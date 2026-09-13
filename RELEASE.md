@@ -2,7 +2,7 @@
 
 *****************
 
-## Release ONDEWO VTSI Rust Client 0.1.0
+## Release ONDEWO VTSI Rust Client 8.7.0
 
 ### New Features
 
@@ -18,6 +18,18 @@
   `ondewo::vtsi::<service>_client::<Service>Client`. Hand-written modules live beside it
   under `src/` and are declared in the hand-written crate barrel `src/lib.rs`, which the
   generator leaves untouched.
+* The generated stubs under `src/api` are COMMITTED, so the crate builds straight from a checkout -
+  no docker, no compiler image and no submodule needed. CI compiles and tests exactly those files.
+* A test suite under `tests/` exercises the generated stubs rather than only the hand-written code:
+  prost messages are serialized and re-parsed field by field, maps and enum discriminants are
+  pinned, and the generated `ProjectsServer` - all seven unary RPCs of `ondewo.vtsi.Projects` - is
+  served over a loopback socket and driven by the generated `ProjectsClient`, so every declared RPC
+  really is encoded, routed by its `/ondewo.vtsi.Projects/<Method>` path, answered and decoded
+  again. Explicit proto3 presence is asserted against `ListVtsiProjectsRequest.page_token` and
+  `SoftTimeoutConfig.timeout_seconds`, both on the wire and across a real gRPC hop.
+* A `BearerTokenInterceptor` (`src/auth.rs`) attaches the Keycloak `authorization` and `cai-token`
+  metadata to every request; its `Debug` output redacts both credentials. `make coverage` gates the
+  hand-written sources at 100% line coverage and the same gate runs in CI.
 * `make build` runs the whole pipeline - submodule checkout, compiler image build, stub
   generation and `cargo build` - and `make check_build` asserts that a generated stub exists for
   every proto package before a release is cut.
