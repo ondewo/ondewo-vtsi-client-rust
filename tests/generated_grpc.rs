@@ -14,13 +14,14 @@
 
 //! End-to-end tests for the GENERATED tonic service stubs.
 //!
-//! `ondewo-vtsi-api` declares three services - `Calls` (28 RPCs), `Logs` and `Projects`. The
-//! generated `ProjectsServer` is the smallest all-unary one, so the fake below implements a
-//! COMPLETE service rather than a slice of one. It is served over a loopback socket and driven by
+//! `ondewo-vtsi-api` declares six services - `Calls` (38 RPCs), `Campaigns`, `Events`, `Logs`,
+//! `Projects` and `Softphones`. The generated `ProjectsServer` is the smallest all-unary one, so
+//! the fake below implements a COMPLETE service rather than a slice of one. It is served over a loopback socket and driven by
 //! the generated `ProjectsClient`, so a request really is encoded, routed by its
 //! `/ondewo.vtsi.Projects/<Method>` path, decoded, answered and decoded again. That is what
 //! catches a service the generator wired to the wrong path, a codec mismatch, or a method that
-//! silently went missing.
+//! silently went missing. The services added in 9.0.0 are wired up in
+//! `tests/generated_grpc_new_services.rs`.
 //!
 //! No network beyond `127.0.0.1` and no ONDEWO server is involved.
 
