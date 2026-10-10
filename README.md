@@ -47,7 +47,7 @@ or declare it in your `Cargo.toml`:
 
 ```toml
 [dependencies]
-ondewo-vtsi-client = "8.7"
+ondewo-vtsi-client = "9.0"
 tonic = "0.14"
 tokio = { version = "1", features = ["full"] }
 ```
@@ -321,7 +321,10 @@ noticed: messages are serialized and re-parsed field by field, an explicit-prese
 checked to stay distinguishable from its zero value, enum discriminants are pinned, and the
 generated `ProjectsServer` is served over a loopback socket and driven by the generated
 `ProjectsClient`, so every declared RPC really is encoded, routed by its
-`/ondewo.vtsi.Projects/<Method>` path, answered and decoded again. No ONDEWO server is involved.
+`/ondewo.vtsi.Projects/<Method>` path, answered and decoded again. Every RPC of the `Softphones`,
+`Campaigns` and `Events` services is called through its generated client against its generated
+server, so each method is proven to reach the handler of the same name. No ONDEWO server is
+involved.
 
 `tests/tls_channel.rs` runs real TLS and mutual TLS handshakes against an in-process tonic
 server, with a throw-away PKI that the `openssl` CLI generates at test time - it has to be on
