@@ -2,6 +2,74 @@
 
 *****************
 
+## Release ONDEWO VTSI Rust Client 9.0.0
+
+### Breaking Changes
+
+Tracking API Version [9.0.0](https://github.com/ondewo/ondewo-vtsi-api/releases/tag/9.0.0)
+(8.7.0 before), a major release: binary wire-compatible in both directions, source-breaking.
+
+* `AsteriskConfigsFiles.sip_conf_file_string` is renamed to `pjsip_conf_file_string` (field
+  number 1 and type unchanged, so the bytes on the wire are identical). Migration: rename the
+  field in struct literals and field accesses.
+* Eleven scalars in `ondewo/vtsi/calls.proto` gained explicit presence and are `Option<_>` now:
+  `InterruptionHandlingConfig.transcribe_on_disabled_interruptions`,
+  `TurnDetectionConfig.turn_detection_system_prompt` and `.turn_detection_user_prompt`,
+  `AudioObjectStorageConfig.activate_audio_object_storage`,
+  `AudioObjectStorageServicesActivationConfig.activate_s2t` and `.activate_t2s`,
+  `MessageBrokerConfig.activate_message_broker` and
+  `MessageBrokerServicesActivationConfig.activate_s2t`, `.activate_nlu`, `.activate_t2s` and
+  `.activate_sip`. Migration: write `Some(value)` (or `None` for "not set"), and read with
+  `.unwrap_or_default()` where the old zero-value behaviour is wanted. An explicit `Some(false)`
+  now reaches the server; `None` sends nothing, as the old `false` did.
+* Messages gained fields (e.g. `VtsiProject.transfer_phone_number_allowlist`, `Call`,
+  `TransferCallRequest`, `AsteriskConfigsVariables`), so a struct literal that names every field
+  needs the new ones or `..Default::default()`.
+
+### New Features
+
+* New services, each with a generated `<service>_client::<Service>Client` and
+  `<service>_server::<Service>Server`:
+  * `Softphones` (`ondewo/vtsi/softphones.proto`): SIP accounts for human softphone users -
+    account CRUD, credential rotation, certificate list / get / revoke and provisioning.
+  * `Campaigns` (`ondewo/vtsi/campaigns.proto`): campaigns of outbound calls with
+    `max_parallel_calls`, lifecycle (`StartCampaign`, `StopCampaign`, `HardStopCampaign`,
+    `ResumeCampaign`), statistics, campaign calls, retries and the server stream
+    `StreamCampaignStatus`.
+  * `Events` (`ondewo/vtsi/events.proto`): `VtsiEvent` subscriptions, webhooks (custom header
+    values are write-only) and the server stream `SubscribeVtsiEvents`.
+* `Calls` gained `AddCallersToCampaign`, `AddScheduledCallersToCampaign`, the status streams
+  `StreamCallerStatus`, `StreamListenerStatus` and `StreamScheduledCallerStatus`, and call control:
+  `InviteToCall`, `RemoveCallParticipant`, `SetCallMediaControl`, the bidirectional
+  `StreamCallAudio` and the server stream `ListenCallAudio`. Batch-creating requests take an
+  `idempotency_key`.
+* Answering machine detection for pooled persistent callers
+  (`VoiceInteractionConfig.answering_machine_detection_config`), and `Call.redial_recommended`,
+  `redial_reason` and `answering_machine_detection_end_description`.
+* Typed transfers (`TransferCallRequest.target`, `mode`, `headers`, `ring_timeout_s`;
+  `TransferCallResponse.outcome` and friends) and `VtsiProject.transfer_phone_number_allowlist`.
+* SIP trunk settings on `AsteriskConfigsVariables`: `sip_trunk_transport` (`SipTrunkTransport`,
+  the zero value means TLS), `sip_trunk_source_cidr`, `sip_trunk_ca_certificates_pem`,
+  `sip_trunk_verify_server` and `softphone_permit_cidrs`.
+* The vendored `ondewo.sip` stubs follow ondewo-sip-api 5.5.0, as in ondewo-sip-client 5.5.0:
+  answering machine detection, call identity, `SipSetCallMediaControl` and `SipStreamCallAudio`.
+
+### Tests
+
+* `tests/generated_grpc_new_services.rs` serves the generated `Softphones`, `Campaigns` and
+  `Events` servers on one loopback socket and calls every one of their RPCs (unary and server
+  streaming) through the generated clients, asserting that each reaches the handler of its name.
+* `tests/generated_messages.rs` pins the `pjsip_conf_file_string` wire format (field 1), the
+  presence of a scalar that gained `optional`, the `SipTrunkTransport` zero value and the
+  presence of `sip_trunk_source_cidr`.
+
+### Build
+
+* `ondewo-proto-compiler` is pinned to 5.15.5 (5.15.4 before). The vendored nlu, s2t and t2s
+  APIs are unchanged (7.1.0, 7.5.0, 6.6.0); sip-api moves from 5.4.0 to 5.5.0.
+
+*****************
+
 ## Release ONDEWO VTSI Rust Client 8.7.1
 
 ### New Features

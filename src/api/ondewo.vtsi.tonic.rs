@@ -1,5 +1,1117 @@
 // @generated
 /// Generated client implementations.
+pub mod campaigns_client {
+    #![allow(
+        unused_variables,
+        dead_code,
+        missing_docs,
+        clippy::wildcard_imports,
+        clippy::let_unit_value,
+    )]
+    use tonic::codegen::*;
+    use tonic::codegen::http::Uri;
+    #[derive(Debug, Clone)]
+    pub struct CampaignsClient<T> {
+        inner: tonic::client::Grpc<T>,
+    }
+    impl CampaignsClient<tonic::transport::Channel> {
+        /// Attempt to create a new client by connecting to a given endpoint.
+        pub async fn connect<D>(dst: D) -> Result<Self, tonic::transport::Error>
+        where
+            D: TryInto<tonic::transport::Endpoint>,
+            D::Error: Into<StdError>,
+        {
+            let conn = tonic::transport::Endpoint::new(dst)?.connect().await?;
+            Ok(Self::new(conn))
+        }
+    }
+    impl<T> CampaignsClient<T>
+    where
+        T: tonic::client::GrpcService<tonic::body::Body>,
+        T::Error: Into<StdError>,
+        T::ResponseBody: Body<Data = Bytes> + std::marker::Send + 'static,
+        <T::ResponseBody as Body>::Error: Into<StdError> + std::marker::Send,
+    {
+        pub fn new(inner: T) -> Self {
+            let inner = tonic::client::Grpc::new(inner);
+            Self { inner }
+        }
+        pub fn with_origin(inner: T, origin: Uri) -> Self {
+            let inner = tonic::client::Grpc::with_origin(inner, origin);
+            Self { inner }
+        }
+        pub fn with_interceptor<F>(
+            inner: T,
+            interceptor: F,
+        ) -> CampaignsClient<InterceptedService<T, F>>
+        where
+            F: tonic::service::Interceptor,
+            T::ResponseBody: Default,
+            T: tonic::codegen::Service<
+                http::Request<tonic::body::Body>,
+                Response = http::Response<
+                    <T as tonic::client::GrpcService<tonic::body::Body>>::ResponseBody,
+                >,
+            >,
+            <T as tonic::codegen::Service<
+                http::Request<tonic::body::Body>,
+            >>::Error: Into<StdError> + std::marker::Send + std::marker::Sync,
+        {
+            CampaignsClient::new(InterceptedService::new(inner, interceptor))
+        }
+        /// Compress requests with the given encoding.
+        ///
+        /// This requires the server to support it otherwise it might respond with an
+        /// error.
+        #[must_use]
+        pub fn send_compressed(mut self, encoding: CompressionEncoding) -> Self {
+            self.inner = self.inner.send_compressed(encoding);
+            self
+        }
+        /// Enable decompressing responses.
+        #[must_use]
+        pub fn accept_compressed(mut self, encoding: CompressionEncoding) -> Self {
+            self.inner = self.inner.accept_compressed(encoding);
+            self
+        }
+        /// Limits the maximum size of a decoded message.
+        ///
+        /// Default: `4MB`
+        #[must_use]
+        pub fn max_decoding_message_size(mut self, limit: usize) -> Self {
+            self.inner = self.inner.max_decoding_message_size(limit);
+            self
+        }
+        /// Limits the maximum size of an encoded message.
+        ///
+        /// Default: `usize::MAX`
+        #[must_use]
+        pub fn max_encoding_message_size(mut self, limit: usize) -> Self {
+            self.inner = self.inner.max_encoding_message_size(limit);
+            self
+        }
+        pub async fn create_campaign(
+            &mut self,
+            request: impl tonic::IntoRequest<super::CreateCampaignRequest>,
+        ) -> std::result::Result<tonic::Response<super::Campaign>, tonic::Status> {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.Campaigns/CreateCampaign",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("ondewo.vtsi.Campaigns", "CreateCampaign"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn get_campaign(
+            &mut self,
+            request: impl tonic::IntoRequest<super::GetCampaignRequest>,
+        ) -> std::result::Result<tonic::Response<super::Campaign>, tonic::Status> {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.Campaigns/GetCampaign",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("ondewo.vtsi.Campaigns", "GetCampaign"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn update_campaign(
+            &mut self,
+            request: impl tonic::IntoRequest<super::UpdateCampaignRequest>,
+        ) -> std::result::Result<tonic::Response<super::Campaign>, tonic::Status> {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.Campaigns/UpdateCampaign",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("ondewo.vtsi.Campaigns", "UpdateCampaign"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn delete_campaign(
+            &mut self,
+            request: impl tonic::IntoRequest<super::DeleteCampaignRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::DeleteCampaignResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.Campaigns/DeleteCampaign",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("ondewo.vtsi.Campaigns", "DeleteCampaign"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn list_campaigns(
+            &mut self,
+            request: impl tonic::IntoRequest<super::ListCampaignsRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::ListCampaignsResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.Campaigns/ListCampaigns",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("ondewo.vtsi.Campaigns", "ListCampaigns"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn get_campaign_statistics(
+            &mut self,
+            request: impl tonic::IntoRequest<super::GetCampaignStatisticsRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::CampaignStatistics>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.Campaigns/GetCampaignStatistics",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new("ondewo.vtsi.Campaigns", "GetCampaignStatistics"),
+                );
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn list_campaign_calls(
+            &mut self,
+            request: impl tonic::IntoRequest<super::ListCampaignCallsRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::ListCampaignCallsResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.Campaigns/ListCampaignCalls",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("ondewo.vtsi.Campaigns", "ListCampaignCalls"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn start_campaign(
+            &mut self,
+            request: impl tonic::IntoRequest<super::StartCampaignRequest>,
+        ) -> std::result::Result<tonic::Response<super::Campaign>, tonic::Status> {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.Campaigns/StartCampaign",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("ondewo.vtsi.Campaigns", "StartCampaign"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn stop_campaign(
+            &mut self,
+            request: impl tonic::IntoRequest<super::StopCampaignRequest>,
+        ) -> std::result::Result<tonic::Response<super::Campaign>, tonic::Status> {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.Campaigns/StopCampaign",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("ondewo.vtsi.Campaigns", "StopCampaign"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn hard_stop_campaign(
+            &mut self,
+            request: impl tonic::IntoRequest<super::HardStopCampaignRequest>,
+        ) -> std::result::Result<tonic::Response<super::Campaign>, tonic::Status> {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.Campaigns/HardStopCampaign",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("ondewo.vtsi.Campaigns", "HardStopCampaign"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn resume_campaign(
+            &mut self,
+            request: impl tonic::IntoRequest<super::ResumeCampaignRequest>,
+        ) -> std::result::Result<tonic::Response<super::Campaign>, tonic::Status> {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.Campaigns/ResumeCampaign",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("ondewo.vtsi.Campaigns", "ResumeCampaign"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn stream_campaign_status(
+            &mut self,
+            request: impl tonic::IntoRequest<super::StreamCampaignStatusRequest>,
+        ) -> std::result::Result<
+            tonic::Response<
+                tonic::codec::Streaming<super::StreamCampaignStatusResponse>,
+            >,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.Campaigns/StreamCampaignStatus",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new("ondewo.vtsi.Campaigns", "StreamCampaignStatus"),
+                );
+            self.inner.server_streaming(req, path, codec).await
+        }
+    }
+}
+/// Generated server implementations.
+pub mod campaigns_server {
+    #![allow(
+        unused_variables,
+        dead_code,
+        missing_docs,
+        clippy::wildcard_imports,
+        clippy::let_unit_value,
+    )]
+    use tonic::codegen::*;
+    /// Generated trait containing gRPC methods that should be implemented for use with CampaignsServer.
+    #[async_trait]
+    pub trait Campaigns: std::marker::Send + std::marker::Sync + 'static {
+        async fn create_campaign(
+            &self,
+            request: tonic::Request<super::CreateCampaignRequest>,
+        ) -> std::result::Result<tonic::Response<super::Campaign>, tonic::Status>;
+        async fn get_campaign(
+            &self,
+            request: tonic::Request<super::GetCampaignRequest>,
+        ) -> std::result::Result<tonic::Response<super::Campaign>, tonic::Status>;
+        async fn update_campaign(
+            &self,
+            request: tonic::Request<super::UpdateCampaignRequest>,
+        ) -> std::result::Result<tonic::Response<super::Campaign>, tonic::Status>;
+        async fn delete_campaign(
+            &self,
+            request: tonic::Request<super::DeleteCampaignRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::DeleteCampaignResponse>,
+            tonic::Status,
+        >;
+        async fn list_campaigns(
+            &self,
+            request: tonic::Request<super::ListCampaignsRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::ListCampaignsResponse>,
+            tonic::Status,
+        >;
+        async fn get_campaign_statistics(
+            &self,
+            request: tonic::Request<super::GetCampaignStatisticsRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::CampaignStatistics>,
+            tonic::Status,
+        >;
+        async fn list_campaign_calls(
+            &self,
+            request: tonic::Request<super::ListCampaignCallsRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::ListCampaignCallsResponse>,
+            tonic::Status,
+        >;
+        async fn start_campaign(
+            &self,
+            request: tonic::Request<super::StartCampaignRequest>,
+        ) -> std::result::Result<tonic::Response<super::Campaign>, tonic::Status>;
+        async fn stop_campaign(
+            &self,
+            request: tonic::Request<super::StopCampaignRequest>,
+        ) -> std::result::Result<tonic::Response<super::Campaign>, tonic::Status>;
+        async fn hard_stop_campaign(
+            &self,
+            request: tonic::Request<super::HardStopCampaignRequest>,
+        ) -> std::result::Result<tonic::Response<super::Campaign>, tonic::Status>;
+        async fn resume_campaign(
+            &self,
+            request: tonic::Request<super::ResumeCampaignRequest>,
+        ) -> std::result::Result<tonic::Response<super::Campaign>, tonic::Status>;
+        /// Server streaming response type for the StreamCampaignStatus method.
+        type StreamCampaignStatusStream: tonic::codegen::tokio_stream::Stream<
+                Item = std::result::Result<
+                    super::StreamCampaignStatusResponse,
+                    tonic::Status,
+                >,
+            >
+            + std::marker::Send
+            + 'static;
+        async fn stream_campaign_status(
+            &self,
+            request: tonic::Request<super::StreamCampaignStatusRequest>,
+        ) -> std::result::Result<
+            tonic::Response<Self::StreamCampaignStatusStream>,
+            tonic::Status,
+        >;
+    }
+    #[derive(Debug)]
+    pub struct CampaignsServer<T> {
+        inner: Arc<T>,
+        accept_compression_encodings: EnabledCompressionEncodings,
+        send_compression_encodings: EnabledCompressionEncodings,
+        max_decoding_message_size: Option<usize>,
+        max_encoding_message_size: Option<usize>,
+    }
+    impl<T> CampaignsServer<T> {
+        pub fn new(inner: T) -> Self {
+            Self::from_arc(Arc::new(inner))
+        }
+        pub fn from_arc(inner: Arc<T>) -> Self {
+            Self {
+                inner,
+                accept_compression_encodings: Default::default(),
+                send_compression_encodings: Default::default(),
+                max_decoding_message_size: None,
+                max_encoding_message_size: None,
+            }
+        }
+        pub fn with_interceptor<F>(
+            inner: T,
+            interceptor: F,
+        ) -> InterceptedService<Self, F>
+        where
+            F: tonic::service::Interceptor,
+        {
+            InterceptedService::new(Self::new(inner), interceptor)
+        }
+        /// Enable decompressing requests with the given encoding.
+        #[must_use]
+        pub fn accept_compressed(mut self, encoding: CompressionEncoding) -> Self {
+            self.accept_compression_encodings.enable(encoding);
+            self
+        }
+        /// Compress responses with the given encoding, if the client supports it.
+        #[must_use]
+        pub fn send_compressed(mut self, encoding: CompressionEncoding) -> Self {
+            self.send_compression_encodings.enable(encoding);
+            self
+        }
+        /// Limits the maximum size of a decoded message.
+        ///
+        /// Default: `4MB`
+        #[must_use]
+        pub fn max_decoding_message_size(mut self, limit: usize) -> Self {
+            self.max_decoding_message_size = Some(limit);
+            self
+        }
+        /// Limits the maximum size of an encoded message.
+        ///
+        /// Default: `usize::MAX`
+        #[must_use]
+        pub fn max_encoding_message_size(mut self, limit: usize) -> Self {
+            self.max_encoding_message_size = Some(limit);
+            self
+        }
+    }
+    impl<T, B> tonic::codegen::Service<http::Request<B>> for CampaignsServer<T>
+    where
+        T: Campaigns,
+        B: Body + std::marker::Send + 'static,
+        B::Error: Into<StdError> + std::marker::Send + 'static,
+    {
+        type Response = http::Response<tonic::body::Body>;
+        type Error = std::convert::Infallible;
+        type Future = BoxFuture<Self::Response, Self::Error>;
+        fn poll_ready(
+            &mut self,
+            _cx: &mut Context<'_>,
+        ) -> Poll<std::result::Result<(), Self::Error>> {
+            Poll::Ready(Ok(()))
+        }
+        fn call(&mut self, req: http::Request<B>) -> Self::Future {
+            match req.uri().path() {
+                "/ondewo.vtsi.Campaigns/CreateCampaign" => {
+                    #[allow(non_camel_case_types)]
+                    struct CreateCampaignSvc<T: Campaigns>(pub Arc<T>);
+                    impl<
+                        T: Campaigns,
+                    > tonic::server::UnaryService<super::CreateCampaignRequest>
+                    for CreateCampaignSvc<T> {
+                        type Response = super::Campaign;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::CreateCampaignRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as Campaigns>::create_campaign(&inner, request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = CreateCampaignSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/ondewo.vtsi.Campaigns/GetCampaign" => {
+                    #[allow(non_camel_case_types)]
+                    struct GetCampaignSvc<T: Campaigns>(pub Arc<T>);
+                    impl<
+                        T: Campaigns,
+                    > tonic::server::UnaryService<super::GetCampaignRequest>
+                    for GetCampaignSvc<T> {
+                        type Response = super::Campaign;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::GetCampaignRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as Campaigns>::get_campaign(&inner, request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = GetCampaignSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/ondewo.vtsi.Campaigns/UpdateCampaign" => {
+                    #[allow(non_camel_case_types)]
+                    struct UpdateCampaignSvc<T: Campaigns>(pub Arc<T>);
+                    impl<
+                        T: Campaigns,
+                    > tonic::server::UnaryService<super::UpdateCampaignRequest>
+                    for UpdateCampaignSvc<T> {
+                        type Response = super::Campaign;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::UpdateCampaignRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as Campaigns>::update_campaign(&inner, request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = UpdateCampaignSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/ondewo.vtsi.Campaigns/DeleteCampaign" => {
+                    #[allow(non_camel_case_types)]
+                    struct DeleteCampaignSvc<T: Campaigns>(pub Arc<T>);
+                    impl<
+                        T: Campaigns,
+                    > tonic::server::UnaryService<super::DeleteCampaignRequest>
+                    for DeleteCampaignSvc<T> {
+                        type Response = super::DeleteCampaignResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::DeleteCampaignRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as Campaigns>::delete_campaign(&inner, request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = DeleteCampaignSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/ondewo.vtsi.Campaigns/ListCampaigns" => {
+                    #[allow(non_camel_case_types)]
+                    struct ListCampaignsSvc<T: Campaigns>(pub Arc<T>);
+                    impl<
+                        T: Campaigns,
+                    > tonic::server::UnaryService<super::ListCampaignsRequest>
+                    for ListCampaignsSvc<T> {
+                        type Response = super::ListCampaignsResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::ListCampaignsRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as Campaigns>::list_campaigns(&inner, request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = ListCampaignsSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/ondewo.vtsi.Campaigns/GetCampaignStatistics" => {
+                    #[allow(non_camel_case_types)]
+                    struct GetCampaignStatisticsSvc<T: Campaigns>(pub Arc<T>);
+                    impl<
+                        T: Campaigns,
+                    > tonic::server::UnaryService<super::GetCampaignStatisticsRequest>
+                    for GetCampaignStatisticsSvc<T> {
+                        type Response = super::CampaignStatistics;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::GetCampaignStatisticsRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as Campaigns>::get_campaign_statistics(&inner, request)
+                                    .await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = GetCampaignStatisticsSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/ondewo.vtsi.Campaigns/ListCampaignCalls" => {
+                    #[allow(non_camel_case_types)]
+                    struct ListCampaignCallsSvc<T: Campaigns>(pub Arc<T>);
+                    impl<
+                        T: Campaigns,
+                    > tonic::server::UnaryService<super::ListCampaignCallsRequest>
+                    for ListCampaignCallsSvc<T> {
+                        type Response = super::ListCampaignCallsResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::ListCampaignCallsRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as Campaigns>::list_campaign_calls(&inner, request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = ListCampaignCallsSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/ondewo.vtsi.Campaigns/StartCampaign" => {
+                    #[allow(non_camel_case_types)]
+                    struct StartCampaignSvc<T: Campaigns>(pub Arc<T>);
+                    impl<
+                        T: Campaigns,
+                    > tonic::server::UnaryService<super::StartCampaignRequest>
+                    for StartCampaignSvc<T> {
+                        type Response = super::Campaign;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::StartCampaignRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as Campaigns>::start_campaign(&inner, request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = StartCampaignSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/ondewo.vtsi.Campaigns/StopCampaign" => {
+                    #[allow(non_camel_case_types)]
+                    struct StopCampaignSvc<T: Campaigns>(pub Arc<T>);
+                    impl<
+                        T: Campaigns,
+                    > tonic::server::UnaryService<super::StopCampaignRequest>
+                    for StopCampaignSvc<T> {
+                        type Response = super::Campaign;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::StopCampaignRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as Campaigns>::stop_campaign(&inner, request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = StopCampaignSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/ondewo.vtsi.Campaigns/HardStopCampaign" => {
+                    #[allow(non_camel_case_types)]
+                    struct HardStopCampaignSvc<T: Campaigns>(pub Arc<T>);
+                    impl<
+                        T: Campaigns,
+                    > tonic::server::UnaryService<super::HardStopCampaignRequest>
+                    for HardStopCampaignSvc<T> {
+                        type Response = super::Campaign;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::HardStopCampaignRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as Campaigns>::hard_stop_campaign(&inner, request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = HardStopCampaignSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/ondewo.vtsi.Campaigns/ResumeCampaign" => {
+                    #[allow(non_camel_case_types)]
+                    struct ResumeCampaignSvc<T: Campaigns>(pub Arc<T>);
+                    impl<
+                        T: Campaigns,
+                    > tonic::server::UnaryService<super::ResumeCampaignRequest>
+                    for ResumeCampaignSvc<T> {
+                        type Response = super::Campaign;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::ResumeCampaignRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as Campaigns>::resume_campaign(&inner, request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = ResumeCampaignSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/ondewo.vtsi.Campaigns/StreamCampaignStatus" => {
+                    #[allow(non_camel_case_types)]
+                    struct StreamCampaignStatusSvc<T: Campaigns>(pub Arc<T>);
+                    impl<
+                        T: Campaigns,
+                    > tonic::server::ServerStreamingService<
+                        super::StreamCampaignStatusRequest,
+                    > for StreamCampaignStatusSvc<T> {
+                        type Response = super::StreamCampaignStatusResponse;
+                        type ResponseStream = T::StreamCampaignStatusStream;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::ResponseStream>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::StreamCampaignStatusRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as Campaigns>::stream_campaign_status(&inner, request)
+                                    .await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = StreamCampaignStatusSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.server_streaming(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                _ => {
+                    Box::pin(async move {
+                        let mut response = http::Response::new(
+                            tonic::body::Body::default(),
+                        );
+                        let headers = response.headers_mut();
+                        headers
+                            .insert(
+                                tonic::Status::GRPC_STATUS,
+                                (tonic::Code::Unimplemented as i32).into(),
+                            );
+                        headers
+                            .insert(
+                                http::header::CONTENT_TYPE,
+                                tonic::metadata::GRPC_CONTENT_TYPE,
+                            );
+                        Ok(response)
+                    })
+                }
+            }
+        }
+    }
+    impl<T> Clone for CampaignsServer<T> {
+        fn clone(&self) -> Self {
+            let inner = self.inner.clone();
+            Self {
+                inner,
+                accept_compression_encodings: self.accept_compression_encodings,
+                send_compression_encodings: self.send_compression_encodings,
+                max_decoding_message_size: self.max_decoding_message_size,
+                max_encoding_message_size: self.max_encoding_message_size,
+            }
+        }
+    }
+    /// Generated gRPC service name
+    pub const SERVICE_NAME: &str = "ondewo.vtsi.Campaigns";
+    impl<T> tonic::server::NamedService for CampaignsServer<T> {
+        const NAME: &'static str = SERVICE_NAME;
+    }
+}
+/// Generated client implementations.
 pub mod calls_client {
     #![allow(
         unused_variables,
@@ -516,6 +1628,56 @@ pub mod calls_client {
                 .insert(GrpcMethod::new("ondewo.vtsi.Calls", "StartScheduledCallers"));
             self.inner.unary(req, path, codec).await
         }
+        pub async fn add_callers_to_campaign(
+            &mut self,
+            request: impl tonic::IntoRequest<super::AddCallersToCampaignRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::AddCallersToCampaignResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.Calls/AddCallersToCampaign",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("ondewo.vtsi.Calls", "AddCallersToCampaign"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn add_scheduled_callers_to_campaign(
+            &mut self,
+            request: impl tonic::IntoRequest<super::AddScheduledCallersToCampaignRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::AddScheduledCallersToCampaignResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.Calls/AddScheduledCallersToCampaign",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new("ondewo.vtsi.Calls", "AddScheduledCallersToCampaign"),
+                );
+            self.inner.unary(req, path, codec).await
+        }
         pub async fn get_scheduled_caller(
             &mut self,
             request: impl tonic::IntoRequest<super::GetScheduledCallerRequest>,
@@ -752,6 +1914,208 @@ pub mod calls_client {
                 .insert(GrpcMethod::new("ondewo.vtsi.Calls", "ListCalls"));
             self.inner.unary(req, path, codec).await
         }
+        pub async fn stream_caller_status(
+            &mut self,
+            request: impl tonic::IntoRequest<super::StreamCallerStatusRequest>,
+        ) -> std::result::Result<
+            tonic::Response<
+                tonic::codec::Streaming<super::StreamCallResourceStatusResponse>,
+            >,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.Calls/StreamCallerStatus",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("ondewo.vtsi.Calls", "StreamCallerStatus"));
+            self.inner.server_streaming(req, path, codec).await
+        }
+        pub async fn stream_listener_status(
+            &mut self,
+            request: impl tonic::IntoRequest<super::StreamListenerStatusRequest>,
+        ) -> std::result::Result<
+            tonic::Response<
+                tonic::codec::Streaming<super::StreamCallResourceStatusResponse>,
+            >,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.Calls/StreamListenerStatus",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("ondewo.vtsi.Calls", "StreamListenerStatus"));
+            self.inner.server_streaming(req, path, codec).await
+        }
+        pub async fn stream_scheduled_caller_status(
+            &mut self,
+            request: impl tonic::IntoRequest<super::StreamScheduledCallerStatusRequest>,
+        ) -> std::result::Result<
+            tonic::Response<
+                tonic::codec::Streaming<super::StreamCallResourceStatusResponse>,
+            >,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.Calls/StreamScheduledCallerStatus",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new("ondewo.vtsi.Calls", "StreamScheduledCallerStatus"),
+                );
+            self.inner.server_streaming(req, path, codec).await
+        }
+        pub async fn invite_to_call(
+            &mut self,
+            request: impl tonic::IntoRequest<super::InviteToCallRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::InviteToCallResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.Calls/InviteToCall",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("ondewo.vtsi.Calls", "InviteToCall"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn remove_call_participant(
+            &mut self,
+            request: impl tonic::IntoRequest<super::RemoveCallParticipantRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::RemoveCallParticipantResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.Calls/RemoveCallParticipant",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("ondewo.vtsi.Calls", "RemoveCallParticipant"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn set_call_media_control(
+            &mut self,
+            request: impl tonic::IntoRequest<super::SetCallMediaControlRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::SetCallMediaControlResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.Calls/SetCallMediaControl",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("ondewo.vtsi.Calls", "SetCallMediaControl"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn stream_call_audio(
+            &mut self,
+            request: impl tonic::IntoStreamingRequest<
+                Message = super::StreamCallAudioRequest,
+            >,
+        ) -> std::result::Result<
+            tonic::Response<tonic::codec::Streaming<super::StreamCallAudioResponse>>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.Calls/StreamCallAudio",
+            );
+            let mut req = request.into_streaming_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("ondewo.vtsi.Calls", "StreamCallAudio"));
+            self.inner.streaming(req, path, codec).await
+        }
+        pub async fn listen_call_audio(
+            &mut self,
+            request: impl tonic::IntoRequest<super::ListenCallAudioRequest>,
+        ) -> std::result::Result<
+            tonic::Response<tonic::codec::Streaming<super::StreamCallAudioResponse>>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.Calls/ListenCallAudio",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("ondewo.vtsi.Calls", "ListenCallAudio"));
+            self.inner.server_streaming(req, path, codec).await
+        }
     }
 }
 /// Generated server implementations.
@@ -887,6 +2251,20 @@ pub mod calls_server {
             tonic::Response<super::StartScheduledCallersResponse>,
             tonic::Status,
         >;
+        async fn add_callers_to_campaign(
+            &self,
+            request: tonic::Request<super::AddCallersToCampaignRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::AddCallersToCampaignResponse>,
+            tonic::Status,
+        >;
+        async fn add_scheduled_callers_to_campaign(
+            &self,
+            request: tonic::Request<super::AddScheduledCallersToCampaignRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::AddScheduledCallersToCampaignResponse>,
+            tonic::Status,
+        >;
         async fn get_scheduled_caller(
             &self,
             request: tonic::Request<super::GetScheduledCallerRequest>,
@@ -949,6 +2327,101 @@ pub mod calls_server {
             request: tonic::Request<super::ListCallsRequest>,
         ) -> std::result::Result<
             tonic::Response<super::ListCallsResponse>,
+            tonic::Status,
+        >;
+        /// Server streaming response type for the StreamCallerStatus method.
+        type StreamCallerStatusStream: tonic::codegen::tokio_stream::Stream<
+                Item = std::result::Result<
+                    super::StreamCallResourceStatusResponse,
+                    tonic::Status,
+                >,
+            >
+            + std::marker::Send
+            + 'static;
+        async fn stream_caller_status(
+            &self,
+            request: tonic::Request<super::StreamCallerStatusRequest>,
+        ) -> std::result::Result<
+            tonic::Response<Self::StreamCallerStatusStream>,
+            tonic::Status,
+        >;
+        /// Server streaming response type for the StreamListenerStatus method.
+        type StreamListenerStatusStream: tonic::codegen::tokio_stream::Stream<
+                Item = std::result::Result<
+                    super::StreamCallResourceStatusResponse,
+                    tonic::Status,
+                >,
+            >
+            + std::marker::Send
+            + 'static;
+        async fn stream_listener_status(
+            &self,
+            request: tonic::Request<super::StreamListenerStatusRequest>,
+        ) -> std::result::Result<
+            tonic::Response<Self::StreamListenerStatusStream>,
+            tonic::Status,
+        >;
+        /// Server streaming response type for the StreamScheduledCallerStatus method.
+        type StreamScheduledCallerStatusStream: tonic::codegen::tokio_stream::Stream<
+                Item = std::result::Result<
+                    super::StreamCallResourceStatusResponse,
+                    tonic::Status,
+                >,
+            >
+            + std::marker::Send
+            + 'static;
+        async fn stream_scheduled_caller_status(
+            &self,
+            request: tonic::Request<super::StreamScheduledCallerStatusRequest>,
+        ) -> std::result::Result<
+            tonic::Response<Self::StreamScheduledCallerStatusStream>,
+            tonic::Status,
+        >;
+        async fn invite_to_call(
+            &self,
+            request: tonic::Request<super::InviteToCallRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::InviteToCallResponse>,
+            tonic::Status,
+        >;
+        async fn remove_call_participant(
+            &self,
+            request: tonic::Request<super::RemoveCallParticipantRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::RemoveCallParticipantResponse>,
+            tonic::Status,
+        >;
+        async fn set_call_media_control(
+            &self,
+            request: tonic::Request<super::SetCallMediaControlRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::SetCallMediaControlResponse>,
+            tonic::Status,
+        >;
+        /// Server streaming response type for the StreamCallAudio method.
+        type StreamCallAudioStream: tonic::codegen::tokio_stream::Stream<
+                Item = std::result::Result<super::StreamCallAudioResponse, tonic::Status>,
+            >
+            + std::marker::Send
+            + 'static;
+        async fn stream_call_audio(
+            &self,
+            request: tonic::Request<tonic::Streaming<super::StreamCallAudioRequest>>,
+        ) -> std::result::Result<
+            tonic::Response<Self::StreamCallAudioStream>,
+            tonic::Status,
+        >;
+        /// Server streaming response type for the ListenCallAudio method.
+        type ListenCallAudioStream: tonic::codegen::tokio_stream::Stream<
+                Item = std::result::Result<super::StreamCallAudioResponse, tonic::Status>,
+            >
+            + std::marker::Send
+            + 'static;
+        async fn listen_call_audio(
+            &self,
+            request: tonic::Request<super::ListenCallAudioRequest>,
+        ) -> std::result::Result<
+            tonic::Response<Self::ListenCallAudioStream>,
             tonic::Status,
         >;
     }
@@ -1826,6 +3299,103 @@ pub mod calls_server {
                     };
                     Box::pin(fut)
                 }
+                "/ondewo.vtsi.Calls/AddCallersToCampaign" => {
+                    #[allow(non_camel_case_types)]
+                    struct AddCallersToCampaignSvc<T: Calls>(pub Arc<T>);
+                    impl<
+                        T: Calls,
+                    > tonic::server::UnaryService<super::AddCallersToCampaignRequest>
+                    for AddCallersToCampaignSvc<T> {
+                        type Response = super::AddCallersToCampaignResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::AddCallersToCampaignRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as Calls>::add_callers_to_campaign(&inner, request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = AddCallersToCampaignSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/ondewo.vtsi.Calls/AddScheduledCallersToCampaign" => {
+                    #[allow(non_camel_case_types)]
+                    struct AddScheduledCallersToCampaignSvc<T: Calls>(pub Arc<T>);
+                    impl<
+                        T: Calls,
+                    > tonic::server::UnaryService<
+                        super::AddScheduledCallersToCampaignRequest,
+                    > for AddScheduledCallersToCampaignSvc<T> {
+                        type Response = super::AddScheduledCallersToCampaignResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<
+                                super::AddScheduledCallersToCampaignRequest,
+                            >,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as Calls>::add_scheduled_callers_to_campaign(
+                                        &inner,
+                                        request,
+                                    )
+                                    .await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = AddScheduledCallersToCampaignSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
                 "/ondewo.vtsi.Calls/GetScheduledCaller" => {
                     #[allow(non_camel_case_types)]
                     struct GetScheduledCallerSvc<T: Calls>(pub Arc<T>);
@@ -2268,6 +3838,383 @@ pub mod calls_server {
                     };
                     Box::pin(fut)
                 }
+                "/ondewo.vtsi.Calls/StreamCallerStatus" => {
+                    #[allow(non_camel_case_types)]
+                    struct StreamCallerStatusSvc<T: Calls>(pub Arc<T>);
+                    impl<
+                        T: Calls,
+                    > tonic::server::ServerStreamingService<
+                        super::StreamCallerStatusRequest,
+                    > for StreamCallerStatusSvc<T> {
+                        type Response = super::StreamCallResourceStatusResponse;
+                        type ResponseStream = T::StreamCallerStatusStream;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::ResponseStream>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::StreamCallerStatusRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as Calls>::stream_caller_status(&inner, request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = StreamCallerStatusSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.server_streaming(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/ondewo.vtsi.Calls/StreamListenerStatus" => {
+                    #[allow(non_camel_case_types)]
+                    struct StreamListenerStatusSvc<T: Calls>(pub Arc<T>);
+                    impl<
+                        T: Calls,
+                    > tonic::server::ServerStreamingService<
+                        super::StreamListenerStatusRequest,
+                    > for StreamListenerStatusSvc<T> {
+                        type Response = super::StreamCallResourceStatusResponse;
+                        type ResponseStream = T::StreamListenerStatusStream;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::ResponseStream>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::StreamListenerStatusRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as Calls>::stream_listener_status(&inner, request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = StreamListenerStatusSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.server_streaming(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/ondewo.vtsi.Calls/StreamScheduledCallerStatus" => {
+                    #[allow(non_camel_case_types)]
+                    struct StreamScheduledCallerStatusSvc<T: Calls>(pub Arc<T>);
+                    impl<
+                        T: Calls,
+                    > tonic::server::ServerStreamingService<
+                        super::StreamScheduledCallerStatusRequest,
+                    > for StreamScheduledCallerStatusSvc<T> {
+                        type Response = super::StreamCallResourceStatusResponse;
+                        type ResponseStream = T::StreamScheduledCallerStatusStream;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::ResponseStream>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<
+                                super::StreamScheduledCallerStatusRequest,
+                            >,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as Calls>::stream_scheduled_caller_status(
+                                        &inner,
+                                        request,
+                                    )
+                                    .await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = StreamScheduledCallerStatusSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.server_streaming(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/ondewo.vtsi.Calls/InviteToCall" => {
+                    #[allow(non_camel_case_types)]
+                    struct InviteToCallSvc<T: Calls>(pub Arc<T>);
+                    impl<
+                        T: Calls,
+                    > tonic::server::UnaryService<super::InviteToCallRequest>
+                    for InviteToCallSvc<T> {
+                        type Response = super::InviteToCallResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::InviteToCallRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as Calls>::invite_to_call(&inner, request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = InviteToCallSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/ondewo.vtsi.Calls/RemoveCallParticipant" => {
+                    #[allow(non_camel_case_types)]
+                    struct RemoveCallParticipantSvc<T: Calls>(pub Arc<T>);
+                    impl<
+                        T: Calls,
+                    > tonic::server::UnaryService<super::RemoveCallParticipantRequest>
+                    for RemoveCallParticipantSvc<T> {
+                        type Response = super::RemoveCallParticipantResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::RemoveCallParticipantRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as Calls>::remove_call_participant(&inner, request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = RemoveCallParticipantSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/ondewo.vtsi.Calls/SetCallMediaControl" => {
+                    #[allow(non_camel_case_types)]
+                    struct SetCallMediaControlSvc<T: Calls>(pub Arc<T>);
+                    impl<
+                        T: Calls,
+                    > tonic::server::UnaryService<super::SetCallMediaControlRequest>
+                    for SetCallMediaControlSvc<T> {
+                        type Response = super::SetCallMediaControlResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::SetCallMediaControlRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as Calls>::set_call_media_control(&inner, request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = SetCallMediaControlSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/ondewo.vtsi.Calls/StreamCallAudio" => {
+                    #[allow(non_camel_case_types)]
+                    struct StreamCallAudioSvc<T: Calls>(pub Arc<T>);
+                    impl<
+                        T: Calls,
+                    > tonic::server::StreamingService<super::StreamCallAudioRequest>
+                    for StreamCallAudioSvc<T> {
+                        type Response = super::StreamCallAudioResponse;
+                        type ResponseStream = T::StreamCallAudioStream;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::ResponseStream>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<
+                                tonic::Streaming<super::StreamCallAudioRequest>,
+                            >,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as Calls>::stream_call_audio(&inner, request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = StreamCallAudioSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.streaming(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/ondewo.vtsi.Calls/ListenCallAudio" => {
+                    #[allow(non_camel_case_types)]
+                    struct ListenCallAudioSvc<T: Calls>(pub Arc<T>);
+                    impl<
+                        T: Calls,
+                    > tonic::server::ServerStreamingService<
+                        super::ListenCallAudioRequest,
+                    > for ListenCallAudioSvc<T> {
+                        type Response = super::StreamCallAudioResponse;
+                        type ResponseStream = T::ListenCallAudioStream;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::ResponseStream>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::ListenCallAudioRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as Calls>::listen_call_audio(&inner, request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = ListenCallAudioSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.server_streaming(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
                 _ => {
                     Box::pin(async move {
                         let mut response = http::Response::new(
@@ -2305,6 +4252,1173 @@ pub mod calls_server {
     /// Generated gRPC service name
     pub const SERVICE_NAME: &str = "ondewo.vtsi.Calls";
     impl<T> tonic::server::NamedService for CallsServer<T> {
+        const NAME: &'static str = SERVICE_NAME;
+    }
+}
+/// Generated client implementations.
+pub mod events_client {
+    #![allow(
+        unused_variables,
+        dead_code,
+        missing_docs,
+        clippy::wildcard_imports,
+        clippy::let_unit_value,
+    )]
+    use tonic::codegen::*;
+    use tonic::codegen::http::Uri;
+    #[derive(Debug, Clone)]
+    pub struct EventsClient<T> {
+        inner: tonic::client::Grpc<T>,
+    }
+    impl EventsClient<tonic::transport::Channel> {
+        /// Attempt to create a new client by connecting to a given endpoint.
+        pub async fn connect<D>(dst: D) -> Result<Self, tonic::transport::Error>
+        where
+            D: TryInto<tonic::transport::Endpoint>,
+            D::Error: Into<StdError>,
+        {
+            let conn = tonic::transport::Endpoint::new(dst)?.connect().await?;
+            Ok(Self::new(conn))
+        }
+    }
+    impl<T> EventsClient<T>
+    where
+        T: tonic::client::GrpcService<tonic::body::Body>,
+        T::Error: Into<StdError>,
+        T::ResponseBody: Body<Data = Bytes> + std::marker::Send + 'static,
+        <T::ResponseBody as Body>::Error: Into<StdError> + std::marker::Send,
+    {
+        pub fn new(inner: T) -> Self {
+            let inner = tonic::client::Grpc::new(inner);
+            Self { inner }
+        }
+        pub fn with_origin(inner: T, origin: Uri) -> Self {
+            let inner = tonic::client::Grpc::with_origin(inner, origin);
+            Self { inner }
+        }
+        pub fn with_interceptor<F>(
+            inner: T,
+            interceptor: F,
+        ) -> EventsClient<InterceptedService<T, F>>
+        where
+            F: tonic::service::Interceptor,
+            T::ResponseBody: Default,
+            T: tonic::codegen::Service<
+                http::Request<tonic::body::Body>,
+                Response = http::Response<
+                    <T as tonic::client::GrpcService<tonic::body::Body>>::ResponseBody,
+                >,
+            >,
+            <T as tonic::codegen::Service<
+                http::Request<tonic::body::Body>,
+            >>::Error: Into<StdError> + std::marker::Send + std::marker::Sync,
+        {
+            EventsClient::new(InterceptedService::new(inner, interceptor))
+        }
+        /// Compress requests with the given encoding.
+        ///
+        /// This requires the server to support it otherwise it might respond with an
+        /// error.
+        #[must_use]
+        pub fn send_compressed(mut self, encoding: CompressionEncoding) -> Self {
+            self.inner = self.inner.send_compressed(encoding);
+            self
+        }
+        /// Enable decompressing responses.
+        #[must_use]
+        pub fn accept_compressed(mut self, encoding: CompressionEncoding) -> Self {
+            self.inner = self.inner.accept_compressed(encoding);
+            self
+        }
+        /// Limits the maximum size of a decoded message.
+        ///
+        /// Default: `4MB`
+        #[must_use]
+        pub fn max_decoding_message_size(mut self, limit: usize) -> Self {
+            self.inner = self.inner.max_decoding_message_size(limit);
+            self
+        }
+        /// Limits the maximum size of an encoded message.
+        ///
+        /// Default: `usize::MAX`
+        #[must_use]
+        pub fn max_encoding_message_size(mut self, limit: usize) -> Self {
+            self.inner = self.inner.max_encoding_message_size(limit);
+            self
+        }
+        pub async fn create_vtsi_event_subscription(
+            &mut self,
+            request: impl tonic::IntoRequest<super::CreateVtsiEventSubscriptionRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::VtsiEventSubscription>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.Events/CreateVtsiEventSubscription",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new("ondewo.vtsi.Events", "CreateVtsiEventSubscription"),
+                );
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn get_vtsi_event_subscription(
+            &mut self,
+            request: impl tonic::IntoRequest<super::GetVtsiEventSubscriptionRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::VtsiEventSubscription>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.Events/GetVtsiEventSubscription",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new("ondewo.vtsi.Events", "GetVtsiEventSubscription"),
+                );
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn update_vtsi_event_subscription(
+            &mut self,
+            request: impl tonic::IntoRequest<super::UpdateVtsiEventSubscriptionRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::VtsiEventSubscription>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.Events/UpdateVtsiEventSubscription",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new("ondewo.vtsi.Events", "UpdateVtsiEventSubscription"),
+                );
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn delete_vtsi_event_subscription(
+            &mut self,
+            request: impl tonic::IntoRequest<super::DeleteVtsiEventSubscriptionRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::DeleteVtsiEventSubscriptionResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.Events/DeleteVtsiEventSubscription",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new("ondewo.vtsi.Events", "DeleteVtsiEventSubscription"),
+                );
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn list_vtsi_event_subscriptions(
+            &mut self,
+            request: impl tonic::IntoRequest<super::ListVtsiEventSubscriptionsRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::ListVtsiEventSubscriptionsResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.Events/ListVtsiEventSubscriptions",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new("ondewo.vtsi.Events", "ListVtsiEventSubscriptions"),
+                );
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn create_webhook(
+            &mut self,
+            request: impl tonic::IntoRequest<super::CreateWebhookRequest>,
+        ) -> std::result::Result<tonic::Response<super::Webhook>, tonic::Status> {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.Events/CreateWebhook",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("ondewo.vtsi.Events", "CreateWebhook"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn get_webhook(
+            &mut self,
+            request: impl tonic::IntoRequest<super::GetWebhookRequest>,
+        ) -> std::result::Result<tonic::Response<super::Webhook>, tonic::Status> {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.Events/GetWebhook",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("ondewo.vtsi.Events", "GetWebhook"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn update_webhook(
+            &mut self,
+            request: impl tonic::IntoRequest<super::UpdateWebhookRequest>,
+        ) -> std::result::Result<tonic::Response<super::Webhook>, tonic::Status> {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.Events/UpdateWebhook",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("ondewo.vtsi.Events", "UpdateWebhook"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn delete_webhook(
+            &mut self,
+            request: impl tonic::IntoRequest<super::DeleteWebhookRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::DeleteWebhookResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.Events/DeleteWebhook",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("ondewo.vtsi.Events", "DeleteWebhook"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn list_webhooks(
+            &mut self,
+            request: impl tonic::IntoRequest<super::ListWebhooksRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::ListWebhooksResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.Events/ListWebhooks",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("ondewo.vtsi.Events", "ListWebhooks"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn test_webhook(
+            &mut self,
+            request: impl tonic::IntoRequest<super::TestWebhookRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::TestWebhookResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.Events/TestWebhook",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("ondewo.vtsi.Events", "TestWebhook"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn subscribe_vtsi_events(
+            &mut self,
+            request: impl tonic::IntoRequest<super::SubscribeVtsiEventsRequest>,
+        ) -> std::result::Result<
+            tonic::Response<tonic::codec::Streaming<super::SubscribeVtsiEventsResponse>>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.Events/SubscribeVtsiEvents",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("ondewo.vtsi.Events", "SubscribeVtsiEvents"));
+            self.inner.server_streaming(req, path, codec).await
+        }
+    }
+}
+/// Generated server implementations.
+pub mod events_server {
+    #![allow(
+        unused_variables,
+        dead_code,
+        missing_docs,
+        clippy::wildcard_imports,
+        clippy::let_unit_value,
+    )]
+    use tonic::codegen::*;
+    /// Generated trait containing gRPC methods that should be implemented for use with EventsServer.
+    #[async_trait]
+    pub trait Events: std::marker::Send + std::marker::Sync + 'static {
+        async fn create_vtsi_event_subscription(
+            &self,
+            request: tonic::Request<super::CreateVtsiEventSubscriptionRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::VtsiEventSubscription>,
+            tonic::Status,
+        >;
+        async fn get_vtsi_event_subscription(
+            &self,
+            request: tonic::Request<super::GetVtsiEventSubscriptionRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::VtsiEventSubscription>,
+            tonic::Status,
+        >;
+        async fn update_vtsi_event_subscription(
+            &self,
+            request: tonic::Request<super::UpdateVtsiEventSubscriptionRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::VtsiEventSubscription>,
+            tonic::Status,
+        >;
+        async fn delete_vtsi_event_subscription(
+            &self,
+            request: tonic::Request<super::DeleteVtsiEventSubscriptionRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::DeleteVtsiEventSubscriptionResponse>,
+            tonic::Status,
+        >;
+        async fn list_vtsi_event_subscriptions(
+            &self,
+            request: tonic::Request<super::ListVtsiEventSubscriptionsRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::ListVtsiEventSubscriptionsResponse>,
+            tonic::Status,
+        >;
+        async fn create_webhook(
+            &self,
+            request: tonic::Request<super::CreateWebhookRequest>,
+        ) -> std::result::Result<tonic::Response<super::Webhook>, tonic::Status>;
+        async fn get_webhook(
+            &self,
+            request: tonic::Request<super::GetWebhookRequest>,
+        ) -> std::result::Result<tonic::Response<super::Webhook>, tonic::Status>;
+        async fn update_webhook(
+            &self,
+            request: tonic::Request<super::UpdateWebhookRequest>,
+        ) -> std::result::Result<tonic::Response<super::Webhook>, tonic::Status>;
+        async fn delete_webhook(
+            &self,
+            request: tonic::Request<super::DeleteWebhookRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::DeleteWebhookResponse>,
+            tonic::Status,
+        >;
+        async fn list_webhooks(
+            &self,
+            request: tonic::Request<super::ListWebhooksRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::ListWebhooksResponse>,
+            tonic::Status,
+        >;
+        async fn test_webhook(
+            &self,
+            request: tonic::Request<super::TestWebhookRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::TestWebhookResponse>,
+            tonic::Status,
+        >;
+        /// Server streaming response type for the SubscribeVtsiEvents method.
+        type SubscribeVtsiEventsStream: tonic::codegen::tokio_stream::Stream<
+                Item = std::result::Result<
+                    super::SubscribeVtsiEventsResponse,
+                    tonic::Status,
+                >,
+            >
+            + std::marker::Send
+            + 'static;
+        async fn subscribe_vtsi_events(
+            &self,
+            request: tonic::Request<super::SubscribeVtsiEventsRequest>,
+        ) -> std::result::Result<
+            tonic::Response<Self::SubscribeVtsiEventsStream>,
+            tonic::Status,
+        >;
+    }
+    #[derive(Debug)]
+    pub struct EventsServer<T> {
+        inner: Arc<T>,
+        accept_compression_encodings: EnabledCompressionEncodings,
+        send_compression_encodings: EnabledCompressionEncodings,
+        max_decoding_message_size: Option<usize>,
+        max_encoding_message_size: Option<usize>,
+    }
+    impl<T> EventsServer<T> {
+        pub fn new(inner: T) -> Self {
+            Self::from_arc(Arc::new(inner))
+        }
+        pub fn from_arc(inner: Arc<T>) -> Self {
+            Self {
+                inner,
+                accept_compression_encodings: Default::default(),
+                send_compression_encodings: Default::default(),
+                max_decoding_message_size: None,
+                max_encoding_message_size: None,
+            }
+        }
+        pub fn with_interceptor<F>(
+            inner: T,
+            interceptor: F,
+        ) -> InterceptedService<Self, F>
+        where
+            F: tonic::service::Interceptor,
+        {
+            InterceptedService::new(Self::new(inner), interceptor)
+        }
+        /// Enable decompressing requests with the given encoding.
+        #[must_use]
+        pub fn accept_compressed(mut self, encoding: CompressionEncoding) -> Self {
+            self.accept_compression_encodings.enable(encoding);
+            self
+        }
+        /// Compress responses with the given encoding, if the client supports it.
+        #[must_use]
+        pub fn send_compressed(mut self, encoding: CompressionEncoding) -> Self {
+            self.send_compression_encodings.enable(encoding);
+            self
+        }
+        /// Limits the maximum size of a decoded message.
+        ///
+        /// Default: `4MB`
+        #[must_use]
+        pub fn max_decoding_message_size(mut self, limit: usize) -> Self {
+            self.max_decoding_message_size = Some(limit);
+            self
+        }
+        /// Limits the maximum size of an encoded message.
+        ///
+        /// Default: `usize::MAX`
+        #[must_use]
+        pub fn max_encoding_message_size(mut self, limit: usize) -> Self {
+            self.max_encoding_message_size = Some(limit);
+            self
+        }
+    }
+    impl<T, B> tonic::codegen::Service<http::Request<B>> for EventsServer<T>
+    where
+        T: Events,
+        B: Body + std::marker::Send + 'static,
+        B::Error: Into<StdError> + std::marker::Send + 'static,
+    {
+        type Response = http::Response<tonic::body::Body>;
+        type Error = std::convert::Infallible;
+        type Future = BoxFuture<Self::Response, Self::Error>;
+        fn poll_ready(
+            &mut self,
+            _cx: &mut Context<'_>,
+        ) -> Poll<std::result::Result<(), Self::Error>> {
+            Poll::Ready(Ok(()))
+        }
+        fn call(&mut self, req: http::Request<B>) -> Self::Future {
+            match req.uri().path() {
+                "/ondewo.vtsi.Events/CreateVtsiEventSubscription" => {
+                    #[allow(non_camel_case_types)]
+                    struct CreateVtsiEventSubscriptionSvc<T: Events>(pub Arc<T>);
+                    impl<
+                        T: Events,
+                    > tonic::server::UnaryService<
+                        super::CreateVtsiEventSubscriptionRequest,
+                    > for CreateVtsiEventSubscriptionSvc<T> {
+                        type Response = super::VtsiEventSubscription;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<
+                                super::CreateVtsiEventSubscriptionRequest,
+                            >,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as Events>::create_vtsi_event_subscription(
+                                        &inner,
+                                        request,
+                                    )
+                                    .await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = CreateVtsiEventSubscriptionSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/ondewo.vtsi.Events/GetVtsiEventSubscription" => {
+                    #[allow(non_camel_case_types)]
+                    struct GetVtsiEventSubscriptionSvc<T: Events>(pub Arc<T>);
+                    impl<
+                        T: Events,
+                    > tonic::server::UnaryService<super::GetVtsiEventSubscriptionRequest>
+                    for GetVtsiEventSubscriptionSvc<T> {
+                        type Response = super::VtsiEventSubscription;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<
+                                super::GetVtsiEventSubscriptionRequest,
+                            >,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as Events>::get_vtsi_event_subscription(&inner, request)
+                                    .await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = GetVtsiEventSubscriptionSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/ondewo.vtsi.Events/UpdateVtsiEventSubscription" => {
+                    #[allow(non_camel_case_types)]
+                    struct UpdateVtsiEventSubscriptionSvc<T: Events>(pub Arc<T>);
+                    impl<
+                        T: Events,
+                    > tonic::server::UnaryService<
+                        super::UpdateVtsiEventSubscriptionRequest,
+                    > for UpdateVtsiEventSubscriptionSvc<T> {
+                        type Response = super::VtsiEventSubscription;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<
+                                super::UpdateVtsiEventSubscriptionRequest,
+                            >,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as Events>::update_vtsi_event_subscription(
+                                        &inner,
+                                        request,
+                                    )
+                                    .await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = UpdateVtsiEventSubscriptionSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/ondewo.vtsi.Events/DeleteVtsiEventSubscription" => {
+                    #[allow(non_camel_case_types)]
+                    struct DeleteVtsiEventSubscriptionSvc<T: Events>(pub Arc<T>);
+                    impl<
+                        T: Events,
+                    > tonic::server::UnaryService<
+                        super::DeleteVtsiEventSubscriptionRequest,
+                    > for DeleteVtsiEventSubscriptionSvc<T> {
+                        type Response = super::DeleteVtsiEventSubscriptionResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<
+                                super::DeleteVtsiEventSubscriptionRequest,
+                            >,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as Events>::delete_vtsi_event_subscription(
+                                        &inner,
+                                        request,
+                                    )
+                                    .await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = DeleteVtsiEventSubscriptionSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/ondewo.vtsi.Events/ListVtsiEventSubscriptions" => {
+                    #[allow(non_camel_case_types)]
+                    struct ListVtsiEventSubscriptionsSvc<T: Events>(pub Arc<T>);
+                    impl<
+                        T: Events,
+                    > tonic::server::UnaryService<
+                        super::ListVtsiEventSubscriptionsRequest,
+                    > for ListVtsiEventSubscriptionsSvc<T> {
+                        type Response = super::ListVtsiEventSubscriptionsResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<
+                                super::ListVtsiEventSubscriptionsRequest,
+                            >,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as Events>::list_vtsi_event_subscriptions(
+                                        &inner,
+                                        request,
+                                    )
+                                    .await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = ListVtsiEventSubscriptionsSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/ondewo.vtsi.Events/CreateWebhook" => {
+                    #[allow(non_camel_case_types)]
+                    struct CreateWebhookSvc<T: Events>(pub Arc<T>);
+                    impl<
+                        T: Events,
+                    > tonic::server::UnaryService<super::CreateWebhookRequest>
+                    for CreateWebhookSvc<T> {
+                        type Response = super::Webhook;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::CreateWebhookRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as Events>::create_webhook(&inner, request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = CreateWebhookSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/ondewo.vtsi.Events/GetWebhook" => {
+                    #[allow(non_camel_case_types)]
+                    struct GetWebhookSvc<T: Events>(pub Arc<T>);
+                    impl<T: Events> tonic::server::UnaryService<super::GetWebhookRequest>
+                    for GetWebhookSvc<T> {
+                        type Response = super::Webhook;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::GetWebhookRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as Events>::get_webhook(&inner, request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = GetWebhookSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/ondewo.vtsi.Events/UpdateWebhook" => {
+                    #[allow(non_camel_case_types)]
+                    struct UpdateWebhookSvc<T: Events>(pub Arc<T>);
+                    impl<
+                        T: Events,
+                    > tonic::server::UnaryService<super::UpdateWebhookRequest>
+                    for UpdateWebhookSvc<T> {
+                        type Response = super::Webhook;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::UpdateWebhookRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as Events>::update_webhook(&inner, request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = UpdateWebhookSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/ondewo.vtsi.Events/DeleteWebhook" => {
+                    #[allow(non_camel_case_types)]
+                    struct DeleteWebhookSvc<T: Events>(pub Arc<T>);
+                    impl<
+                        T: Events,
+                    > tonic::server::UnaryService<super::DeleteWebhookRequest>
+                    for DeleteWebhookSvc<T> {
+                        type Response = super::DeleteWebhookResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::DeleteWebhookRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as Events>::delete_webhook(&inner, request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = DeleteWebhookSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/ondewo.vtsi.Events/ListWebhooks" => {
+                    #[allow(non_camel_case_types)]
+                    struct ListWebhooksSvc<T: Events>(pub Arc<T>);
+                    impl<
+                        T: Events,
+                    > tonic::server::UnaryService<super::ListWebhooksRequest>
+                    for ListWebhooksSvc<T> {
+                        type Response = super::ListWebhooksResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::ListWebhooksRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as Events>::list_webhooks(&inner, request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = ListWebhooksSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/ondewo.vtsi.Events/TestWebhook" => {
+                    #[allow(non_camel_case_types)]
+                    struct TestWebhookSvc<T: Events>(pub Arc<T>);
+                    impl<
+                        T: Events,
+                    > tonic::server::UnaryService<super::TestWebhookRequest>
+                    for TestWebhookSvc<T> {
+                        type Response = super::TestWebhookResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::TestWebhookRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as Events>::test_webhook(&inner, request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = TestWebhookSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/ondewo.vtsi.Events/SubscribeVtsiEvents" => {
+                    #[allow(non_camel_case_types)]
+                    struct SubscribeVtsiEventsSvc<T: Events>(pub Arc<T>);
+                    impl<
+                        T: Events,
+                    > tonic::server::ServerStreamingService<
+                        super::SubscribeVtsiEventsRequest,
+                    > for SubscribeVtsiEventsSvc<T> {
+                        type Response = super::SubscribeVtsiEventsResponse;
+                        type ResponseStream = T::SubscribeVtsiEventsStream;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::ResponseStream>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::SubscribeVtsiEventsRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as Events>::subscribe_vtsi_events(&inner, request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = SubscribeVtsiEventsSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.server_streaming(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                _ => {
+                    Box::pin(async move {
+                        let mut response = http::Response::new(
+                            tonic::body::Body::default(),
+                        );
+                        let headers = response.headers_mut();
+                        headers
+                            .insert(
+                                tonic::Status::GRPC_STATUS,
+                                (tonic::Code::Unimplemented as i32).into(),
+                            );
+                        headers
+                            .insert(
+                                http::header::CONTENT_TYPE,
+                                tonic::metadata::GRPC_CONTENT_TYPE,
+                            );
+                        Ok(response)
+                    })
+                }
+            }
+        }
+    }
+    impl<T> Clone for EventsServer<T> {
+        fn clone(&self) -> Self {
+            let inner = self.inner.clone();
+            Self {
+                inner,
+                accept_compression_encodings: self.accept_compression_encodings,
+                send_compression_encodings: self.send_compression_encodings,
+                max_decoding_message_size: self.max_decoding_message_size,
+                max_encoding_message_size: self.max_encoding_message_size,
+            }
+        }
+    }
+    /// Generated gRPC service name
+    pub const SERVICE_NAME: &str = "ondewo.vtsi.Events";
+    impl<T> tonic::server::NamedService for EventsServer<T> {
         const NAME: &'static str = SERVICE_NAME;
     }
 }
@@ -3657,6 +6771,1056 @@ pub mod projects_server {
     /// Generated gRPC service name
     pub const SERVICE_NAME: &str = "ondewo.vtsi.Projects";
     impl<T> tonic::server::NamedService for ProjectsServer<T> {
+        const NAME: &'static str = SERVICE_NAME;
+    }
+}
+/// Generated client implementations.
+pub mod softphones_client {
+    #![allow(
+        unused_variables,
+        dead_code,
+        missing_docs,
+        clippy::wildcard_imports,
+        clippy::let_unit_value,
+    )]
+    use tonic::codegen::*;
+    use tonic::codegen::http::Uri;
+    #[derive(Debug, Clone)]
+    pub struct SoftphonesClient<T> {
+        inner: tonic::client::Grpc<T>,
+    }
+    impl SoftphonesClient<tonic::transport::Channel> {
+        /// Attempt to create a new client by connecting to a given endpoint.
+        pub async fn connect<D>(dst: D) -> Result<Self, tonic::transport::Error>
+        where
+            D: TryInto<tonic::transport::Endpoint>,
+            D::Error: Into<StdError>,
+        {
+            let conn = tonic::transport::Endpoint::new(dst)?.connect().await?;
+            Ok(Self::new(conn))
+        }
+    }
+    impl<T> SoftphonesClient<T>
+    where
+        T: tonic::client::GrpcService<tonic::body::Body>,
+        T::Error: Into<StdError>,
+        T::ResponseBody: Body<Data = Bytes> + std::marker::Send + 'static,
+        <T::ResponseBody as Body>::Error: Into<StdError> + std::marker::Send,
+    {
+        pub fn new(inner: T) -> Self {
+            let inner = tonic::client::Grpc::new(inner);
+            Self { inner }
+        }
+        pub fn with_origin(inner: T, origin: Uri) -> Self {
+            let inner = tonic::client::Grpc::with_origin(inner, origin);
+            Self { inner }
+        }
+        pub fn with_interceptor<F>(
+            inner: T,
+            interceptor: F,
+        ) -> SoftphonesClient<InterceptedService<T, F>>
+        where
+            F: tonic::service::Interceptor,
+            T::ResponseBody: Default,
+            T: tonic::codegen::Service<
+                http::Request<tonic::body::Body>,
+                Response = http::Response<
+                    <T as tonic::client::GrpcService<tonic::body::Body>>::ResponseBody,
+                >,
+            >,
+            <T as tonic::codegen::Service<
+                http::Request<tonic::body::Body>,
+            >>::Error: Into<StdError> + std::marker::Send + std::marker::Sync,
+        {
+            SoftphonesClient::new(InterceptedService::new(inner, interceptor))
+        }
+        /// Compress requests with the given encoding.
+        ///
+        /// This requires the server to support it otherwise it might respond with an
+        /// error.
+        #[must_use]
+        pub fn send_compressed(mut self, encoding: CompressionEncoding) -> Self {
+            self.inner = self.inner.send_compressed(encoding);
+            self
+        }
+        /// Enable decompressing responses.
+        #[must_use]
+        pub fn accept_compressed(mut self, encoding: CompressionEncoding) -> Self {
+            self.inner = self.inner.accept_compressed(encoding);
+            self
+        }
+        /// Limits the maximum size of a decoded message.
+        ///
+        /// Default: `4MB`
+        #[must_use]
+        pub fn max_decoding_message_size(mut self, limit: usize) -> Self {
+            self.inner = self.inner.max_decoding_message_size(limit);
+            self
+        }
+        /// Limits the maximum size of an encoded message.
+        ///
+        /// Default: `usize::MAX`
+        #[must_use]
+        pub fn max_encoding_message_size(mut self, limit: usize) -> Self {
+            self.inner = self.inner.max_encoding_message_size(limit);
+            self
+        }
+        pub async fn create_softphone_account(
+            &mut self,
+            request: impl tonic::IntoRequest<super::CreateSoftphoneAccountRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::CreateSoftphoneAccountResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.Softphones/CreateSoftphoneAccount",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new("ondewo.vtsi.Softphones", "CreateSoftphoneAccount"),
+                );
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn get_softphone_account(
+            &mut self,
+            request: impl tonic::IntoRequest<super::GetSoftphoneAccountRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::SoftphoneAccount>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.Softphones/GetSoftphoneAccount",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new("ondewo.vtsi.Softphones", "GetSoftphoneAccount"),
+                );
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn update_softphone_account(
+            &mut self,
+            request: impl tonic::IntoRequest<super::UpdateSoftphoneAccountRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::SoftphoneAccount>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.Softphones/UpdateSoftphoneAccount",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new("ondewo.vtsi.Softphones", "UpdateSoftphoneAccount"),
+                );
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn delete_softphone_account(
+            &mut self,
+            request: impl tonic::IntoRequest<super::DeleteSoftphoneAccountRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::DeleteSoftphoneAccountResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.Softphones/DeleteSoftphoneAccount",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new("ondewo.vtsi.Softphones", "DeleteSoftphoneAccount"),
+                );
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn list_softphone_accounts(
+            &mut self,
+            request: impl tonic::IntoRequest<super::ListSoftphoneAccountsRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::ListSoftphoneAccountsResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.Softphones/ListSoftphoneAccounts",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new("ondewo.vtsi.Softphones", "ListSoftphoneAccounts"),
+                );
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn rotate_softphone_credentials(
+            &mut self,
+            request: impl tonic::IntoRequest<super::RotateSoftphoneCredentialsRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::RotateSoftphoneCredentialsResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.Softphones/RotateSoftphoneCredentials",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new(
+                        "ondewo.vtsi.Softphones",
+                        "RotateSoftphoneCredentials",
+                    ),
+                );
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn list_softphone_certificates(
+            &mut self,
+            request: impl tonic::IntoRequest<super::ListSoftphoneCertificatesRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::ListSoftphoneCertificatesResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.Softphones/ListSoftphoneCertificates",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new(
+                        "ondewo.vtsi.Softphones",
+                        "ListSoftphoneCertificates",
+                    ),
+                );
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn get_softphone_certificate(
+            &mut self,
+            request: impl tonic::IntoRequest<super::GetSoftphoneCertificateRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::SoftphoneCertificate>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.Softphones/GetSoftphoneCertificate",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new("ondewo.vtsi.Softphones", "GetSoftphoneCertificate"),
+                );
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn revoke_softphone_certificate(
+            &mut self,
+            request: impl tonic::IntoRequest<super::RevokeSoftphoneCertificateRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::SoftphoneCertificate>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.Softphones/RevokeSoftphoneCertificate",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new(
+                        "ondewo.vtsi.Softphones",
+                        "RevokeSoftphoneCertificate",
+                    ),
+                );
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn get_softphone_provisioning(
+            &mut self,
+            request: impl tonic::IntoRequest<super::GetSoftphoneProvisioningRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::SoftphoneProvisioning>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.Softphones/GetSoftphoneProvisioning",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new("ondewo.vtsi.Softphones", "GetSoftphoneProvisioning"),
+                );
+            self.inner.unary(req, path, codec).await
+        }
+    }
+}
+/// Generated server implementations.
+pub mod softphones_server {
+    #![allow(
+        unused_variables,
+        dead_code,
+        missing_docs,
+        clippy::wildcard_imports,
+        clippy::let_unit_value,
+    )]
+    use tonic::codegen::*;
+    /// Generated trait containing gRPC methods that should be implemented for use with SoftphonesServer.
+    #[async_trait]
+    pub trait Softphones: std::marker::Send + std::marker::Sync + 'static {
+        async fn create_softphone_account(
+            &self,
+            request: tonic::Request<super::CreateSoftphoneAccountRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::CreateSoftphoneAccountResponse>,
+            tonic::Status,
+        >;
+        async fn get_softphone_account(
+            &self,
+            request: tonic::Request<super::GetSoftphoneAccountRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::SoftphoneAccount>,
+            tonic::Status,
+        >;
+        async fn update_softphone_account(
+            &self,
+            request: tonic::Request<super::UpdateSoftphoneAccountRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::SoftphoneAccount>,
+            tonic::Status,
+        >;
+        async fn delete_softphone_account(
+            &self,
+            request: tonic::Request<super::DeleteSoftphoneAccountRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::DeleteSoftphoneAccountResponse>,
+            tonic::Status,
+        >;
+        async fn list_softphone_accounts(
+            &self,
+            request: tonic::Request<super::ListSoftphoneAccountsRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::ListSoftphoneAccountsResponse>,
+            tonic::Status,
+        >;
+        async fn rotate_softphone_credentials(
+            &self,
+            request: tonic::Request<super::RotateSoftphoneCredentialsRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::RotateSoftphoneCredentialsResponse>,
+            tonic::Status,
+        >;
+        async fn list_softphone_certificates(
+            &self,
+            request: tonic::Request<super::ListSoftphoneCertificatesRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::ListSoftphoneCertificatesResponse>,
+            tonic::Status,
+        >;
+        async fn get_softphone_certificate(
+            &self,
+            request: tonic::Request<super::GetSoftphoneCertificateRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::SoftphoneCertificate>,
+            tonic::Status,
+        >;
+        async fn revoke_softphone_certificate(
+            &self,
+            request: tonic::Request<super::RevokeSoftphoneCertificateRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::SoftphoneCertificate>,
+            tonic::Status,
+        >;
+        async fn get_softphone_provisioning(
+            &self,
+            request: tonic::Request<super::GetSoftphoneProvisioningRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::SoftphoneProvisioning>,
+            tonic::Status,
+        >;
+    }
+    #[derive(Debug)]
+    pub struct SoftphonesServer<T> {
+        inner: Arc<T>,
+        accept_compression_encodings: EnabledCompressionEncodings,
+        send_compression_encodings: EnabledCompressionEncodings,
+        max_decoding_message_size: Option<usize>,
+        max_encoding_message_size: Option<usize>,
+    }
+    impl<T> SoftphonesServer<T> {
+        pub fn new(inner: T) -> Self {
+            Self::from_arc(Arc::new(inner))
+        }
+        pub fn from_arc(inner: Arc<T>) -> Self {
+            Self {
+                inner,
+                accept_compression_encodings: Default::default(),
+                send_compression_encodings: Default::default(),
+                max_decoding_message_size: None,
+                max_encoding_message_size: None,
+            }
+        }
+        pub fn with_interceptor<F>(
+            inner: T,
+            interceptor: F,
+        ) -> InterceptedService<Self, F>
+        where
+            F: tonic::service::Interceptor,
+        {
+            InterceptedService::new(Self::new(inner), interceptor)
+        }
+        /// Enable decompressing requests with the given encoding.
+        #[must_use]
+        pub fn accept_compressed(mut self, encoding: CompressionEncoding) -> Self {
+            self.accept_compression_encodings.enable(encoding);
+            self
+        }
+        /// Compress responses with the given encoding, if the client supports it.
+        #[must_use]
+        pub fn send_compressed(mut self, encoding: CompressionEncoding) -> Self {
+            self.send_compression_encodings.enable(encoding);
+            self
+        }
+        /// Limits the maximum size of a decoded message.
+        ///
+        /// Default: `4MB`
+        #[must_use]
+        pub fn max_decoding_message_size(mut self, limit: usize) -> Self {
+            self.max_decoding_message_size = Some(limit);
+            self
+        }
+        /// Limits the maximum size of an encoded message.
+        ///
+        /// Default: `usize::MAX`
+        #[must_use]
+        pub fn max_encoding_message_size(mut self, limit: usize) -> Self {
+            self.max_encoding_message_size = Some(limit);
+            self
+        }
+    }
+    impl<T, B> tonic::codegen::Service<http::Request<B>> for SoftphonesServer<T>
+    where
+        T: Softphones,
+        B: Body + std::marker::Send + 'static,
+        B::Error: Into<StdError> + std::marker::Send + 'static,
+    {
+        type Response = http::Response<tonic::body::Body>;
+        type Error = std::convert::Infallible;
+        type Future = BoxFuture<Self::Response, Self::Error>;
+        fn poll_ready(
+            &mut self,
+            _cx: &mut Context<'_>,
+        ) -> Poll<std::result::Result<(), Self::Error>> {
+            Poll::Ready(Ok(()))
+        }
+        fn call(&mut self, req: http::Request<B>) -> Self::Future {
+            match req.uri().path() {
+                "/ondewo.vtsi.Softphones/CreateSoftphoneAccount" => {
+                    #[allow(non_camel_case_types)]
+                    struct CreateSoftphoneAccountSvc<T: Softphones>(pub Arc<T>);
+                    impl<
+                        T: Softphones,
+                    > tonic::server::UnaryService<super::CreateSoftphoneAccountRequest>
+                    for CreateSoftphoneAccountSvc<T> {
+                        type Response = super::CreateSoftphoneAccountResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::CreateSoftphoneAccountRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as Softphones>::create_softphone_account(&inner, request)
+                                    .await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = CreateSoftphoneAccountSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/ondewo.vtsi.Softphones/GetSoftphoneAccount" => {
+                    #[allow(non_camel_case_types)]
+                    struct GetSoftphoneAccountSvc<T: Softphones>(pub Arc<T>);
+                    impl<
+                        T: Softphones,
+                    > tonic::server::UnaryService<super::GetSoftphoneAccountRequest>
+                    for GetSoftphoneAccountSvc<T> {
+                        type Response = super::SoftphoneAccount;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::GetSoftphoneAccountRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as Softphones>::get_softphone_account(&inner, request)
+                                    .await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = GetSoftphoneAccountSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/ondewo.vtsi.Softphones/UpdateSoftphoneAccount" => {
+                    #[allow(non_camel_case_types)]
+                    struct UpdateSoftphoneAccountSvc<T: Softphones>(pub Arc<T>);
+                    impl<
+                        T: Softphones,
+                    > tonic::server::UnaryService<super::UpdateSoftphoneAccountRequest>
+                    for UpdateSoftphoneAccountSvc<T> {
+                        type Response = super::SoftphoneAccount;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::UpdateSoftphoneAccountRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as Softphones>::update_softphone_account(&inner, request)
+                                    .await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = UpdateSoftphoneAccountSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/ondewo.vtsi.Softphones/DeleteSoftphoneAccount" => {
+                    #[allow(non_camel_case_types)]
+                    struct DeleteSoftphoneAccountSvc<T: Softphones>(pub Arc<T>);
+                    impl<
+                        T: Softphones,
+                    > tonic::server::UnaryService<super::DeleteSoftphoneAccountRequest>
+                    for DeleteSoftphoneAccountSvc<T> {
+                        type Response = super::DeleteSoftphoneAccountResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::DeleteSoftphoneAccountRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as Softphones>::delete_softphone_account(&inner, request)
+                                    .await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = DeleteSoftphoneAccountSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/ondewo.vtsi.Softphones/ListSoftphoneAccounts" => {
+                    #[allow(non_camel_case_types)]
+                    struct ListSoftphoneAccountsSvc<T: Softphones>(pub Arc<T>);
+                    impl<
+                        T: Softphones,
+                    > tonic::server::UnaryService<super::ListSoftphoneAccountsRequest>
+                    for ListSoftphoneAccountsSvc<T> {
+                        type Response = super::ListSoftphoneAccountsResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::ListSoftphoneAccountsRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as Softphones>::list_softphone_accounts(&inner, request)
+                                    .await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = ListSoftphoneAccountsSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/ondewo.vtsi.Softphones/RotateSoftphoneCredentials" => {
+                    #[allow(non_camel_case_types)]
+                    struct RotateSoftphoneCredentialsSvc<T: Softphones>(pub Arc<T>);
+                    impl<
+                        T: Softphones,
+                    > tonic::server::UnaryService<
+                        super::RotateSoftphoneCredentialsRequest,
+                    > for RotateSoftphoneCredentialsSvc<T> {
+                        type Response = super::RotateSoftphoneCredentialsResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<
+                                super::RotateSoftphoneCredentialsRequest,
+                            >,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as Softphones>::rotate_softphone_credentials(
+                                        &inner,
+                                        request,
+                                    )
+                                    .await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = RotateSoftphoneCredentialsSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/ondewo.vtsi.Softphones/ListSoftphoneCertificates" => {
+                    #[allow(non_camel_case_types)]
+                    struct ListSoftphoneCertificatesSvc<T: Softphones>(pub Arc<T>);
+                    impl<
+                        T: Softphones,
+                    > tonic::server::UnaryService<
+                        super::ListSoftphoneCertificatesRequest,
+                    > for ListSoftphoneCertificatesSvc<T> {
+                        type Response = super::ListSoftphoneCertificatesResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<
+                                super::ListSoftphoneCertificatesRequest,
+                            >,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as Softphones>::list_softphone_certificates(
+                                        &inner,
+                                        request,
+                                    )
+                                    .await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = ListSoftphoneCertificatesSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/ondewo.vtsi.Softphones/GetSoftphoneCertificate" => {
+                    #[allow(non_camel_case_types)]
+                    struct GetSoftphoneCertificateSvc<T: Softphones>(pub Arc<T>);
+                    impl<
+                        T: Softphones,
+                    > tonic::server::UnaryService<super::GetSoftphoneCertificateRequest>
+                    for GetSoftphoneCertificateSvc<T> {
+                        type Response = super::SoftphoneCertificate;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<
+                                super::GetSoftphoneCertificateRequest,
+                            >,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as Softphones>::get_softphone_certificate(
+                                        &inner,
+                                        request,
+                                    )
+                                    .await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = GetSoftphoneCertificateSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/ondewo.vtsi.Softphones/RevokeSoftphoneCertificate" => {
+                    #[allow(non_camel_case_types)]
+                    struct RevokeSoftphoneCertificateSvc<T: Softphones>(pub Arc<T>);
+                    impl<
+                        T: Softphones,
+                    > tonic::server::UnaryService<
+                        super::RevokeSoftphoneCertificateRequest,
+                    > for RevokeSoftphoneCertificateSvc<T> {
+                        type Response = super::SoftphoneCertificate;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<
+                                super::RevokeSoftphoneCertificateRequest,
+                            >,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as Softphones>::revoke_softphone_certificate(
+                                        &inner,
+                                        request,
+                                    )
+                                    .await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = RevokeSoftphoneCertificateSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/ondewo.vtsi.Softphones/GetSoftphoneProvisioning" => {
+                    #[allow(non_camel_case_types)]
+                    struct GetSoftphoneProvisioningSvc<T: Softphones>(pub Arc<T>);
+                    impl<
+                        T: Softphones,
+                    > tonic::server::UnaryService<super::GetSoftphoneProvisioningRequest>
+                    for GetSoftphoneProvisioningSvc<T> {
+                        type Response = super::SoftphoneProvisioning;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<
+                                super::GetSoftphoneProvisioningRequest,
+                            >,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as Softphones>::get_softphone_provisioning(
+                                        &inner,
+                                        request,
+                                    )
+                                    .await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = GetSoftphoneProvisioningSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                _ => {
+                    Box::pin(async move {
+                        let mut response = http::Response::new(
+                            tonic::body::Body::default(),
+                        );
+                        let headers = response.headers_mut();
+                        headers
+                            .insert(
+                                tonic::Status::GRPC_STATUS,
+                                (tonic::Code::Unimplemented as i32).into(),
+                            );
+                        headers
+                            .insert(
+                                http::header::CONTENT_TYPE,
+                                tonic::metadata::GRPC_CONTENT_TYPE,
+                            );
+                        Ok(response)
+                    })
+                }
+            }
+        }
+    }
+    impl<T> Clone for SoftphonesServer<T> {
+        fn clone(&self) -> Self {
+            let inner = self.inner.clone();
+            Self {
+                inner,
+                accept_compression_encodings: self.accept_compression_encodings,
+                send_compression_encodings: self.send_compression_encodings,
+                max_decoding_message_size: self.max_decoding_message_size,
+                max_encoding_message_size: self.max_encoding_message_size,
+            }
+        }
+    }
+    /// Generated gRPC service name
+    pub const SERVICE_NAME: &str = "ondewo.vtsi.Softphones";
+    impl<T> tonic::server::NamedService for SoftphonesServer<T> {
         const NAME: &'static str = SERVICE_NAME;
     }
 }

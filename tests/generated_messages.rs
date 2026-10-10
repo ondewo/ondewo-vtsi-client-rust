@@ -66,6 +66,7 @@ fn sample_project() -> vtsi::VtsiProject {
         ],
         deployed_callers: 3,
         deployed_listeners: 1,
+        transfer_phone_number_allowlist: vec!["+43".to_string(), "+4912345".to_string()],
     }
 }
 
@@ -94,6 +95,10 @@ fn a_project_survives_a_serialize_parse_round_trip() {
     assert_eq!(parsed.max_callers, 20);
     assert_eq!(parsed.nlu_agent_names.len(), 2);
     assert_eq!(parsed.nlu_agent_names[1], "projects/q/agent");
+    assert_eq!(
+        parsed.transfer_phone_number_allowlist,
+        vec!["+43", "+4912345"]
+    );
     assert_eq!(parsed.created_at.unwrap().nanos, 123);
     let configs = parsed.asterisk_configs.unwrap();
     assert_eq!(configs.asterisk_version.as_deref(), Some("20.4.0"));
@@ -388,4 +393,77 @@ fn messages_of_every_generated_package_are_reachable() {
         google::api::CustomHttpPattern::decode(pattern.encode_to_vec().as_slice()).unwrap(),
         pattern
     );
+}
+
+/// 9.0.0 renamed `AsteriskConfigsFiles.sip_conf_file_string` to `pjsip_conf_file_string` but kept
+/// field number 1 and type `string`, so the rename is source-breaking only: the bytes an 8.7.x
+/// client wrote for the old field are exactly the bytes of the new one.
+#[test]
+fn the_pjsip_conf_rename_keeps_the_wire_format() {
+    let files = vtsi::AsteriskConfigsFiles {
+        pjsip_conf_file_string: "[transport-tls]".to_string(),
+        ..Default::default()
+    };
+
+    let bytes = files.encode_to_vec();
+    // tag 1, wire type 2 (length-delimited), length 15
+    assert_eq!(&bytes[..2], &[0x0A, 15]);
+    assert_eq!(&bytes[2..], b"[transport-tls]");
+    assert_eq!(
+        vtsi::AsteriskConfigsFiles::decode(bytes.as_slice()).unwrap(),
+        files
+    );
+}
+
+/// The scalars that gained `optional` in 9.0.0 are `Option<_>` now: an explicit `false` reaches
+/// the wire and comes back as `Some(false)`, while an unset value sends nothing and stays `None`.
+#[test]
+fn a_scalar_that_gained_presence_distinguishes_false_from_unset() {
+    let explicit_off = vtsi::MessageBrokerConfig {
+        activate_message_broker: Some(false),
+        ..Default::default()
+    };
+    let bytes = explicit_off.encode_to_vec();
+    assert!(!bytes.is_empty(), "an explicit false must reach the wire");
+    assert_eq!(
+        vtsi::MessageBrokerConfig::decode(bytes.as_slice())
+            .unwrap()
+            .activate_message_broker,
+        Some(false)
+    );
+
+    let unset = vtsi::MessageBrokerConfig::default();
+    assert!(unset.encode_to_vec().is_empty());
+    assert_eq!(unset.activate_message_broker, None);
+
+    let services = vtsi::MessageBrokerServicesActivationConfig {
+        activate_nlu: Some(true),
+        ..Default::default()
+    };
+    let parsed =
+        vtsi::MessageBrokerServicesActivationConfig::decode(services.encode_to_vec().as_slice())
+            .unwrap();
+    assert_eq!(parsed.activate_nlu, Some(true));
+    assert_eq!(parsed.activate_s2t, None);
+}
+
+/// The SIP trunk transport defaults to its `UNSPECIFIED` zero value, which the API defines as TLS,
+/// and the source CIDR has presence, so an explicit empty CIDR is not the same as none sent.
+#[test]
+fn the_sip_trunk_transport_defaults_to_unspecified_and_the_cidr_has_presence() {
+    assert_eq!(vtsi::SipTrunkTransport::Unspecified as i32, 0);
+    assert_eq!(vtsi::SipTrunkTransport::Udp as i32, 2);
+    assert_eq!(
+        vtsi::AsteriskConfigsVariables::default().sip_trunk_transport,
+        vtsi::SipTrunkTransport::Unspecified as i32
+    );
+
+    let udp = vtsi::AsteriskConfigsVariables {
+        sip_trunk_transport: vtsi::SipTrunkTransport::Udp as i32,
+        sip_trunk_source_cidr: Some(String::new()),
+        ..Default::default()
+    };
+    let parsed = vtsi::AsteriskConfigsVariables::decode(udp.encode_to_vec().as_slice()).unwrap();
+    assert_eq!(parsed, udp);
+    assert_eq!(parsed.sip_trunk_source_cidr, Some(String::new()));
 }
