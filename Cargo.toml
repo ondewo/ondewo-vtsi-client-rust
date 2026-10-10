@@ -13,7 +13,7 @@
 # the Makefile - do not edit it by hand.
 [package]
 name = "ondewo-vtsi-client"
-version = "8.7.0"
+version = "8.7.1"
 edition = "2021"
 rust-version = "1.88"
 description = "ONDEWO VTSI (Virtual Telephony Server Interface) gRPC client library, generated from the ondewo-vtsi-api protocol buffer definitions"
