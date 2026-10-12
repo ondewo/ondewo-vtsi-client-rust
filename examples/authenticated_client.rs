@@ -54,6 +54,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
             page_token: None,
             vtsi_project_sorting: None,
             nlu_agent_names: Vec::new(),
+            ..Default::default()
         })
         .await?
         .into_inner();

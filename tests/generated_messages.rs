@@ -67,6 +67,13 @@ fn sample_project() -> vtsi::VtsiProject {
         deployed_callers: 3,
         deployed_listeners: 1,
         transfer_phone_number_allowlist: vec!["+43".to_string(), "+4912345".to_string()],
+        status_message: "Deployed 20 callers and 5 listeners".to_string(),
+        status_changed_at: Some(Timestamp {
+            seconds: 1_700_000_002,
+            nanos: 7,
+        }),
+        trunk_registration_state: vtsi::TrunkRegistrationState::Registered as i32,
+        asterisk_version_effective: "20.4.0".to_string(),
     }
 }
 
@@ -252,6 +259,7 @@ fn a_non_zero_enum_value_round_trips() {
     let request = vtsi::GetVtsiProjectRequest {
         name: "projects/p".to_string(),
         vtsi_project_view: vtsi::VtsiProjectView::Minimum as i32,
+        field_mask: None,
     };
 
     let parsed = vtsi::GetVtsiProjectRequest::decode(request.encode_to_vec().as_slice()).unwrap();

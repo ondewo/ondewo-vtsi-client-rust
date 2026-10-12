@@ -136,8 +136,9 @@ impl Projects for FakeProjects {
             .vtsi_project
             .ok_or_else(|| Status::invalid_argument("vtsi_project is required"))?;
         Ok(Response::new(vtsi::UpdateVtsiProjectResponse {
-            name: project.name,
+            name: project.name.clone(),
             error_message: String::new(),
+            vtsi_project: Some(project),
         }))
     }
 
@@ -237,6 +238,7 @@ async fn a_unary_call_round_trips_through_the_generated_client_and_server() {
             page_token: None,
             vtsi_project_sorting: None,
             nlu_agent_names: Vec::new(),
+            ..Default::default()
         })
         .await
         .expect("ListVtsiProjects must succeed")
@@ -297,6 +299,7 @@ async fn a_server_error_reaches_the_client_as_its_status() {
         .get_vtsi_project(vtsi::GetVtsiProjectRequest {
             name: MISSING_PROJECT.to_string(),
             vtsi_project_view: vtsi::VtsiProjectView::Full as i32,
+            field_mask: None,
         })
         .await
         .expect_err("GetVtsiProject must report the missing project");
@@ -320,7 +323,7 @@ async fn every_declared_service_method_exists_and_is_routable() {
     let created = client
         .create_vtsi_project(vtsi::CreateVtsiProjectRequest {
             vtsi_project: Some(project.clone()),
-            error_message: String::new(),
+            ..Default::default()
         })
         .await
         .expect("CreateVtsiProject")
@@ -334,6 +337,7 @@ async fn every_declared_service_method_exists_and_is_routable() {
         .get_vtsi_project(vtsi::GetVtsiProjectRequest {
             name: "projects/p".to_string(),
             vtsi_project_view: vtsi::VtsiProjectView::Minimum as i32,
+            field_mask: None,
         })
         .await
         .expect("GetVtsiProject");
@@ -341,6 +345,8 @@ async fn every_declared_service_method_exists_and_is_routable() {
         .update_vtsi_project(vtsi::UpdateVtsiProjectRequest {
             vtsi_project: Some(project),
             update_mask: None,
+            field_mask: None,
+            validate_only: false,
         })
         .await
         .expect("UpdateVtsiProject");
@@ -421,6 +427,7 @@ async fn a_call_to_an_unreachable_target_fails_as_a_status() {
         .get_vtsi_project(vtsi::GetVtsiProjectRequest {
             name: "projects/p".to_string(),
             vtsi_project_view: vtsi::VtsiProjectView::Full as i32,
+            field_mask: None,
         })
         .await
         .expect_err("nothing listens on port 1");

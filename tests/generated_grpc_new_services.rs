@@ -138,6 +138,7 @@ fake_service! {
         get_softphone_certificate: GetSoftphoneCertificateRequest => SoftphoneCertificate,
         revoke_softphone_certificate: RevokeSoftphoneCertificateRequest => SoftphoneCertificate,
         get_softphone_provisioning: GetSoftphoneProvisioningRequest => SoftphoneProvisioning,
+        get_softphone_registration: GetSoftphoneRegistrationRequest => SoftphoneRegistration,
     }
     server_streaming {}
 }
@@ -156,6 +157,10 @@ fake_service! {
         stop_campaign: StopCampaignRequest => Campaign,
         hard_stop_campaign: HardStopCampaignRequest => Campaign,
         resume_campaign: ResumeCampaignRequest => Campaign,
+        get_campaign_call: GetCampaignCallRequest => CampaignCall,
+        cancel_campaign_calls: CancelCampaignCallsRequest => CancelCampaignCallsResponse,
+        retry_campaign_calls: RetryCampaignCallsRequest => RetryCampaignCallsResponse,
+        clone_campaign: CloneCampaignRequest => Campaign,
     }
     server_streaming {
         stream_campaign_status / StreamCampaignStatusStream:
@@ -177,6 +182,7 @@ fake_service! {
         delete_webhook: DeleteWebhookRequest => DeleteWebhookResponse,
         list_webhooks: ListWebhooksRequest => ListWebhooksResponse,
         test_webhook: TestWebhookRequest => TestWebhookResponse,
+        redeliver_webhook_events: RedeliverWebhookEventsRequest => RedeliverWebhookEventsResponse,
     }
     server_streaming {
         subscribe_vtsi_events / SubscribeVtsiEventsStream:
@@ -216,7 +222,7 @@ async fn every_softphones_rpc_reaches_its_own_handler() {
 
     let called = call_every_softphones_rpc(channel).await;
 
-    assert_eq!(called.len(), 10, "Softphones declares ten RPCs");
+    assert_eq!(called.len(), 11, "Softphones declares eleven RPCs");
     assert_eq!(recorder.take(), called);
 }
 
@@ -226,7 +232,7 @@ async fn every_campaigns_rpc_reaches_its_own_handler() {
 
     let called = call_every_campaigns_rpc(channel).await;
 
-    assert_eq!(called.len(), 12, "Campaigns declares twelve RPCs");
+    assert_eq!(called.len(), 16, "Campaigns declares sixteen RPCs");
     assert_eq!(recorder.take(), called);
 }
 
@@ -236,7 +242,7 @@ async fn every_events_rpc_reaches_its_own_handler() {
 
     let called = call_every_events_rpc(channel).await;
 
-    assert_eq!(called.len(), 12, "Events declares twelve RPCs");
+    assert_eq!(called.len(), 13, "Events declares thirteen RPCs");
     assert_eq!(recorder.take(), called);
 }
 
