@@ -32,7 +32,7 @@ env:
 jobs:
   build-and-test:
     name: build + test + publish dry run
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
 
@@ -96,7 +96,7 @@ jobs:
 
   coverage:
     name: coverage
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
 
@@ -148,7 +148,7 @@ jobs:
 
   lint:
     name: pre-commit
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
 
@@ -158,5 +158,15 @@ jobs:
 
       # markdownlint-cli2 + the hygiene hooks from .pre-commit-config.yaml. The commit-msg
       # hooks (giticket, conventional-pre-commit) are not part of `run --all-files`.
+      # pre-commit itself rather than pre-commit/action, which pins actions/cache@v4 on Node.js 20.
+      - name: Install pre-commit
+        run: python -m pip install pre-commit
+
+      - name: Cache the pre-commit environments
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-${{ runner.os }}-${{ hashFiles('.pre-commit-config.yaml') }}
+
       - name: Run the pre-commit hooks
-        uses: pre-commit/action@v3.0.1
+        run: pre-commit run --all-files --show-diff-on-failure --color=always
