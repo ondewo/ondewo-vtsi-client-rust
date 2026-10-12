@@ -144,7 +144,7 @@ jobs:
       # records how much of them the suite touches, without gating on it.
       - name: Report the coverage of the generated stubs (not gated)
         run: |
-          cargo llvm-cov --summary-only --no-run --ignore-filename-regex '(^|/)(tests/|examples/)'
+          cargo llvm-cov report --summary-only --ignore-filename-regex '(^|/)(tests/|examples/)'
 
   lint:
     name: pre-commit
