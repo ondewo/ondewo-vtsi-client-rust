@@ -305,8 +305,16 @@ create_release_tag: ## Create Release Tag and push it to origin
 push_to_gh: login_to_gh build_gh_release ## Logs into GitHub CLI and Releases
 	@echo 'Released to Github'
 
+# gh REFUSES `gh auth login` while GH_TOKEN or GITHUB_TOKEN is in the environment ("The value of the
+# GH_TOKEN environment variable is being used for authentication", exit 1) and authenticates every
+# later call with that variable instead - and this runs after the tag has been pushed. So the login
+# is skipped when gh already has a token, the way ondewo-vtsi-client-go and -php do it.
 login_to_gh: check_release_credentials ## Login to Github CLI with Access Token
-	@echo "$$GITHUB_GH_TOKEN" | gh auth login -p ssh --with-token
+	@if [ -n "$${GH_TOKEN}" ] || [ -n "$${GITHUB_TOKEN}" ]; then \
+		echo "$(BLUE)[INFO]$(NC) gh already authenticates through GH_TOKEN/GITHUB_TOKEN from the environment - skipping gh auth login"; \
+	else \
+		echo "$$GITHUB_GH_TOKEN" | gh auth login -p ssh --with-token; \
+	fi
 
 check_release_notes: ## Assert RELEASE.md carries an entry for ONDEWO_VTSI_VERSION
 # `gh release create -n ""` succeeds and publishes an EMPTY release, so an entry that was
