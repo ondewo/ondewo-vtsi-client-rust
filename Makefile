@@ -259,6 +259,9 @@ release: ## Automate the entire release process
 	make check_release_credentials
 	make check_release_notes
 	make build
+# The suite runs BEFORE anything is committed or pushed: a red suite must never reach a tag, and
+# the tag push is what publishes to crates.io.
+	make test
 	-make precommit_hooks_run_all_files
 	git status
 	make check_build
@@ -376,7 +379,9 @@ package_crate: ## Package the crate locally (the same artifact `make publish_cra
 ########################################################
 #		DEVOPS-ACCOUNTS
 
-ondewo_release: spc clone_devops_accounts run_release_with_devops ## Release with credentials from devops-accounts repo
+# update_cargo_version runs BEFORE spc: release_client sets ONDEWO_VTSI_VERSION in this Makefile but
+# not the crate version, so spc's Test 3 refused every release until `build` (inside `release`) ran.
+ondewo_release: update_cargo_version spc clone_devops_accounts run_release_with_devops ## Release with credentials from devops-accounts repo
 	@rm -rf ${DEVOPS_ACCOUNT_GIT}
 
 ondewo_publish_crate: clone_devops_accounts run_publish_crate_with_devops ## Publish to crates.io with the token from the devops-accounts repo
