@@ -14,10 +14,11 @@
 
 //! End-to-end tests for the GENERATED tonic service stubs.
 //!
-//! `ondewo-vtsi-api` declares six services - `Calls` (38 RPCs), `Campaigns`, `Events`, `Logs`,
-//! `Projects` and `Softphones`. The generated `ProjectsServer` is the smallest all-unary one, so
-//! the fake below implements a COMPLETE service rather than a slice of one. It is served over a loopback socket and driven by
-//! the generated `ProjectsClient`, so a request really is encoded, routed by its
+//! `ondewo-vtsi-api` declares six services - `Calls`, `Campaigns`, `Events`, `Logs`, `Projects`
+//! and `Softphones` (`tests/api_surface.rs` checks the stubs against the protos). The generated
+//! `ProjectsServer` is the smallest all-unary one, so the fake below implements a COMPLETE service
+//! rather than a slice of one. It is served over a loopback socket and driven by the generated
+//! `ProjectsClient`, so a request really is encoded, routed by its
 //! `/ondewo.vtsi.Projects/<Method>` path, decoded, answered and decoded again. That is what
 //! catches a service the generator wired to the wrong path, a codec mismatch, or a method that
 //! silently went missing. The services added in 9.0.0 are wired up in
@@ -25,6 +26,9 @@
 //!
 //! No network beyond `127.0.0.1` and no ONDEWO server is involved.
 
+mod common;
+
+use std::collections::BTreeSet;
 use std::net::SocketAddr;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
@@ -372,6 +376,22 @@ async fn every_declared_service_method_exists_and_is_routable() {
         .list_vtsi_projects(vtsi::ListVtsiProjectsRequest::default())
         .await
         .expect("ListVtsiProjects");
+
+    // Compared with the methods DERIVED from the generated code: a Projects rpc that a new API
+    // release adds fails here until it is called above.
+    let called: BTreeSet<String> = [
+        "create_vtsi_project",
+        "get_vtsi_project",
+        "update_vtsi_project",
+        "deploy_vtsi_project",
+        "undeploy_vtsi_project",
+        "delete_vtsi_project",
+        "list_vtsi_projects",
+    ]
+    .iter()
+    .map(|method| method.to_string())
+    .collect();
+    assert_eq!(called, common::generated_methods("Projects"));
 }
 
 /// The hand-written [`BearerTokenInterceptor`] has to put its metadata on the wire, where the

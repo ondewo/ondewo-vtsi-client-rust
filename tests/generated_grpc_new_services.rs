@@ -23,8 +23,16 @@
 //! `tests/generated_grpc.rs` covers the behaviour of a single service in depth; this suite is
 //! about the wiring of the new ones.
 //!
+//! The RPCs each fake implements are listed by hand, because rust needs the request and response
+//! types - but the compiler already refuses a fake that misses one of the generated trait's
+//! methods, and every test below compares the calls it made with the methods DERIVED from the
+//! generated code, so neither side carries a count that a new API release would make stale.
+//!
 //! No network beyond `127.0.0.1` and no ONDEWO server is involved.
 
+mod common;
+
+use std::collections::BTreeSet;
 use std::net::SocketAddr;
 use std::pin::Pin;
 use std::sync::{Arc, Mutex};
@@ -190,6 +198,17 @@ fake_service! {
     }
 }
 
+/// The calls made, as a set of method names.
+fn method_set(called: &[&'static str]) -> BTreeSet<String> {
+    let set: BTreeSet<String> = called.iter().map(|method| method.to_string()).collect();
+    assert_eq!(
+        set.len(),
+        called.len(),
+        "a method was called twice: {called:?}"
+    );
+    set
+}
+
 /// Serve all three generated servers on one ephemeral loopback port and connect to it.
 async fn serve_and_connect() -> (Recorder, Channel) {
     let recorder = Recorder::default();
@@ -222,7 +241,7 @@ async fn every_softphones_rpc_reaches_its_own_handler() {
 
     let called = call_every_softphones_rpc(channel).await;
 
-    assert_eq!(called.len(), 11, "Softphones declares eleven RPCs");
+    assert_eq!(method_set(&called), common::generated_methods("Softphones"));
     assert_eq!(recorder.take(), called);
 }
 
@@ -232,7 +251,7 @@ async fn every_campaigns_rpc_reaches_its_own_handler() {
 
     let called = call_every_campaigns_rpc(channel).await;
 
-    assert_eq!(called.len(), 16, "Campaigns declares sixteen RPCs");
+    assert_eq!(method_set(&called), common::generated_methods("Campaigns"));
     assert_eq!(recorder.take(), called);
 }
 
@@ -242,7 +261,7 @@ async fn every_events_rpc_reaches_its_own_handler() {
 
     let called = call_every_events_rpc(channel).await;
 
-    assert_eq!(called.len(), 13, "Events declares thirteen RPCs");
+    assert_eq!(method_set(&called), common::generated_methods("Events"));
     assert_eq!(recorder.take(), called);
 }
 
