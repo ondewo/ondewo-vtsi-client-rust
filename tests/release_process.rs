@@ -163,7 +163,7 @@ fn the_suite_is_the_whole_gate() {
 
 #[test]
 fn the_preflight_is_read_only_and_checks_everything_first() {
-    let preflight: String = recipe("release_preflight").join("\n");
+    let preflight: String = recipe("release_preflight_checks").join("\n");
     for check in [
         "check_host_tools",
         "spc",
@@ -180,6 +180,7 @@ fn the_preflight_is_read_only_and_checks_everything_first() {
     assert!(credentials.contains("https://crates.io/api/v1/me"));
     for line in recipe("release_preflight")
         .iter()
+        .chain(recipe("release_preflight_checks").iter())
         .chain(recipe("check_release_credentials").iter())
         .chain(recipe("spc").iter())
     {
@@ -220,7 +221,7 @@ fn spc_matches_exact_refs_and_asks_crates_io() {
 
 #[test]
 fn the_release_only_finishes_once_crates_io_serves_the_version() {
-    let verify: String = recipe("release_verify").join("\n");
+    let verify: String = recipe("release_verify_checks").join("\n");
     assert!(verify.contains("git ls-remote --exit-code --tags origin"));
     assert!(verify.contains("release view"));
     assert!(verify.contains("--json body"));
@@ -242,7 +243,7 @@ fn ondewo_release_deletes_the_credentials_clone_before_the_release_starts() {
     let clone: usize = position(&lines, "git clone");
     let load: usize = position(&lines, "account_github.env");
     let delete: usize = position(&lines, "then rm -rf \"$$owned\"");
-    let release: usize = position(&lines, "$(MAKE) release");
+    let release: usize = position(&lines, "$(SUBMAKE) release");
     assert!(
         trap < clone,
         "the trap must be armed before the clone exists"
@@ -250,7 +251,7 @@ fn ondewo_release_deletes_the_credentials_clone_before_the_release_starts() {
     assert!(clone < load && load < delete, "clone, load, then delete");
     assert!(
         delete < release,
-        "the clone must be gone before `$(MAKE) release`"
+        "the clone must be gone before `$(SUBMAKE) release`"
     );
     assert!(lines[clone].contains("\"$$accounts\""));
     assert!(
@@ -296,4 +297,107 @@ fn nothing_mounts_the_repository_root_as_a_compiler_output() {
             .unwrap_or_else(|| panic!("no {pinned} line"));
         assert!(line.contains("@sha256:"), "pin the image by digest: {line}");
     }
+}
+
+/// The release driver runs `release_preflight` and `release_verify` standalone, with nothing but an
+/// absolute `DEVOPS_ACCOUNT_DIR` in the environment, so both load the credentials they lack from
+/// that directory first - into the shell that then runs their checks.
+#[test]
+fn preflight_and_verify_load_missing_credentials_from_the_devops_directory() {
+    for target in ["release_preflight", "release_verify"] {
+        assert_eq!(
+            recipe(target),
+            vec![format!(
+                "\t@$(LOAD_DEVOPS_CREDENTIALS); $(SUBMAKE) --no-print-directory {target}_checks"
+            )],
+            "{target} must load the credentials, then run its checks in the same shell"
+        );
+        assert!(
+            prerequisites(target).is_empty(),
+            "{target} must not run a check before the credentials are loaded"
+        );
+    }
+    let start: usize = MAKEFILE
+        .find("\nLOAD_DEVOPS_CREDENTIALS=")
+        .expect("the Makefile defines LOAD_DEVOPS_CREDENTIALS");
+    let load: &str = &MAKEFILE[start + 1..];
+    let load: &str = &load[..load
+        .find("\n\tfi\n")
+        .expect("LOAD_DEVOPS_CREDENTIALS ends in fi")];
+    // Only from an existing directory, each value only when the environment lacks it, anchored,
+    // through `set -a` + eval - never on a command line, never echoed.
+    assert!(load.contains("[ -d \"${DEVOPS_ACCOUNT_DIR}\" ]"));
+    assert!(load.contains("set -a"));
+    for (secret, file) in [
+        ("GITHUB_GH_TOKEN", "account_github.env"),
+        ("CARGO_REGISTRY_TOKEN", "account_cargo.env"),
+    ] {
+        assert!(
+            load.contains(&format!(
+                "[ -n \"$${{{secret}:-}}\" ] || eval \"`grep -h -E '^{secret}=' \"${{DEVOPS_ACCOUNT_DIR}}/{file}\""
+            )),
+            "{secret} from {file}"
+        );
+    }
+    assert!(!load.contains("echo"), "nothing in the loader may print");
+}
+
+/// GNU make executes every recipe line that references `$(MAKE)` even under `make -n`, so a recipe
+/// that clones devops-accounts or loads credentials must start its sub-make through the `SUBMAKE`
+/// alias - otherwise `make -n ondewo_release` clones and loads just to print the plan.
+#[test]
+fn a_dry_run_never_clones_or_loads_credentials() {
+    assert!(MAKEFILE.contains("\nSUBMAKE=$(MAKE)\n"));
+    for target in [
+        "ondewo_release",
+        "ondewo_publish_crate",
+        "release_preflight",
+        "release_verify",
+    ] {
+        for line in recipe(target) {
+            assert!(
+                !line.contains("$(MAKE)"),
+                "{target}: `{line}` runs even under `make -n`"
+            );
+        }
+    }
+}
+
+/// The behavioural half of the test above: `make -n ondewo_release` against a devops-accounts
+/// repository that does not exist must succeed and only PRINT the clone. Before the `SUBMAKE`
+/// alias, make executed the recipe and the run died on `fatal: repository ... does not exist`.
+#[test]
+fn make_n_ondewo_release_only_prints_the_clone() {
+    let output = std::process::Command::new("make")
+        .current_dir(env!("CARGO_MANIFEST_DIR"))
+        // A `make release` that runs this suite must not hand its own flags (-n, a jobserver)
+        // to the make started here.
+        .env_remove("MAKEFLAGS")
+        .env_remove("MAKELEVEL")
+        .env_remove("MFLAGS")
+        // No credential may be in play: the dry run must not need, load or print one.
+        .env_remove("GITHUB_GH_TOKEN")
+        .env_remove("CARGO_REGISTRY_TOKEN")
+        .env_remove("GH_TOKEN")
+        .env_remove("GITHUB_TOKEN")
+        .args(["-n", "--no-print-directory", "ondewo_release"])
+        .arg("DEVOPS_ACCOUNT_REPO=/nonexistent/devops.git")
+        .arg("DEVOPS_ACCOUNT_DIR=")
+        .output()
+        .expect("make must be on PATH");
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(
+        output.status.success(),
+        "make -n ondewo_release failed ({}):\n{stderr}",
+        output.status
+    );
+    assert!(
+        stdout.contains("git clone --quiet --depth 1 /nonexistent/devops.git"),
+        "the clone must be printed:\n{stdout}"
+    );
+    assert!(
+        !stderr.contains("fatal:"),
+        "make -n executed the clone:\n{stderr}"
+    );
 }

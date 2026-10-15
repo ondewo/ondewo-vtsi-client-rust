@@ -132,6 +132,12 @@ CRATES_IO_VERSION_URL=https://crates.io/api/v1/crates/${CRATE_NAME}/${ONDEWO_VTS
 VERIFY_ATTEMPTS=20
 VERIFY_INTERVAL_S=30
 
+# The recipes that clone or load credentials start their sub-make through this alias rather than
+# through a literal $$(MAKE): GNU make EXECUTES a recipe line that references $$(MAKE) even under
+# `make -n`, so `make -n ondewo_release` would clone devops-accounts and load the credentials just
+# to show the plan. Referenced through another variable, the line is only printed.
+SUBMAKE=$(MAKE)
+
 DEVOPS_ACCOUNT_GIT=ondewo-devops-accounts
 DEVOPS_ACCOUNT_REPO=git@bitbucket.org:ondewo/${DEVOPS_ACCOUNT_GIT}.git
 # Set by the ondewo-vtsi-api release driver to its single temporary clone: when it names an
@@ -139,6 +145,17 @@ DEVOPS_ACCOUNT_REPO=git@bitbucket.org:ondewo/${DEVOPS_ACCOUNT_GIT}.git
 # deletes it (the driver owns it). Unset, ondewo_release clones into a fresh `mktemp -d` OUTSIDE
 # this repository and deletes that clone before the release starts.
 DEVOPS_ACCOUNT_DIR?=
+# The release driver also runs release_preflight and release_verify STANDALONE, with nothing but an
+# absolute DEVOPS_ACCOUNT_DIR set. Those two therefore load what they need from that directory -
+# each credential only when the environment does not already carry it (inside `make release` it
+# does) - into their own recipe shell: anchored grep, `set -a` + eval, so no value reaches an argv or
+# the log. A no-op when DEVOPS_ACCOUNT_DIR is unset or not a directory.
+LOAD_DEVOPS_CREDENTIALS=if [ -n "${DEVOPS_ACCOUNT_DIR}" ] && [ -d "${DEVOPS_ACCOUNT_DIR}" ]; then \
+		set -a; \
+		[ -n "$${GITHUB_GH_TOKEN:-}" ] || eval "`grep -h -E '^GITHUB_GH_TOKEN=' "${DEVOPS_ACCOUNT_DIR}/account_github.env" 2>/dev/null`"; \
+		[ -n "$${CARGO_REGISTRY_TOKEN:-}" ] || eval "`grep -h -E '^CARGO_REGISTRY_TOKEN=' "${DEVOPS_ACCOUNT_DIR}/account_cargo.env" 2>/dev/null`"; \
+		set +a; \
+	fi
 
 # Define colors globally (reused for [INFO]/[SUCCESS]/[WARN]/[ERROR] log lines in recipes)
 BLUE   := \033[1;34m
@@ -341,6 +358,9 @@ release: ## Automate the entire release process (run it through `make ondewo_rel
 	@echo "Release Finished"
 
 release_preflight: ## Read-only: fail before anything is built, committed or pushed (tools, version, notes, credentials)
+	@$(LOAD_DEVOPS_CREDENTIALS); $(SUBMAKE) --no-print-directory release_preflight_checks
+
+release_preflight_checks: ## The checks of release_preflight, with the credentials already in the environment
 	$(MAKE) check_host_tools
 	$(MAKE) spc
 	$(MAKE) check_release_notes
@@ -401,6 +421,9 @@ check_release_credentials: ## Read-only: every credential the release uses is pr
 	fi
 
 release_verify: ## Read-only: the release is complete - tag on origin, non-empty GitHub release, crate served by crates.io
+	@$(LOAD_DEVOPS_CREDENTIALS); $(SUBMAKE) --no-print-directory release_verify_checks
+
+release_verify_checks: ## The checks of release_verify, with the credentials already in the environment
 	@status=0; git ls-remote --exit-code --tags origin "refs/tags/${ONDEWO_VTSI_VERSION}" >/dev/null || status=$$?; \
 	test $$status -eq 0 || { echo "$(RED)[ERROR]$(NC) tag ${ONDEWO_VTSI_VERSION} is not on origin (git ls-remote exit $$status)"; exit 1; }; \
 	echo "$(GREEN)[SUCCESS]$(NC) tag ${ONDEWO_VTSI_VERSION} is on origin"
@@ -543,7 +566,7 @@ ondewo_release: spc ## Release with credentials from devops-accounts repo (honou
 	if [ -f "$$accounts/account_cargo.env" ]; then eval "`grep -h -E '^CARGO_REGISTRY_TOKEN=' "$$accounts/account_cargo.env"`"; fi; \
 	set +a; \
 	if [ -n "$$owned" ]; then rm -rf "$$owned"; echo "$(BLUE)[INFO]$(NC) Deleted the devops-accounts clone"; fi; \
-	$(MAKE) release
+	$(SUBMAKE) release
 
 ondewo_publish_crate: ## Manual crates.io fallback: publish with the token from the devops-accounts repo (honours DEVOPS_ACCOUNT_DIR)
 	@set -eu; \
@@ -560,7 +583,7 @@ ondewo_publish_crate: ## Manual crates.io fallback: publish with the token from 
 	eval "`grep -h -E '^CARGO_REGISTRY_TOKEN=' "$$accounts/account_cargo.env"`"; \
 	set +a; \
 	if [ -n "$$owned" ]; then rm -rf "$$owned"; echo "$(BLUE)[INFO]$(NC) Deleted the devops-accounts clone"; fi; \
-	$(MAKE) publish_crate
+	$(SUBMAKE) publish_crate
 
 spc: ## Refuse a version that already exists: release branch or tag (origin and local), or the crate version on crates.io
 # Anchored, exact ref names: `git ls-remote --exit-code` exits 2 when the ref is absent, 0 when it
