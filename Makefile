@@ -109,7 +109,7 @@ CARGO_REGISTRY_TOKEN?=ENTER_HERE_YOUR_CARGO_REGISTRY_TOKEN
 # environment make was started with (ondewo_release puts it there), and recipes read it as $$NAME.
 
 # crates.io refuses an upload whose .crate tarball is larger than this (10 MiB, the default limit).
-# The check is server-side, so `cargo publish --dry-run` cannot catch it - publish_crate_dry_run does.
+# The check is server-side, so no local packaging step catches it - publish_crate_dry_run does.
 CRATE_MAX_BYTES=10485760
 
 # The release notes of ONDEWO_VTSI_VERSION: from the heading that matches EXACTLY (anchored, the
@@ -491,9 +491,9 @@ build_gh_release: check_release_notes ## Create the GitHub release (gh authentic
 #		CRATES.IO
 
 check_crate_metadata: ## Assert Cargo.toml carries everything crates.io requires of a publishable crate
-# `cargo publish --dry-run` already rejects an empty description/license/repository and a missing
-# readme file, but it says nothing about keywords/categories (crates.io only recommends those) and
-# it cannot see the server-side size limit. Keeping the whole list in one credential-free target
+# crates.io refuses an upload with an empty description/license/repository or a missing readme
+# file, and a local `cargo package` only warns about those; it says nothing about keywords/categories
+# (crates.io only recommends those) and it cannot see the server-side size limit. Keeping the whole list in one credential-free target
 # means CI exercises every one of them on every push, instead of discovering them at release time.
 	@for field in description license repository readme; do \
 		grep -Eq "^$$field = \"[^\"]+\"" Cargo.toml || { echo "$(RED)[ERROR]$(NC) Cargo.toml carries no non-empty '$$field' - crates.io refuses the upload without it"; exit 1; }; \
@@ -515,10 +515,12 @@ publish_crate_dry_run: check_crate_metadata ## Credential-free run of the whole 
 # check_crate_metadata has already proven that file exists and is non-empty.
 	@echo "$(BLUE)[INFO]$(NC) Files that would be published:"
 	${CARGO} package --list --allow-dirty --locked
-# `cargo publish --dry-run` builds its tarball in a scratch directory and does not leave it behind,
-# so the size limit is measured on the one `cargo package` writes. --no-verify keeps this step to
-# the tarball alone (seconds); the compile that proves the packaged copy builds is the dry run below.
-	${CARGO} package --no-verify --allow-dirty --locked
+# `cargo package` (verifying, the default) writes the tarball the upload would send and compiles
+# the packaged copy from scratch, which is everything `cargo publish --dry-run` does before the
+# upload. The dry run itself is not used: it prints `warning: aborting upload due to dry run` on
+# every run, and `warning: crate ... already exists on crates.io index` on every run after a
+# release, so CI logs could never be warning-free. The size limit is measured on this tarball.
+	${CARGO} package --allow-dirty --locked
 # Name the tarball from the manifest rather than globbing target/package: a cached build directory
 # can still hold the .crate of an earlier version, and a glob would happily measure that one.
 	@crate_file="target/package/`sed -n 's|^name = "\(.*\)"|\1|p' Cargo.toml | head -n 1`-`sed -n 's|^version = "\(.*\)"|\1|p' Cargo.toml | head -n 1`.crate"; \
@@ -526,7 +528,6 @@ publish_crate_dry_run: check_crate_metadata ## Credential-free run of the whole 
 		crate_bytes=`wc -c < "$$crate_file" | tr -d ' '`; \
 		test "$$crate_bytes" -le ${CRATE_MAX_BYTES} || { echo "$(RED)[ERROR]$(NC) $$crate_file is $$crate_bytes bytes, over the crates.io limit of ${CRATE_MAX_BYTES} - trim Cargo.toml's exclude list"; exit 1; }; \
 		echo "$(GREEN)[SUCCESS]$(NC) $$crate_file is $$crate_bytes bytes (crates.io limit: ${CRATE_MAX_BYTES})"
-	${CARGO} publish --dry-run --allow-dirty --locked
 
 publish_crate: check_crate_metadata ## Publish the crate to crates.io (needs CARGO_REGISTRY_TOKEN)
 # cargo reads CARGO_REGISTRY_TOKEN from the environment it was started with, so the token
