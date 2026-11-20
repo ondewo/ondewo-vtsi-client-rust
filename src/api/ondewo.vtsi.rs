@@ -72,6 +72,11 @@ pub struct NluVtsiConfig {
     /// Return the message specified in Intent.Message.Platform platform to the user in the DetectIntentResponse
     #[prost(enumeration="super::nlu::intent::message::Platform", optional, tag="9")]
     pub platform: ::core::option::Option<i32>,
+    /// Optional: Bounds of the preemptive (speculative) NLU requests of the call. Unset keeps the deployment&apos;s
+    /// values. Whether preemptive generation runs at all is set with
+    /// <code>CsiVtsiConfig.preemptive_generation_config.enabled</code>
+    #[prost(message, optional, tag="10")]
+    pub preemptive_generation_config: ::core::option::Option<NluPreemptiveGenerationConfig>,
     /// authentication information (login information)
     #[prost(oneof="nlu_vtsi_config::Authentication", tags="2, 3")]
     pub authentication: ::core::option::Option<nlu_vtsi_config::Authentication>,
@@ -89,6 +94,25 @@ pub mod nlu_vtsi_config {
         AuthToken(::prost::alloc::string::String),
     }
 }
+/// Bounds of the preemptive (speculative) NLU requests: on a stable partial transcription the speech-to-speech
+/// service asks the NLU for the answer of a draft BEFORE the final transcription arrives, and keeps it only when the
+/// final transcription matches the draft. Every field is optional; an unset field keeps the deployment&apos;s value.
+/// A value outside its range is refused with <code>INVALID_ARGUMENT</code>
+#[derive(Clone, Copy, PartialEq, ::prost::Message)]
+pub struct NluPreemptiveGenerationConfig {
+    /// Optional: Number of drafts one caller turn may start at most (default: 2, valid range: 0 - 5;
+    /// 0 = no drafts)
+    #[prost(int32, optional, tag="1")]
+    pub max_drafts_per_turn: ::core::option::Option<i32>,
+    /// Optional: Seconds a partial transcription must stay unchanged before the first draft of a turn starts
+    /// (default: 0.25, valid range: 0 - 2; 0 = no wait)
+    #[prost(float, optional, tag="2")]
+    pub min_stable_dwell_seconds: ::core::option::Option<f32>,
+    /// Optional: Minimum seconds between the starts of two drafts within one turn (default: 0.5,
+    /// valid range: 0 - 5; 0 = no limit)
+    #[prost(float, optional, tag="3")]
+    pub min_interval_seconds: ::core::option::Option<f32>,
+}
 /// Text-2-Speech Configuration
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct T2sVtsiConfig {
@@ -98,6 +122,24 @@ pub struct T2sVtsiConfig {
     /// Configuration of Text-2-Speech
     #[prost(message, optional, tag="2")]
     pub t2s_request_config: ::core::option::Option<super::t2s::RequestConfig>,
+    /// Optional: Speech synthesis of preemptive (speculative) drafts. Unset keeps the deployment&apos;s values
+    #[prost(message, optional, tag="3")]
+    pub preemptive_synthesis_config: ::core::option::Option<T2sPreemptiveSynthesisConfig>,
+}
+/// Speech synthesis of the answer of a preemptive (speculative) draft. Every field is optional; an unset field keeps
+/// the deployment&apos;s value
+#[derive(Clone, Copy, PartialEq, Eq, Hash, ::prost::Message)]
+pub struct T2sPreemptiveSynthesisConfig {
+    /// Optional: Synthesize the answer of a draft before the final transcription arrives, so that a matching draft
+    /// plays at once (default: true). <code>false</code> asks the NLU only and synthesizes at the commit
+    #[prost(bool, optional, tag="1")]
+    pub enabled: ::core::option::Option<bool>,
+    /// Optional: Hand a matching draft&apos;s answer over chunk by chunk while it is still being synthesized, instead
+    /// of waiting for the whole synthesis (default: false). Needs chunked text-to-speech streaming
+    /// (<code>ResponseTimingConfig.t2s_chunked_streaming_enabled</code>) and is ignored without it.
+    /// <code>chunked</code> has no effect when <code>enabled</code> is false
+    #[prost(bool, optional, tag="2")]
+    pub chunked: ::core::option::Option<bool>,
 }
 /// Speech-2-Text Configuration
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -146,6 +188,241 @@ pub struct VoiceInteractionConfig {
     /// is rejected with INVALID_ARGUMENT
     #[prost(message, optional, tag="4")]
     pub answering_machine_detection_config: ::core::option::Option<AnsweringMachineDetectionConfig>,
+    /// Configuration of the DTMF keys the CALLER presses (keypad input to the bot). Unset keeps the deployment&apos;s
+    /// behaviour (keys on, a key barges in, undeclared keys dropped)
+    #[prost(message, optional, tag="5")]
+    pub dtmf_config: ::core::option::Option<DtmfConfig>,
+    /// Configuration of the warm intro of a WARM transfer of this call (see <code>WarmTransferConfig</code>). Unset
+    /// inherits the project default <code>VtsiProject.warm_transfer_defaults</code>; a
+    /// <code>TransferCallRequest.warm_transfer_config</code> wins over it for that one transfer
+    #[prost(message, optional, tag="6")]
+    pub warm_transfer_config: ::core::option::Option<WarmTransferConfig>,
+}
+/// Configuration of the DTMF keys a caller presses. A key reaches the bot only when the bot&apos;s last answer
+/// declared a key menu or a key entry (ondewo-cai intent tags <code>ondewo-voice:dtmf-menu:&lt;id&gt;</code> /
+/// <code>ondewo-voice:dtmf-digits:&lt;id&gt;</code>); it is then sent to the NLU as the turn text
+/// <code>\[DTMF:&lt;keys&gt;\]</code>. Every field is <code>optional</code>; unset keeps the deployment&apos;s value
+/// (the <code>ONDEWO_VTSI_CSI_DTMF_*</code> / <code>ONDEWO_VTSI_SIP_DTMF_FORWARD_ACTIVE</code> settings, else
+/// the default).
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+pub struct DtmfConfig {
+    /// Whether a pressed key is forwarded to the bot at all (default true). <code>false</code> ignores every key of
+    /// the call
+    #[prost(bool, optional, tag="1")]
+    pub enabled: ::core::option::Option<bool>,
+    /// Whether a key pressed while the bot speaks stops the bot, like a spoken interruption (default true)
+    #[prost(bool, optional, tag="2")]
+    pub barge_in: ::core::option::Option<bool>,
+    /// Milliseconds after the last key of a key entry (e.g. a PIN) without a terminator before the entry is sent
+    /// (default 2000, valid range 300 - 10000; a value outside the range is refused with
+    /// <code>INVALID_ARGUMENT</code>)
+    #[prost(uint32, optional, tag="3")]
+    pub inter_digit_timeout_ms: ::core::option::Option<u32>,
+    /// What a key the bot declared nothing for does: <code>DROP</code> (default; the key is ignored and the bot is
+    /// not interrupted) or <code>COMMIT_SINGLE</code> (the key is sent to the NLU as a one-key turn). Any other
+    /// value is refused with <code>INVALID_ARGUMENT</code>
+    #[prost(string, optional, tag="4")]
+    pub undeclared_policy: ::core::option::Option<::prost::alloc::string::String>,
+}
+/// <p>Warm intro of a WARM transfer: after the human target answered and before the target is joined, an ONDEWO bot
+/// (a free listener of the project, in an NLU session of its own) greets the target, confirms that a person is on
+/// the line, briefs them (who calls and why), asks whether they accept the call and, on a decline, asks what to tell
+/// the caller. Meanwhile the caller stays with the paused bot of the call. On accept the target is joined and the
+/// bot leaves as in every WARM transfer; on a decline, no decision or an unreachable target the call stays with the
+/// bot, which tells the caller (<code>caller_declined_message</code> / <code>caller_unreachable_message</code>).</p>
+/// <p>Levels: unset fields inherit, the most specific level winning per field (protobuf <code>MergeFrom</code>):
+/// <code>TransferCallRequest.warm_transfer_config</code> &gt; <code>VoiceInteractionConfig.warm_transfer_config</code>
+/// of the call (listener, caller, campaign) &gt; <code>VtsiProject.warm_transfer_defaults</code> &gt; the
+/// deployment&apos;s <code>ONDEWO_VTSI_WARM_TRANSFER_*</code> settings &gt; the ONDEWO NLU agent&apos;s warm transfer
+/// settings (texts only) &gt; the built-in default. <code>enabled</code> unset at every level is
+/// <code>false</code>: a WARM transfer then behaves exactly as before 9.5.0. An NLU agent whose warm transfer
+/// settings switch warm intros off makes the intro unavailable, and <code>on_intro_unavailable</code> decides.</p>
+/// <p>Requires the deployment switch <code>ONDEWO_VTSI_WARM_TRANSFER_ENABLED=true</code> (default
+/// <code>false</code>); otherwise an explicit <code>enabled=true</code> is refused with
+/// <code>FAILED_PRECONDITION</code> <code>reason=warm-intro-disabled</code>, at every level (also on
+/// <code>UpdateVtsiProject</code>). <code>VtsiProject.feature_availability.warm_intro</code> says up front whether
+/// warm intros can run in a project. Fields marked <i>phase B</i> are refused with <code>FAILED_PRECONDITION</code>
+/// <code>reason=phase-b-not-enabled</code> while the deployment has not enabled phase B
+/// (<code>VtsiProject.feature_availability.warm_intro_phase_b</code>).</p>
+/// <p>Texts are spoken by text-to-speech in the language of the intro bot. The placeholders are
+/// <code>{project}</code>, <code>{caller_name}</code>, <code>{callee_name}</code>, <code>{topic}</code>,
+/// <code>{summary}</code> and <code>{reason}</code>, where a field lists them; an unknown placeholder is refused with
+/// <code>INVALID_ARGUMENT</code>. A text must not contain SIP markup (<code>&lt;SIP:</code>): refused with
+/// <code>INVALID_ARGUMENT</code>. No text of an intro (the briefing, the decline reason) is ever stored by VTSI,
+/// logged, sent in an event or a SIP header: it lives only in the intro bot&apos;s NLU session.</p>
+/// <p>Every scalar is <code>optional</code>: unset inherits, a set value (also <code>&quot;&quot;</code> or
+/// <code>0</code>) is that level&apos;s value. Values outside a documented range are refused with
+/// <code>INVALID_ARGUMENT</code>.</p>
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+pub struct WarmTransferConfig {
+    /// Master switch of the warm intro. Unset at every level means <code>false</code>
+    #[prost(bool, optional, tag="1")]
+    pub enabled: ::core::option::Option<bool>,
+    /// TEMPLATE: the briefing spoken to the target after the readiness answer, with the placeholders
+    /// <code>{caller_name}</code>, <code>{callee_name}</code>, <code>{topic}</code> and <code>{summary}</code>
+    /// (default e.g. &quot;Ich habe {caller_name} in der Leitung, es geht um {topic}.&quot;). LLM_SUMMARY
+    /// (<i>phase B</i>): the instruction to the LLM that writes the briefing from the call so far. At most 4000
+    /// characters
+    #[prost(string, optional, tag="2")]
+    pub intro_prompt: ::core::option::Option<::prost::alloc::string::String>,
+    /// How the briefing is produced. <code>WARM_INTRO_TEXT_SOURCE_UNSPECIFIED</code> means
+    /// <code>WARM_INTRO_TEXT_SOURCE_LLM_SUMMARY</code> when phase B is enabled and the project has an LLM service,
+    /// else <code>WARM_INTRO_TEXT_SOURCE_TEMPLATE</code>. <code>WARM_INTRO_TEXT_SOURCE_LLM_SUMMARY</code> is
+    /// <i>phase B</i>; when the LLM fails or is too slow the TEMPLATE is used (<code>WarmIntroRecord.text_fell_back</code>)
+    #[prost(enumeration="WarmIntroTextSource", tag="3")]
+    pub intro_text_source: i32,
+    /// The first sentence the target hears, before anything about the caller (it carries no personal data, so a
+    /// mailbox that answers records nothing about the caller). Placeholder <code>{project}</code>. Default (de):
+    /// &quot;Hier ist der digitale Assistent von {project}. Ich habe einen Anruf für Sie. Sind Sie am Apparat? Sagen
+    /// Sie ja oder drücken Sie 1.&quot; At most 1000 characters
+    #[prost(string, optional, tag="4")]
+    pub ready_question: ::core::option::Option<::prost::alloc::string::String>,
+    /// Whether the briefing is spoken only after the target answered the <code>ready_question</code> (by voice or
+    /// <code>accept_dtmf</code>). Default <code>true</code>: the mailbox guard. <code>false</code> briefs the target
+    /// right after the <code>ready_question</code>
+    #[prost(bool, optional, tag="5")]
+    pub confirm_human_before_intro: ::core::option::Option<bool>,
+    /// The question after the briefing. Default (de): &quot;Möchten Sie das Gespräch übernehmen? Ja oder 1, nein oder
+    /// 2.&quot; At most 1000 characters
+    #[prost(string, optional, tag="6")]
+    pub accept_question: ::core::option::Option<::prost::alloc::string::String>,
+    /// Asked after a decline, to learn what to tell the caller. Default (de): &quot;Was darf ich dem Anrufer
+    /// ausrichten?&quot;, (en) &quot;What may I tell the caller?&quot;. <code>&quot;&quot;</code> means: do not ask,
+    /// the caller hears the decline without a reason. The answer is relayed to the caller only through the bot&apos;s
+    /// NLU (normalised: SIP markup removed, at most 300 characters, digit runs of 12 or more masked); VTSI never
+    /// receives it. At most 1000 characters
+    #[prost(string, optional, tag="7")]
+    pub decline_reason_question: ::core::option::Option<::prost::alloc::string::String>,
+    /// What the caller hears after a decline, placeholders <code>{callee_name}</code> and <code>{reason}</code>.
+    /// Default (de): &quot;{callee_name} kann das Gespräch gerade nicht übernehmen und lässt ausrichten:
+    /// {reason}&quot;; without a reason a variant without the clause is spoken. At most 1000 characters
+    #[prost(string, optional, tag="8")]
+    pub caller_declined_message: ::core::option::Option<::prost::alloc::string::String>,
+    /// What the caller hears when the target was busy, did not answer, gave no decision, hung up during the intro or
+    /// the intro could not run (with <code>WARM_INTRO_UNAVAILABLE_POLICY_RETURN_TO_CALLER</code>). Placeholder
+    /// <code>{callee_name}</code>. At most 1000 characters
+    #[prost(string, optional, tag="9")]
+    pub caller_unreachable_message: ::core::option::Option<::prost::alloc::string::String>,
+    /// The key that accepts (and answers the <code>ready_question</code>). Default <code>1</code>; exactly one of
+    /// <code>0-9 * #</code>
+    #[prost(string, optional, tag="10")]
+    pub accept_dtmf: ::core::option::Option<::prost::alloc::string::String>,
+    /// The key that declines. Default <code>2</code>; exactly one of <code>0-9 * #</code>, different from the
+    /// effective <code>accept_dtmf</code>
+    #[prost(string, optional, tag="11")]
+    pub decline_dtmf: ::core::option::Option<::prost::alloc::string::String>,
+    /// Seconds from a question to the target&apos;s decision before the intro ends with
+    /// <code>WARM_INTRO_DECISION_NO_DECISION</code>. Default 20, valid range 5 - 60
+    #[prost(uint32, optional, tag="12")]
+    pub decision_timeout_s: ::core::option::Option<u32>,
+    /// Hard cap in seconds from the target&apos;s answer to the decision. Default 90, valid range 30 - 300. The caller
+    /// waits at most the ring time plus this
+    #[prost(uint32, optional, tag="13")]
+    pub max_intro_duration_s: ::core::option::Option<u32>,
+    /// Who the target is, spoken as <code>{callee_name}</code>, e.g. &quot;Frau Berger, Buchhaltung&quot;. Unset
+    /// resolves from the target softphone account&apos;s <code>display_name</code>, then from
+    /// <code>VtsiProject.transfer_target_directory</code>. At most 128 characters. Meaningful per transfer only
+    #[prost(string, optional, tag="14")]
+    pub callee_display_name: ::core::option::Option<::prost::alloc::string::String>,
+    /// The target&apos;s role and context for the briefing (LLM_SUMMARY). Unset resolves from the target softphone
+    /// account&apos;s <code>description</code>, then from <code>VtsiProject.transfer_target_directory</code>. At most
+    /// 512 characters. Meaningful per transfer only
+    #[prost(string, optional, tag="15")]
+    pub callee_description: ::core::option::Option<::prost::alloc::string::String>,
+    /// What happens when the intro cannot run (no free listener, the NLU could not prepare the intro).
+    /// <code>WARM_INTRO_UNAVAILABLE_POLICY_UNSPECIFIED</code> means
+    /// <code>WARM_INTRO_UNAVAILABLE_POLICY_CONNECT_WITHOUT_INTRO</code>
+    #[prost(enumeration="WarmIntroUnavailablePolicy", tag="16")]
+    pub on_intro_unavailable: i32,
+    /// Whether the bot&apos;s OWN transfers to a human (the NLU answer&apos;s transfer or human handover) get a warm
+    /// intro too: the transfer is handed to VTSI instead of being sent by the bot. Default <code>false</code>. Valid
+    /// on the call and project levels; set on a <code>TransferCallRequest</code> it is refused with
+    /// <code>INVALID_ARGUMENT</code>
+    #[prost(bool, optional, tag="17")]
+    pub apply_to_bot_transfers: ::core::option::Option<bool>,
+    /// Spoken to the caller while the intro runs, after <code>caller_disclosure_message</code>, e.g. &quot;Einen
+    /// Moment bitte, ich verbinde Sie.&quot; <code>&quot;&quot;</code> or unset: none (silence). At most 1000
+    /// characters
+    #[prost(string, optional, tag="18")]
+    pub caller_hold_message: ::core::option::Option<::prost::alloc::string::String>,
+    /// <i>Phase B</i>: music on hold for the caller between the hold messages. Default <code>false</code> (silence)
+    #[prost(bool, optional, tag="19")]
+    pub caller_hold_music: ::core::option::Option<bool>,
+    /// Repeat <code>caller_hold_message</code> every N seconds while the intro runs. <code>0</code> (default): never.
+    /// Valid: 0 or 15 - 120
+    #[prost(uint32, optional, tag="20")]
+    pub caller_reassure_interval_s: ::core::option::Option<u32>,
+    /// The LLM service of the ONDEWO NLU agent that writes the briefing (LLM_SUMMARY, <i>phase B</i>). Empty: the
+    /// agent&apos;s warm transfer setting, else the project&apos;s first LLM service
+    #[prost(string, optional, tag="21")]
+    pub llm_ccai_service_name: ::core::option::Option<::prost::alloc::string::String>,
+    /// Spoken to the caller FIRST when the intro starts, e.g. that the call is being announced to the target.
+    /// Default empty: none. At most 1000 characters
+    #[prost(string, optional, tag="22")]
+    pub caller_disclosure_message: ::core::option::Option<::prost::alloc::string::String>,
+    /// Spoken to the caller after the target accepted and before the target is joined, placeholder
+    /// <code>{callee_name}</code>, e.g. &quot;Ich verbinde Sie jetzt mit {callee_name}.&quot; The target does not
+    /// hear it. Default empty: none. At most 1000 characters
+    #[prost(string, optional, tag="23")]
+    pub caller_accepted_message: ::core::option::Option<::prost::alloc::string::String>,
+    /// Whether the intro bot&apos;s NLU session stores the intro audio (the target&apos;s voice and the bot&apos;s).
+    /// Default <code>false</code>: no audio is stored; the session&apos;s text follows the conversation retention
+    #[prost(bool, optional, tag="24")]
+    pub store_intro_audio: ::core::option::Option<bool>,
+    /// Project level only: listeners (<pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre>)
+    /// reserved as intro bots. Empty (default): any free listener of the project, keeping at least one ready
+    /// listener free for customer calls. At most 50 entries; set on another level it is refused with
+    /// <code>INVALID_ARGUMENT</code>
+    #[prost(string, repeated, tag="25")]
+    pub intro_listener_names: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+}
+/// <p>Audit of one warm intro, in <code>CallTransferRecord.warm_intro</code>. Output only. Holds NO intro text and NO
+/// decline reason text.</p>
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+pub struct WarmIntroRecord {
+    /// Id of the intro: the participant id of the target&apos;s leg (the <code>participant_id</code> of the events)
+    #[prost(string, tag="1")]
+    pub intro_id: ::prost::alloc::string::String,
+    /// The target&apos;s decision
+    #[prost(enumeration="WarmIntroDecision", tag="2")]
+    pub decision: i32,
+    /// How it was taken
+    #[prost(enumeration="WarmIntroDecidedBy", tag="3")]
+    pub decided_by: i32,
+    /// Whether the target gave a reason for a decline (the reason itself never leaves the intro bot&apos;s NLU session)
+    #[prost(bool, tag="4")]
+    pub decline_reason_present: bool,
+    /// The intro bot&apos;s call, labelled <code>{&quot;purpose&quot;: &quot;warm_intro&quot;}</code>. Empty when no
+    /// intro bot answered
+    #[prost(string, tag="5")]
+    pub intro_call_name: ::prost::alloc::string::String,
+    /// From the start of the ring to the target&apos;s answer
+    #[prost(message, optional, tag="6")]
+    pub ring_duration: ::core::option::Option<::prost_types::Duration>,
+    /// From the target&apos;s answer to the decision or the end of the intro
+    #[prost(message, optional, tag="7")]
+    pub intro_duration: ::core::option::Option<::prost_types::Duration>,
+    /// The text source actually used
+    #[prost(enumeration="WarmIntroTextSource", tag="8")]
+    pub text_source: i32,
+    /// Whether the LLM summary failed or timed out and the TEMPLATE was used
+    #[prost(bool, tag="9")]
+    pub text_fell_back: bool,
+    /// Bounded kebab-case token naming why the intro ended or did not run, e.g. <code>declined</code>,
+    /// <code>voicemail-suspected</code>, <code>target-hung-up</code>, <code>no-free-listener</code>,
+    /// <code>prepare-failed</code>, <code>intro-timeout</code>; empty on accept
+    #[prost(string, tag="10")]
+    pub cause: ::prost::alloc::string::String,
+    /// Whether the caller&apos;s bot queued the outcome notice (decline / unreachable) for the caller. Only meaningful
+    /// when a notice was owed (every decision but <code>WARM_INTRO_DECISION_ACCEPTED</code>); <code>false</code> there
+    /// goes with <code>VTSI_EVENT_CALL_WARM_TRANSFER_OUTCOME_NOTICE_UNDELIVERED</code>
+    #[prost(bool, tag="11")]
+    pub notice_delivered: bool,
+    /// Whether the intro started (an intro bot answered). <code>false</code> with
+    /// <code>WARM_INTRO_UNAVAILABLE_POLICY_CONNECT_WITHOUT_INTRO</code> means the target was joined without an intro;
+    /// <code>cause</code> says why
+    #[prost(bool, tag="12")]
+    pub intro_started: bool,
 }
 /// Configuration of the turn detection, i.e. deciding when the caller has finished speaking
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -178,9 +455,92 @@ pub struct TurnDetectionConfig {
     /// rules of <code>turn_detection_system_prompt</code>
     #[prost(string, optional, tag="6")]
     pub turn_detection_user_prompt: ::core::option::Option<::prost::alloc::string::String>,
+    /// Optional: Number of the latest conversation turns (the caller&apos;s committed turns and the bot&apos;s
+    /// utterances as the caller heard them) handed to the semantic turn detection model of the speech-to-text
+    /// service together with the utterance it judges (default: 0 = off, valid range: 0 - 10). Use it only where
+    /// the speech-to-text service serves a turn detection model trained with conversation context. Used only by an
+    /// end-of-utterance model; a chat model ignores it. Only valid with the mode <code>SEMANTIC_MODEL</code> (or
+    /// unspecified): a value above 0 together with <code>VAD</code> or <code>AUDIO_MODEL</code>, or a value outside
+    /// the range, is refused with <code>INVALID_ARGUMENT</code>
+    #[prost(uint32, optional, tag="7")]
+    pub conversation_context_turns: ::core::option::Option<u32>,
+    /// Optional: Name of the semantic turn detection model the speech-to-text service asks for this call. Unset uses
+    /// the model configured in the speech-to-text pipeline. The model&apos;s endpoint is deliberately not
+    /// configurable per call. Valid: 1 - 256 characters, no whitespace or control characters. Only valid with the
+    /// mode <code>SEMANTIC_MODEL</code> (or unspecified): set together with <code>VAD</code> or
+    /// <code>AUDIO_MODEL</code>, or invalid, it is refused with <code>INVALID_ARGUMENT</code>
+    #[prost(string, optional, tag="8")]
+    pub semantic_model_name: ::core::option::Option<::prost::alloc::string::String>,
+    /// Optional: End-of-turn probability at or above which the semantic turn detection model takes the caller to
+    /// have finished the turn (valid range: 0 - 1). Unset uses the speech-to-text service&apos;s configured threshold
+    /// for the language of the call. Used only by an end-of-utterance model; a chat model ignores it. Only valid
+    /// with the mode <code>SEMANTIC_MODEL</code> (or unspecified): set together with <code>VAD</code> or
+    /// <code>AUDIO_MODEL</code>, or outside the range, it is refused with <code>INVALID_ARGUMENT</code>
+    #[prost(float, optional, tag="9")]
+    pub end_of_turn_probability_threshold: ::core::option::Option<f32>,
+    /// Optional: Hold bands of the semantic turn detection model: how long a turn judged finished, but only with a
+    /// probability below a band&apos;s upper bound, waits for further silence before it is committed. Set with no
+    /// bands, a turn at or above the threshold is committed at once; unset uses the speech-to-text service&apos;s
+    /// configured bands for the language of the call. At most 10 bands, with the ranges of
+    /// <code>EndOfTurnHoldBand</code>. Used only by an end-of-utterance model; a chat model ignores it. Only valid
+    /// with the mode <code>SEMANTIC_MODEL</code> (or unspecified): set together with <code>VAD</code> or
+    /// <code>AUDIO_MODEL</code>, or invalid, it is refused with <code>INVALID_ARGUMENT</code>
+    #[prost(message, optional, tag="10")]
+    pub hold_bands: ::core::option::Option<turn_detection_config::EndOfTurnHoldBands>,
+    /// Optional: Minimum number of words a turn needs before a hold band may hold it; a shorter turn judged finished
+    /// is committed at once (default: 3, valid range: 0 - 20). Used only by an end-of-utterance model; a chat model
+    /// ignores it. Only valid with the mode <code>SEMANTIC_MODEL</code> (or unspecified): set together with
+    /// <code>VAD</code> or <code>AUDIO_MODEL</code>, or outside the range, it is refused with
+    /// <code>INVALID_ARGUMENT</code>
+    #[prost(uint32, optional, tag="11")]
+    pub uncertain_min_words: ::core::option::Option<u32>,
+    /// Optional: Seconds of silence after a turn the semantic turn detection model (of either kind) judged NOT
+    /// finished before it is committed anyway (default: the voice activity detection&apos;s minimum silence, valid
+    /// range: 0 - 4; the speech-to-text service raises a value below that minimum silence to it). Only valid with
+    /// the mode <code>SEMANTIC_MODEL</code> (or unspecified): set together with <code>VAD</code> or
+    /// <code>AUDIO_MODEL</code>, or outside the range, it is refused with <code>INVALID_ARGUMENT</code>
+    #[prost(float, optional, tag="12")]
+    pub incomplete_max_silence_seconds: ::core::option::Option<f32>,
+    /// Optional: Compute the exact end-of-turn probability instead of reading it from the model&apos;s returned top
+    /// log probabilities (default: false). Requires a deployment that returns prompt log probabilities (vLLM
+    /// <code>prompt_logprobs</code>); on any other deployment every turn waits for
+    /// <code>incomplete_max_silence_seconds</code>. Used only by an end-of-utterance model; a chat model ignores it.
+    /// Only valid with the mode <code>SEMANTIC_MODEL</code> (or unspecified): set together with <code>VAD</code> or
+    /// <code>AUDIO_MODEL</code> it is refused with <code>INVALID_ARGUMENT</code>
+    #[prost(bool, optional, tag="13")]
+    pub exact_probability: ::core::option::Option<bool>,
+    /// Optional: Seconds a speech-to-text final that looks like half a sentence is held, to be merged with the
+    /// caller&apos;s continuation into ONE turn (default: 0 = off, valid range: 0 - 2). Valid with every mode. A value
+    /// outside the range is refused with <code>INVALID_ARGUMENT</code>
+    #[prost(float, optional, tag="14")]
+    pub final_merge_window_seconds: ::core::option::Option<f32>,
+    /// Configuration of the dictation hold, i.e. waiting for the rest of a dictated value (digits, phone or card
+    /// number, IBAN, address, date, ...) instead of ending the turn at the caller&apos;s pause between its groups.
+    /// Valid with every mode. Unset fields keep the defaults
+    #[prost(message, optional, tag="15")]
+    pub dictation_config: ::core::option::Option<DictationConfig>,
 }
 /// Nested message and enum types in `TurnDetectionConfig`.
 pub mod turn_detection_config {
+    /// Hold bands of the semantic turn detection model
+    #[derive(Clone, PartialEq, ::prost::Message)]
+    pub struct EndOfTurnHoldBands {
+        /// The bands (at most 10). The first band, sorted by <code>upper_probability</code>, whose upper probability
+        /// exceeds the end-of-turn probability decides the hold; a probability above every band is committed at once
+        #[prost(message, repeated, tag="1")]
+        pub bands: ::prost::alloc::vec::Vec<EndOfTurnHoldBand>,
+    }
+    /// One hold band of the semantic turn detection model
+    #[derive(Clone, Copy, PartialEq, ::prost::Message)]
+    pub struct EndOfTurnHoldBand {
+        /// Exclusive upper bound of the end-of-turn probabilities the band covers (valid range: 0 - 1)
+        #[prost(float, tag="1")]
+        pub upper_probability: f32,
+        /// Seconds of silence a turn in the band waits before it is committed (valid range: 0 - 4; never longer than
+        /// <code>incomplete_max_silence_seconds</code>)
+        #[prost(float, tag="2")]
+        pub max_silence_seconds: f32,
+    }
     /// Mode of the turn detection
     #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
     #[repr(i32)]
@@ -256,6 +616,55 @@ pub mod turn_detection_config {
         }
     }
 }
+/// Configuration of the dictation hold of a call: a final transcription whose dictated value is not complete yet is
+/// held until the caller continues, so that the groups of the value reach the NLU as ONE turn. Every unset field
+/// keeps its default; a field that is out of range is refused with <code>INVALID_ARGUMENT</code>
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct DictationConfig {
+    /// Optional: Hold a final transcription whose dictated value is unfinished (default: false)
+    #[prost(bool, optional, tag="1")]
+    pub hold_enabled: ::core::option::Option<bool>,
+    /// Optional: Read the expected value (slot) from the NLU answer, so that the hold applies the rule of the value
+    /// the bot asked for (default: false; without it only the generic rule holds)
+    #[prost(bool, optional, tag="2")]
+    pub expected_input_enabled: ::core::option::Option<bool>,
+    /// Optional: With <code>expected_input_enabled</code>, take a bot answer that reads a complete value back and asks
+    /// for confirmation as asking for a confirmation of that value (default: false)
+    #[prost(bool, optional, tag="3")]
+    pub read_back_from_bot_text_enabled: ::core::option::Option<bool>,
+    /// Optional: Seconds the generic rule (no expected value) holds at most (default: 1.5, valid range: 0 - 2;
+    /// 0 switches the generic rule off)
+    #[prost(float, optional, tag="4")]
+    pub hold_generic_max_seconds: ::core::option::Option<f32>,
+    /// Optional: Seconds an unfinished value of a category is held at most, keyed by the category: <code>digits</code>,
+    /// <code>phone</code>, <code>card</code>, <code>expiry_cvc</code>, <code>iban</code>, <code>bic</code>,
+    /// <code>svnr</code>, <code>address</code>, <code>date</code>, <code>time</code>, <code>email</code> or
+    /// <code>confirm_value</code> (valid range: 0 - 4 each). The rule without an expected value is not a category: it
+    /// is set with <code>hold_generic_max_seconds</code>. An unknown category, <code>generic</code> included, is
+    /// refused with <code>INVALID_ARGUMENT</code>. The map is ONE field: a non-empty map replaces the whole
+    /// replica-wide table of the deployment, so a category not listed here keeps the speech-to-speech service's
+    /// default cap, not a cap the replica-wide table set; an empty map keeps the replica-wide table
+    #[prost(map="string, float", tag="5")]
+    pub hold_max_seconds_by_category: ::std::collections::HashMap<::prost::alloc::string::String, f32>,
+    /// Optional: Seconds a full-length value whose checksum fails is held, so that the bot can ask again
+    /// (default: 1.5, valid range: 0 - 4)
+    #[prost(float, optional, tag="6")]
+    pub hold_invalid_checksum_seconds: ::core::option::Option<f32>,
+    /// Optional: Commit the turn on a partial transcription as soon as the expected value is complete; needs
+    /// <code>hold_enabled</code> and <code>expected_input_enabled</code> (default: false)
+    #[prost(bool, optional, tag="7")]
+    pub early_commit_on_complete_value: ::core::option::Option<bool>,
+    /// Optional: Minimum silence in seconds the speech-to-text service waits before it ends an utterance while a value
+    /// is expected (default: 0 = off, valid range: 0 or 0.5 - 4). Only takes effect when a value to restore after the
+    /// turn is known: <code>s2t_slot_min_duration_off_restore_seconds</code> or the minimum silence of the
+    /// speech-to-text configuration
+    #[prost(float, optional, tag="8")]
+    pub s2t_slot_min_duration_off_seconds: ::core::option::Option<f32>,
+    /// Optional: Minimum silence in seconds restored on the speech-to-text service after a turn with an expected value
+    /// (default: the minimum silence of the speech-to-text configuration, valid range: 0.05 - 4)
+    #[prost(float, optional, tag="9")]
+    pub s2t_slot_min_duration_off_restore_seconds: ::core::option::Option<f32>,
+}
 /// Configuration of the interruption (barge-in) handling, i.e. the caller speaking while the bot is speaking
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
 pub struct InterruptionHandlingConfig {
@@ -290,6 +699,11 @@ pub struct InterruptionHandlingConfig {
     /// (default: false, i.e. caller speech during bot speech is not transcribed while <code>enabled</code> is false)
     #[prost(bool, optional, tag="8")]
     pub transcribe_on_disabled_interruptions: ::core::option::Option<bool>,
+    /// Optional: Duration in milliseconds over which the bot&apos;s voice fades out (raised cosine) when the caller
+    /// interrupts it, instead of stopping abruptly (default: 100, valid range: 0 - 500; 0 = stop at once).
+    /// A value outside the range is refused with <code>INVALID_ARGUMENT</code>
+    #[prost(int32, optional, tag="9")]
+    pub interruption_fade_out_ms: ::core::option::Option<i32>,
 }
 /// Configuration of the response timing, i.e. when and how the bot responds
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -305,7 +719,11 @@ pub struct ResponseTimingConfig {
     /// Configuration of the soft timeout filler messages
     #[prost(message, optional, tag="3")]
     pub soft_timeout_config: ::core::option::Option<SoftTimeoutConfig>,
-    /// Optional: Enable preemptive response generation on an eagerly detected end of turn (default: false)
+    /// Optional, DEPRECATED: use <code>CsiVtsiConfig.preemptive_generation_config.enabled</code>.
+    /// Enable preemptive response generation on an eagerly detected end of turn (default: the deployment&apos;s
+    /// setting, which is true unless changed). Still honoured when it is set alone; set together with
+    /// <code>CsiVtsiConfig.preemptive_generation_config.enabled</code> to a different value, the request is refused
+    /// with <code>INVALID_ARGUMENT</code>
     #[prost(bool, optional, tag="4")]
     pub preemptive_generation_enabled: ::core::option::Option<bool>,
     /// Optional: Enable chunked text-to-speech streaming for a lower time to first audio (default: false)
@@ -557,7 +975,7 @@ pub struct SipCallerConfig {
     pub sip_headers: ::std::collections::HashMap<::prost::alloc::string::String, ::prost::alloc::string::String>,
 }
 /// CSI configuration
-#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct CsiVtsiConfig {
     /// Callback for the Speech-2-Text platform
     #[prost(message, optional, tag="1")]
@@ -587,6 +1005,29 @@ pub struct CsiVtsiConfig {
     /// mentioned them.
     #[prost(bool, optional, tag="6")]
     pub activate_control_messages: ::core::option::Option<bool>,
+    /// Optional: Preemptive (speculative) generation of the answer. Unset keeps the deployment&apos;s values
+    #[prost(message, optional, tag="7")]
+    pub preemptive_generation_config: ::core::option::Option<CsiPreemptiveGenerationConfig>,
+}
+/// Preemptive (speculative) generation of the answer: on a stable partial transcription a draft answer is generated
+/// before the final transcription arrives, and played only when the final transcription matches it; a draft that
+/// does not match is discarded and the caller hears nothing of it. Every field is optional; an unset field keeps
+/// the deployment&apos;s value. A value outside its range is refused with <code>INVALID_ARGUMENT</code>.
+/// The NLU bounds are set with <code>NluVtsiConfig.preemptive_generation_config</code>, the speech synthesis of a
+/// draft with <code>T2sVtsiConfig.preemptive_synthesis_config</code>
+#[derive(Clone, Copy, PartialEq, ::prost::Message)]
+pub struct CsiPreemptiveGenerationConfig {
+    /// Optional: Enable preemptive generation (default: the deployment&apos;s setting, which is true unless changed).
+    /// Replaces the deprecated <code>ResponseTimingConfig.preemptive_generation_enabled</code>; set together with it
+    /// to a different value, the request is refused with <code>INVALID_ARGUMENT</code>
+    #[prost(bool, optional, tag="1")]
+    pub enabled: ::core::option::Option<bool>,
+    /// Optional: Seconds a draft that matches the final transcription may still take before it is discarded and the
+    /// turn is answered normally (default: 3.0, valid range: 0 - 3). While
+    /// <code>T2sPreemptiveSynthesisConfig.chunked</code> is off the commit waits for the whole draft; while it is on,
+    /// only for the draft&apos;s first chunk
+    #[prost(float, optional, tag="2")]
+    pub commit_wait_timeout_seconds: ::core::option::Option<f32>,
 }
 /// Minio Audio Object Store
 #[derive(Clone, Copy, PartialEq, Eq, Hash, ::prost::Message)]
@@ -708,6 +1149,147 @@ pub struct T2sVtsiCallbacks {
     /// Callback executed after the Text-2-Speech has been called
     #[prost(string, repeated, tag="2")]
     pub post_t2s_callbacks: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+}
+/// <p>How the briefing of a warm intro is produced</p>
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
+#[repr(i32)]
+pub enum WarmIntroTextSource {
+    /// See <code>WarmTransferConfig.intro_text_source</code>
+    Unspecified = 0,
+    /// <code>WarmTransferConfig.intro_prompt</code> as a template
+    Template = 1,
+    /// An LLM summary of the call so far, instructed by <code>WarmTransferConfig.intro_prompt</code> (phase B)
+    LlmSummary = 2,
+}
+impl WarmIntroTextSource {
+    /// String value of the enum field names used in the ProtoBuf definition.
+    ///
+    /// The values are not transformed in any way and thus are considered stable
+    /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    pub fn as_str_name(&self) -> &'static str {
+        match self {
+            Self::Unspecified => "WARM_INTRO_TEXT_SOURCE_UNSPECIFIED",
+            Self::Template => "WARM_INTRO_TEXT_SOURCE_TEMPLATE",
+            Self::LlmSummary => "WARM_INTRO_TEXT_SOURCE_LLM_SUMMARY",
+        }
+    }
+    /// Creates an enum from field names used in the ProtoBuf definition.
+    pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+        match value {
+            "WARM_INTRO_TEXT_SOURCE_UNSPECIFIED" => Some(Self::Unspecified),
+            "WARM_INTRO_TEXT_SOURCE_TEMPLATE" => Some(Self::Template),
+            "WARM_INTRO_TEXT_SOURCE_LLM_SUMMARY" => Some(Self::LlmSummary),
+            _ => None,
+        }
+    }
+}
+/// <p>What a WARM transfer does when its warm intro cannot run</p>
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
+#[repr(i32)]
+pub enum WarmIntroUnavailablePolicy {
+    /// Same as <code>WARM_INTRO_UNAVAILABLE_POLICY_CONNECT_WITHOUT_INTRO</code>
+    Unspecified = 0,
+    /// Join the target directly, as a WARM transfer without an intro
+    ConnectWithoutIntro = 1,
+    /// Hang up the target and keep the call with the bot, which tells the caller
+    /// (<code>TRANSFER_OUTCOME_INTRO_UNAVAILABLE</code>)
+    ReturnToCaller = 2,
+}
+impl WarmIntroUnavailablePolicy {
+    /// String value of the enum field names used in the ProtoBuf definition.
+    ///
+    /// The values are not transformed in any way and thus are considered stable
+    /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    pub fn as_str_name(&self) -> &'static str {
+        match self {
+            Self::Unspecified => "WARM_INTRO_UNAVAILABLE_POLICY_UNSPECIFIED",
+            Self::ConnectWithoutIntro => "WARM_INTRO_UNAVAILABLE_POLICY_CONNECT_WITHOUT_INTRO",
+            Self::ReturnToCaller => "WARM_INTRO_UNAVAILABLE_POLICY_RETURN_TO_CALLER",
+        }
+    }
+    /// Creates an enum from field names used in the ProtoBuf definition.
+    pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+        match value {
+            "WARM_INTRO_UNAVAILABLE_POLICY_UNSPECIFIED" => Some(Self::Unspecified),
+            "WARM_INTRO_UNAVAILABLE_POLICY_CONNECT_WITHOUT_INTRO" => Some(Self::ConnectWithoutIntro),
+            "WARM_INTRO_UNAVAILABLE_POLICY_RETURN_TO_CALLER" => Some(Self::ReturnToCaller),
+            _ => None,
+        }
+    }
+}
+/// <p>The target&apos;s decision in a warm intro</p>
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
+#[repr(i32)]
+pub enum WarmIntroDecision {
+    /// No decision yet (the intro runs, or it never started)
+    Unspecified = 0,
+    /// The target accepted and was joined
+    Accepted = 1,
+    /// The target declined; the call stays with the bot
+    Declined = 2,
+    /// The target answered but gave no decision in time (also a mailbox that answered)
+    NoDecision = 3,
+}
+impl WarmIntroDecision {
+    /// String value of the enum field names used in the ProtoBuf definition.
+    ///
+    /// The values are not transformed in any way and thus are considered stable
+    /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    pub fn as_str_name(&self) -> &'static str {
+        match self {
+            Self::Unspecified => "WARM_INTRO_DECISION_UNSPECIFIED",
+            Self::Accepted => "WARM_INTRO_DECISION_ACCEPTED",
+            Self::Declined => "WARM_INTRO_DECISION_DECLINED",
+            Self::NoDecision => "WARM_INTRO_DECISION_NO_DECISION",
+        }
+    }
+    /// Creates an enum from field names used in the ProtoBuf definition.
+    pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+        match value {
+            "WARM_INTRO_DECISION_UNSPECIFIED" => Some(Self::Unspecified),
+            "WARM_INTRO_DECISION_ACCEPTED" => Some(Self::Accepted),
+            "WARM_INTRO_DECISION_DECLINED" => Some(Self::Declined),
+            "WARM_INTRO_DECISION_NO_DECISION" => Some(Self::NoDecision),
+            _ => None,
+        }
+    }
+}
+/// <p>How the decision of a warm intro was taken</p>
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
+#[repr(i32)]
+pub enum WarmIntroDecidedBy {
+    /// Not decided
+    Unspecified = 0,
+    /// A key (<code>accept_dtmf</code> / <code>decline_dtmf</code>)
+    Dtmf = 1,
+    /// A spoken answer
+    Speech = 2,
+    /// No answer within <code>decision_timeout_s</code> / <code>max_intro_duration_s</code>
+    Timeout = 3,
+}
+impl WarmIntroDecidedBy {
+    /// String value of the enum field names used in the ProtoBuf definition.
+    ///
+    /// The values are not transformed in any way and thus are considered stable
+    /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    pub fn as_str_name(&self) -> &'static str {
+        match self {
+            Self::Unspecified => "WARM_INTRO_DECIDED_BY_UNSPECIFIED",
+            Self::Dtmf => "WARM_INTRO_DECIDED_BY_DTMF",
+            Self::Speech => "WARM_INTRO_DECIDED_BY_SPEECH",
+            Self::Timeout => "WARM_INTRO_DECIDED_BY_TIMEOUT",
+        }
+    }
+    /// Creates an enum from field names used in the ProtoBuf definition.
+    pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+        match value {
+            "WARM_INTRO_DECIDED_BY_UNSPECIFIED" => Some(Self::Unspecified),
+            "WARM_INTRO_DECIDED_BY_DTMF" => Some(Self::Dtmf),
+            "WARM_INTRO_DECIDED_BY_SPEECH" => Some(Self::Speech),
+            "WARM_INTRO_DECIDED_BY_TIMEOUT" => Some(Self::Timeout),
+            _ => None,
+        }
+    }
 }
 // ////////////////////////////////////////////////////////////////////////////
 // Resources
@@ -2508,7 +3090,7 @@ impl StreamEndReason {
     }
 }
 /// The VTSI project with its configuration setting
-#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct VtsiProject {
     /// Required. The project name.
     /// Format: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
@@ -2611,6 +3193,63 @@ pub struct VtsiProject {
     /// would start, e.g. after the server default changed. Ignored on create and update.
     #[prost(string, tag="21")]
     pub asterisk_version_effective: ::prost::alloc::string::String,
+    /// OPTIONAL: The project&apos;s default warm intro of a WARM transfer (see
+    /// <a href="index.html#ondewo.vtsi.WarmTransferConfig">WarmTransferConfig</a>): the level below a call&apos;s
+    /// <code>VoiceInteractionConfig.warm_transfer_config</code> and a
+    /// <code>TransferCallRequest.warm_transfer_config</code>. <code>enabled=true</code> while the deployment switch
+    /// <code>ONDEWO_VTSI_WARM_TRANSFER_ENABLED</code> is off, or a phase-B field while phase B is off, is refused
+    /// with <code>FAILED_PRECONDITION</code> (<code>reason=warm-intro-disabled</code> /
+    /// <code>reason=phase-b-not-enabled</code>); an invalid field with <code>INVALID_ARGUMENT</code> naming it.
+    /// Updatable with the update mask path <code>warm_transfer_defaults</code> or its leaf paths, e.g.
+    /// <code>warm_transfer_defaults.enabled</code>. Touches no Asterisk.
+    #[prost(message, optional, tag="22")]
+    pub warm_transfer_defaults: ::core::option::Option<WarmTransferConfig>,
+    /// Output only. Which features can run in this project with the deployment, the Asterisk and the listeners it
+    /// has now, computed on every <code>GetVtsiProject</code> / <code>ListVtsiProjects</code> (it costs no RPC).
+    /// Read it instead of learning from a refusal. Ignored on create and update.
+    #[prost(message, optional, tag="23")]
+    pub feature_availability: ::core::option::Option<VtsiProjectFeatureAvailability>,
+    /// OPTIONAL: Whether the project&apos;s published IVR menus route its inbound phone numbers. Unset means
+    /// <code>true</code>. <code>false</code> switches every route off at once (every inbound number reaches the
+    /// listener queue as without a menu) and keeps the menus and their phone number bindings, so <code>true</code>
+    /// restores them. Updatable with the update mask path <code>ivr_menus_enabled</code>; it reloads no Asterisk and
+    /// ends no call.
+    #[prost(bool, optional, tag="24")]
+    pub ivr_menus_enabled: ::core::option::Option<bool>,
+    /// OPTIONAL: Directory of the project&apos;s human transfer targets, keyed by the target: an E.164 phone number
+    /// (<code>^\+[1-9][0-9]{6,14}$</code>, which must pass <code>transfer_phone_number_allowlist</code>) or the
+    /// <code>sip_username</code> of a softphone account of the project. It names a target in a warm intro
+    /// (<code>{callee_name}</code>) and describes it, below a transfer&apos;s own
+    /// <code>WarmTransferConfig.callee_display_name</code> / <code>callee_description</code> and the softphone
+    /// account&apos;s <code>display_name</code> / <code>description</code>. That is how the bot&apos;s own handover to
+    /// a target names the right person. At most 200 entries; an invalid key or entry is refused with
+    /// <code>INVALID_ARGUMENT</code> naming it. Updatable with the update mask path
+    /// <code>transfer_target_directory</code> (the whole map is replaced). Touches no Asterisk.
+    #[prost(map="string, message", tag="25")]
+    pub transfer_target_directory: ::std::collections::HashMap<::prost::alloc::string::String, TransferTargetDirectoryItem>,
+}
+/// <p>One human transfer target of <code>VtsiProject.transfer_target_directory</code>. Carries no secret</p>
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+pub struct TransferTargetDirectoryItem {
+    /// Who the target is, e.g. <code>Frau Berger, Buchhaltung</code>. 1 to 128 characters
+    #[prost(string, tag="1")]
+    pub display_name: ::prost::alloc::string::String,
+    /// The target&apos;s role and context, for a warm intro&apos;s briefing. At most 512 characters
+    #[prost(string, tag="2")]
+    pub description: ::prost::alloc::string::String,
+}
+/// <p>Which features can run in a VTSI project. Output only</p>
+#[derive(Clone, Copy, PartialEq, Eq, Hash, ::prost::Message)]
+pub struct VtsiProjectFeatureAvailability {
+    /// Whether a WARM transfer can run a warm intro
+    #[prost(enumeration="WarmIntroAvailability", tag="1")]
+    pub warm_intro: i32,
+    /// Whether the phase-B fields of <code>WarmTransferConfig</code> (LLM summary, hold music) are accepted
+    #[prost(bool, tag="2")]
+    pub warm_intro_phase_b: bool,
+    /// Whether the project can publish and route IVR menus
+    #[prost(enumeration="IvrAvailability", tag="3")]
+    pub ivr: i32,
 }
 /// Configuration variables for the Asterisk server
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
@@ -2755,7 +3394,7 @@ pub mod asterisk_configs {
     }
 }
 /// Request for creating a VTSI project
-#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct CreateVtsiProjectRequest {
     /// VTSI project
     /// Recommended is to leave &quot;name&quot; empty. The project name here is optional.
@@ -2779,7 +3418,7 @@ pub struct CreateVtsiProjectRequest {
     pub validate_only: bool,
 }
 /// Response of the create project
-#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct CreateVtsiProjectResponse {
     /// The created project, <code>UNDEPLOYED</code>, with its assigned name and port (with
     /// <code>validate_only</code>: the would-be project).
@@ -2932,7 +3571,7 @@ pub mod vtsi_project_sorting {
     }
 }
 /// Request to update a VTSI project
-#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct UpdateVtsiProjectRequest {
     /// The project to update, identified by <code>vtsi_project.name</code>
     /// (<pre><code>projects/&lt;project_uuid&gt;/project</code></pre>), carrying the new values. The
@@ -2989,7 +3628,7 @@ pub struct UpdateVtsiProjectRequest {
     pub validate_only: bool,
 }
 /// Response to the update of a VTSI project
-#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct UpdateVtsiProjectResponse {
     /// VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     #[prost(string, tag="1")]
@@ -3056,6 +3695,88 @@ pub struct UndeployVtsiProjectResponse {
     /// Never set: errors are reported as gRPC status codes. Kept for wire compatibility.
     #[prost(string, tag="2")]
     pub error_message: ::prost::alloc::string::String,
+}
+/// <p>Whether a project can run warm intros, and if not, why</p>
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
+#[repr(i32)]
+pub enum WarmIntroAvailability {
+    /// Not computed (e.g. an older server)
+    Unspecified = 0,
+    /// Warm intros can run
+    Available = 1,
+    /// The deployment switch <code>ONDEWO_VTSI_WARM_TRANSFER_ENABLED</code> is off
+    DisabledByDeployment = 2,
+    /// The project&apos;s Asterisk is not run by this server (or is older than Asterisk 22)
+    NeedsLocalAsterisk = 3,
+    /// The project has no listener to run the intro (a project with pooled callers only)
+    NeedsListener = 4,
+    /// The deployment has no call-control key (<code>ONDEWO_VTSI_CALL_CONTROL_KEY</code>)
+    NeedsCallControlKey = 5,
+}
+impl WarmIntroAvailability {
+    /// String value of the enum field names used in the ProtoBuf definition.
+    ///
+    /// The values are not transformed in any way and thus are considered stable
+    /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    pub fn as_str_name(&self) -> &'static str {
+        match self {
+            Self::Unspecified => "WARM_INTRO_AVAILABILITY_UNSPECIFIED",
+            Self::Available => "WARM_INTRO_AVAILABILITY_AVAILABLE",
+            Self::DisabledByDeployment => "WARM_INTRO_AVAILABILITY_DISABLED_BY_DEPLOYMENT",
+            Self::NeedsLocalAsterisk => "WARM_INTRO_AVAILABILITY_NEEDS_LOCAL_ASTERISK",
+            Self::NeedsListener => "WARM_INTRO_AVAILABILITY_NEEDS_LISTENER",
+            Self::NeedsCallControlKey => "WARM_INTRO_AVAILABILITY_NEEDS_CALL_CONTROL_KEY",
+        }
+    }
+    /// Creates an enum from field names used in the ProtoBuf definition.
+    pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+        match value {
+            "WARM_INTRO_AVAILABILITY_UNSPECIFIED" => Some(Self::Unspecified),
+            "WARM_INTRO_AVAILABILITY_AVAILABLE" => Some(Self::Available),
+            "WARM_INTRO_AVAILABILITY_DISABLED_BY_DEPLOYMENT" => Some(Self::DisabledByDeployment),
+            "WARM_INTRO_AVAILABILITY_NEEDS_LOCAL_ASTERISK" => Some(Self::NeedsLocalAsterisk),
+            "WARM_INTRO_AVAILABILITY_NEEDS_LISTENER" => Some(Self::NeedsListener),
+            "WARM_INTRO_AVAILABILITY_NEEDS_CALL_CONTROL_KEY" => Some(Self::NeedsCallControlKey),
+            _ => None,
+        }
+    }
+}
+/// <p>Whether a project can use IVR menus, and if not, why</p>
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
+#[repr(i32)]
+pub enum IvrAvailability {
+    /// Not computed (e.g. an older server)
+    Unspecified = 0,
+    /// IVR menus can be published and routed
+    Available = 1,
+    /// The deployment switch <code>ONDEWO_VTSI_IVR_ACTIVE</code> is off
+    DisabledByDeployment = 2,
+    /// The project&apos;s Asterisk is not run by this server
+    NeedsLocalAsterisk = 3,
+}
+impl IvrAvailability {
+    /// String value of the enum field names used in the ProtoBuf definition.
+    ///
+    /// The values are not transformed in any way and thus are considered stable
+    /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    pub fn as_str_name(&self) -> &'static str {
+        match self {
+            Self::Unspecified => "IVR_AVAILABILITY_UNSPECIFIED",
+            Self::Available => "IVR_AVAILABILITY_AVAILABLE",
+            Self::DisabledByDeployment => "IVR_AVAILABILITY_DISABLED_BY_DEPLOYMENT",
+            Self::NeedsLocalAsterisk => "IVR_AVAILABILITY_NEEDS_LOCAL_ASTERISK",
+        }
+    }
+    /// Creates an enum from field names used in the ProtoBuf definition.
+    pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+        match value {
+            "IVR_AVAILABILITY_UNSPECIFIED" => Some(Self::Unspecified),
+            "IVR_AVAILABILITY_AVAILABLE" => Some(Self::Available),
+            "IVR_AVAILABILITY_DISABLED_BY_DEPLOYMENT" => Some(Self::DisabledByDeployment),
+            "IVR_AVAILABILITY_NEEDS_LOCAL_ASTERISK" => Some(Self::NeedsLocalAsterisk),
+            _ => None,
+        }
+    }
 }
 /// Registration state of a VTSI project&apos;s SIP trunk with the carrier.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
@@ -4978,19 +5699,38 @@ pub struct TransferCallRequest {
     /// ASCII characters, scoped to <code>call_name</code>. A repeated request with the same <code>call_name</code>
     /// and <code>request_id</code> returns the <code>TransferCallResponse</code> of the first request instead of
     /// transferring again, for as long as the call record exists; the same key with a different target, mode,
-    /// headers or ring timeout is refused with <code>INVALID_ARGUMENT</code> and <code>reason=request-id-conflict</code>.
+    /// headers, ring timeout or <code>warm_transfer_config</code> is refused with <code>INVALID_ARGUMENT</code> and
+    /// <code>reason=request-id-conflict</code>.
     /// A first request that was refused with a gRPC status stored nothing, so its retry runs again; a first request
     /// that answered an outcome (also a telephony failure such as <code>TRANSFER_OUTCOME_TIMEOUT</code>) is replayed.
     /// A replay writes no second audit record and emits no event. Empty means no deduplication. In a
     /// <code>TransferCallsRequest</code> each entry carries its own key.
     #[prost(string, tag="8")]
     pub request_id: ::prost::alloc::string::String,
+    /// WARM only: the warm intro of this transfer, merged field by field over the call&apos;s
+    /// <code>VoiceInteractionConfig.warm_transfer_config</code> and the project&apos;s
+    /// <code>VtsiProject.warm_transfer_defaults</code> (see <code>WarmTransferConfig</code>). Set with
+    /// <code>TRANSFER_MODE_BLIND</code> it is refused with <code>INVALID_ARGUMENT</code>. When the effective config
+    /// enables the intro, the target must be a human (<code>phone_number</code> or
+    /// <code>softphone_account_name</code>; a listener, the listener queue or an IVR menu is refused with
+    /// <code>INVALID_ARGUMENT</code> <code>reason=warm-intro-target-not-human</code>), and these preconditions are
+    /// checked before anything rings, each refused with <code>FAILED_PRECONDITION</code> and the reason:
+    /// <code>warm-intro-disabled</code> (the deployment switch is off), <code>asterisk-not-local</code>,
+    /// <code>no-nlu-session</code> (the call has no live NLU session), <code>warm-intro-needs-listener</code> (the
+    /// project has no listener to run the intro), <code>warm-intro-needs-session-from-sip-context</code>,
+    /// <code>warm-intro-cross-project</code> (the listeners use another NLU project than the call),
+    /// <code>warm-intro-notice-unsupported</code> (the call&apos;s SIP container cannot deliver the outcome to the
+    /// caller), <code>call-control-disabled</code> and <code>phase-b-not-enabled</code>. The response is then
+    /// <code>TRANSFER_OUTCOME_PENDING</code>; the outcome arrives in <code>Call.last_transfer</code> and the events
+    /// <code>VTSI_EVENT_CALL_WARM_INTRO_*</code>
+    #[prost(message, optional, tag="9")]
+    pub warm_transfer_config: ::core::option::Option<WarmTransferConfig>,
 }
 /// <p>Target of a transfer</p>
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct CallTarget {
     /// One of the following
-    #[prost(oneof="call_target::Target", tags="1, 2, 3, 4")]
+    #[prost(oneof="call_target::Target", tags="1, 2, 3, 4, 5")]
     pub target: ::core::option::Option<call_target::Target>,
 }
 /// Nested message and enum types in `CallTarget`.
@@ -5014,6 +5754,14 @@ pub mod call_target {
         /// The project&apos;s listener queue: any idle listener of the project takes the call
         #[prost(message, tag="4")]
         ListenerQueue(super::ListenerQueueTarget),
+        /// A PUBLISHED IVR menu of the same project:
+        /// <pre><code>projects/&lt;project_uuid&gt;/ivr_menus/&lt;ivr_menu_uuid&gt;</code></pre>. The caller enters
+        /// the menu&apos;s published revision at its entry node. <code>TRANSFER_MODE_BLIND</code> only; with
+        /// <code>TRANSFER_MODE_WARM</code> it is refused with <code>INVALID_ARGUMENT</code>. A menu that is not
+        /// published is refused with <code>FAILED_PRECONDITION</code> <code>reason=menu-not-published</code>, and a
+        /// deployment without IVR menus with <code>UNIMPLEMENTED</code> <code>reason=ivr-disabled</code>
+        #[prost(string, tag="5")]
+        IvrMenuName(::prost::alloc::string::String),
     }
 }
 /// <p>The project&apos;s listener queue as a transfer target. Carries no fields</p>
@@ -5042,7 +5790,8 @@ pub struct TransferCallResponse {
     /// <code>FAILED_PRECONDITION: reason=call-not-connected</code>.
     #[prost(string, tag="4")]
     pub error_message: ::prost::alloc::string::String,
-    /// Outcome of the transfer
+    /// Outcome of the transfer. A WARM transfer with a warm intro answers <code>TRANSFER_OUTCOME_PENDING</code>; its
+    /// final outcome arrives in <code>Call.last_transfer</code> and the events
     #[prost(enumeration="TransferOutcome", tag="5")]
     pub outcome: i32,
     /// The dialplan extension the target resolved to, e.g. <code>ondewo0007</code>, a softphone user name,
@@ -5079,6 +5828,15 @@ pub struct CallTransferRecord {
     /// When the outcome was recorded
     #[prost(message, optional, tag="6")]
     pub time: ::core::option::Option<::prost_types::Timestamp>,
+    /// The warm intro of the transfer; unset when the transfer ran no intro and tried none. A busy, unanswered or
+    /// unreachable target keeps the outcome it had before 9.5.0 (<code>TRANSFER_OUTCOME_TIMEOUT</code>, ...)
+    #[prost(message, optional, tag="7")]
+    pub warm_intro: ::core::option::Option<WarmIntroRecord>,
+    /// The RESOLVED warm intro configuration the transfer ran with (every level merged, defaults filled in), for
+    /// support. Holds configuration texts only, never a briefing or a decline reason. Unset when no intro was
+    /// enabled
+    #[prost(message, optional, tag="8")]
+    pub effective_warm_transfer_config: ::core::option::Option<WarmTransferConfig>,
 }
 /// <p>Effective media control state of a call</p>
 #[derive(Clone, Copy, PartialEq, Eq, Hash, ::prost::Message)]
@@ -5194,6 +5952,33 @@ pub struct InviteToCallResponse {
     /// Kept for wire compatibility.
     #[prost(string, tag="4")]
     pub error_message: ::prost::alloc::string::String,
+}
+/// <p>Request of <code>SendCallDtmf</code></p>
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+pub struct SendCallDtmfRequest {
+    /// VTSI project name of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    #[prost(string, tag="1")]
+    pub vtsi_project_name: ::prost::alloc::string::String,
+    /// Name of the connected call
+    #[prost(string, tag="2")]
+    pub call_name: ::prost::alloc::string::String,
+    /// The keys to press, in order: 1 to 64 of <code>0-9</code>, <code>*</code>, <code>#</code> and
+    /// <code>A-D</code>. Never logged; treat it like a password (it may be a PIN).
+    #[prost(string, tag="3")]
+    pub digits: ::prost::alloc::string::String,
+}
+/// <p>Response of <code>SendCallDtmf</code></p>
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+pub struct SendCallDtmfResponse {
+    /// VTSI project name of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    #[prost(string, tag="1")]
+    pub vtsi_project_name: ::prost::alloc::string::String,
+    /// Name of the call
+    #[prost(string, tag="2")]
+    pub call_name: ::prost::alloc::string::String,
+    /// Number of keys queued: the length of <code>digits</code>
+    #[prost(int32, tag="3")]
+    pub queued_keys: i32,
 }
 /// <p>Request to hang up a participant of a call</p>
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
@@ -5582,6 +6367,22 @@ pub struct Call {
     /// anything about the live call being changed. Set in the SHALLOW and FULL views.
     #[prost(map="string, string", tag="26")]
     pub labels: ::std::collections::HashMap<::prost::alloc::string::String, ::prost::alloc::string::String>,
+    /// Output only. The display name of the IVR menu the caller came through before the bot took the call (from
+    /// <code>X-ondewo-ivr-menu</code>); empty when the call did not pass an IVR menu. Set in the SHALLOW and FULL
+    /// views
+    #[prost(string, tag="27")]
+    pub ivr_menu_display_name: ::prost::alloc::string::String,
+    /// Output only. The option labels the caller took through the IVR menus, e.g. <code>main:1&gt;billing:2</code>
+    /// (from <code>X-ondewo-ivr-path</code>, at most 256 characters); empty when the call did not pass an IVR menu.
+    /// Set in the SHALLOW and FULL views
+    #[prost(string, tag="28")]
+    pub ivr_path: ::prost::alloc::string::String,
+    /// Output only. Resource name of the IVR menu that handled the call&apos;s IVR leg, i.e. the menu
+    /// <code>ivr_menu_display_name</code> names, so a client can find the menu by id instead of by its label.
+    /// The format is: <pre><code>projects/&lt;project_uuid&gt;/ivr_menus/&lt;ivr_menu_uuid&gt;</code></pre>
+    /// Empty when the call did not pass an IVR menu. Set in the SHALLOW and FULL views
+    #[prost(string, tag="29")]
+    pub ivr_menu_name: ::prost::alloc::string::String,
 }
 /// Narrows a set of calls of one project: the calls <code>ListCalls</code> lists, <code>GetCallStatistics</code>
 /// counts and <code>StopAllCalls</code> stops. Every field is optional; an unset field, or an empty repeated field
@@ -6254,8 +7055,9 @@ pub enum TransferOutcome {
     /// BLIND: the REFER was accepted and the bot left the call. WARM: the target answered and was bridged, and the bot
     /// left the call
     Accepted = 1,
-    /// WARM: the target is ringing. Follow <code>VTSI_EVENT_CALL_TRANSFERRED</code> /
-    /// <code>VTSI_EVENT_CALL_TRANSFER_FAILED</code> or <code>Call.last_transfer</code>
+    /// WARM: the target is ringing (with a warm intro: the target is ringing or being briefed). Follow
+    /// <code>VTSI_EVENT_CALL_TRANSFERRED</code> / <code>VTSI_EVENT_CALL_TRANSFER_FAILED</code> (and the
+    /// <code>VTSI_EVENT_CALL_WARM_INTRO_*</code> events) or <code>Call.last_transfer</code>
     Pending = 2,
     /// Refused before anything was sent; the call is untouched. <code>error_reason</code> says why
     TargetInvalid = 3,
@@ -6271,6 +7073,17 @@ pub enum TransferOutcome {
     CallScopeMismatch = 7,
     /// The call&apos;s SIP container could not be reached
     SipUnreachable = 8,
+    /// Warm intro: the target declined; the call stays with the bot, which tells the caller
+    Declined = 9,
+    /// Warm intro: the target answered but gave no decision in time; the call stays with the bot
+    NoDecision = 10,
+    /// Warm intro: the target answered but is gone (hung up during the intro, a mailbox is suspected); the call
+    /// stays with the bot. <code>CallTransferRecord.warm_intro.cause</code> says which
+    TargetUnavailable = 11,
+    /// Warm intro: the intro could not run and <code>WarmTransferConfig.on_intro_unavailable</code> is
+    /// <code>WARM_INTRO_UNAVAILABLE_POLICY_RETURN_TO_CALLER</code>; the target was hung up and the call stays with
+    /// the bot
+    IntroUnavailable = 12,
 }
 impl TransferOutcome {
     /// String value of the enum field names used in the ProtoBuf definition.
@@ -6288,6 +7101,10 @@ impl TransferOutcome {
             Self::CallEnded => "TRANSFER_OUTCOME_CALL_ENDED",
             Self::CallScopeMismatch => "TRANSFER_OUTCOME_CALL_SCOPE_MISMATCH",
             Self::SipUnreachable => "TRANSFER_OUTCOME_SIP_UNREACHABLE",
+            Self::Declined => "TRANSFER_OUTCOME_DECLINED",
+            Self::NoDecision => "TRANSFER_OUTCOME_NO_DECISION",
+            Self::TargetUnavailable => "TRANSFER_OUTCOME_TARGET_UNAVAILABLE",
+            Self::IntroUnavailable => "TRANSFER_OUTCOME_INTRO_UNAVAILABLE",
         }
     }
     /// Creates an enum from field names used in the ProtoBuf definition.
@@ -6302,6 +7119,10 @@ impl TransferOutcome {
             "TRANSFER_OUTCOME_CALL_ENDED" => Some(Self::CallEnded),
             "TRANSFER_OUTCOME_CALL_SCOPE_MISMATCH" => Some(Self::CallScopeMismatch),
             "TRANSFER_OUTCOME_SIP_UNREACHABLE" => Some(Self::SipUnreachable),
+            "TRANSFER_OUTCOME_DECLINED" => Some(Self::Declined),
+            "TRANSFER_OUTCOME_NO_DECISION" => Some(Self::NoDecision),
+            "TRANSFER_OUTCOME_TARGET_UNAVAILABLE" => Some(Self::TargetUnavailable),
+            "TRANSFER_OUTCOME_INTRO_UNAVAILABLE" => Some(Self::IntroUnavailable),
             _ => None,
         }
     }
@@ -6729,7 +7550,7 @@ pub struct VtsiEventMessage {
     #[prost(string, tag="3")]
     pub vtsi_project_name: ::prost::alloc::string::String,
     /// The resource the event is about (call, caller, listener, scheduled caller, campaign, campaign
-    /// call, project, softphone account).
+    /// call, project, softphone account, IVR menu).
     #[prost(string, tag="4")]
     pub resource_name: ::prost::alloc::string::String,
     /// When the event happened.
@@ -7451,8 +8272,8 @@ pub enum VtsiEvent {
     /// accepted, or when the target of a WARM transfer starts ringing.
     /// <p>Attributes: <code>transfer_id</code> (the target, a phone number masked to its last 3 digits, e.g.
     /// <code>***678</code>, or an extension), <code>target_type</code> (<code>phone_number</code>,
-    /// <code>softphone</code>, <code>listener</code>, <code>listener_queue</code>, <code>legacy</code>,
-    /// <code>unknown</code>), <code>mode</code> (<code>blind</code> / <code>warm</code>; <code>WARM</code>, upper
+    /// <code>softphone</code>, <code>listener</code>, <code>listener_queue</code>, <code>ivr_menu</code>,
+    /// <code>legacy</code>, <code>unknown</code>), <code>mode</code> (<code>blind</code> / <code>warm</code>; <code>WARM</code>, upper
     /// case, when reported for the ringing WARM leg), <code>outcome</code> (<code>accepted</code>,
     /// <code>pending</code>, ...), <code>sip_response_code</code> (SIP code, <code>0</code> when unknown),
     /// <code>error_reason</code> (kebab-case token, may be empty), <code>participant_id</code> (WARM leg),
@@ -7465,7 +8286,10 @@ pub enum VtsiEvent {
     /// <code>warm</code>), <code>outcome</code> (<code>accepted</code>), <code>sip_response_code</code>,
     /// <code>source</code> (<code>call_monitor</code>), and the call status attributes
     /// (<code>caller_name</code> / <code>listener_name</code> / <code>scheduled_caller_name</code>,
-    /// <code>phone_number</code>). Sets the call status fields.</p>
+    /// <code>phone_number</code>). Sets the call status fields. A WARM transfer whose warm intro was enabled but
+    /// skipped (<code>WARM_INTRO_UNAVAILABLE_POLICY_CONNECT_WITHOUT_INTRO</code>) also carries
+    /// <code>intro_skipped_reason</code> (a kebab-case token such as <code>no-free-listener</code> or
+    /// <code>prepare-failed</code>).</p>
     CallTransferred = 106,
     /// A transfer failed and the call was KEPT with the bot: <code>TRANSFER_CALL_FAILED</code>, a refused or unanswered
     /// REFER, or a WARM target that was busy or did not answer.
@@ -7539,6 +8363,39 @@ pub enum VtsiEvent {
     /// <code>labels</code>). Never carries a label value. Sets <code>call_name</code>. Not emitted for an entry
     /// of a batch that failed, nor when the update changed nothing.
     CallUpdated = 122,
+    /// DTMF keys were queued on the call (<code>SendCallDtmf</code>). Attributes: <code>keys</code> (the NUMBER of
+    /// keys, never the keys) and <code>actor</code> (the authenticated user, when known). Sets
+    /// <code>call_name</code>.
+    CallDtmfSent = 123,
+    /// The warm intro of a WARM transfer started: the target answered and an intro bot greets it.
+    /// <p>Attributes (the warm intro attributes, also on 125 to 128): <code>intro_id</code> (the participant id of the
+    /// target&apos;s leg), <code>target_kind</code> (<code>phone_number</code> / <code>softphone</code>),
+    /// <code>text_source</code> (<code>template</code> / <code>llm_summary</code>), <code>decided_by</code>
+    /// (<code>dtmf</code> / <code>speech</code> / <code>timeout</code>, on 125 to 127), <code>reason_present</code>
+    /// (<code>true</code> / <code>false</code>, on 126), <code>intro_ms</code> (milliseconds from the target&apos;s
+    /// answer, on 125 to 128) and <code>cause</code> (kebab-case token). Never carries an intro text, a decline reason
+    /// or a full phone number. Sets <code>call_name</code>.</p>
+    CallWarmIntroStarted = 124,
+    /// The target of a warm intro accepted. <code>VTSI_EVENT_CALL_TRANSFERRED</code> follows once the target joined.
+    /// The warm intro attributes (see 124).
+    CallWarmIntroAccepted = 125,
+    /// The target of a warm intro declined; the call stays with the bot, which tells the caller. The warm intro
+    /// attributes (see 124).
+    CallWarmIntroDeclined = 126,
+    /// The target of a warm intro gave no decision in time; the call stays with the bot. The warm intro attributes
+    /// (see 124).
+    CallWarmIntroNoDecision = 127,
+    /// The target of a warm intro answered but is gone, or the intro could not run with
+    /// <code>WARM_INTRO_UNAVAILABLE_POLICY_RETURN_TO_CALLER</code>; the call stays with the bot. The warm intro
+    /// attributes (see 124), <code>cause</code> being <code>voicemail-suspected</code>, <code>target-hung-up</code>
+    /// or <code>intro-unavailable</code>.
+    CallWarmIntroTargetUnavailable = 128,
+    /// WARNING: the outcome of a warm intro (a decline, no decision, an unreachable target) could not be handed to
+    /// the call&apos;s bot, so the caller may not be told; <code>CallTransferRecord.warm_intro.notice_delivered</code>
+    /// is <code>false</code>. Attributes: <code>intro_id</code> and <code>reason</code> (kebab-case token: the
+    /// bot&apos;s refusal, e.g. <code>disabled</code>, <code>invalid</code>, <code>pending</code>, or
+    /// <code>sip-unreachable</code>). Sets <code>call_name</code>.
+    CallWarmTransferOutcomeNoticeUndelivered = 129,
     // ---- Callers (resource_name: the caller) ----
 
     /// A caller started and placed its call. No attributes; sets <code>call_name</code>.
@@ -7782,6 +8639,24 @@ pub enum VtsiEvent {
     EventSubscriptionUpdated = 905,
     /// An event subscription was deleted. No attributes.
     EventSubscriptionDeleted = 906,
+    // ---- IVR menus (resource_name: the IVR menu) ----
+    // <p>Attributes of every IVR menu event: <code>revision</code> (the revision concerned),
+    // <code>node_count</code> and <code>routed_numbers</code> (the NUMBER of bound phone numbers, never a number).</p>
+
+    /// An IVR menu was created (<code>CreateIvrMenu</code>, <code>CloneIvrMenu</code>).
+    IvrMenuCreated = 1001,
+    /// An IVR menu was updated; attribute <code>updated_fields</code> (the mask paths).
+    IvrMenuUpdated = 1002,
+    /// An IVR menu was deleted.
+    IvrMenuDeleted = 1003,
+    /// A revision of an IVR menu was published and its phone numbers route to it.
+    IvrMenuPublished = 1004,
+    /// A publish of an IVR menu failed; the previous published revision stays live. <code>description</code> says
+    /// why (no personal data).
+    IvrMenuPublishFailed = 1005,
+    /// A test call of an IVR menu finished; attributes <code>test_id</code>, <code>state</code>
+    /// (<code>IvrMenuTestState</code> name without prefix) and <code>steps</code> (the number of nodes entered).
+    IvrMenuTested = 1006,
 }
 impl VtsiEvent {
     /// String value of the enum field names used in the ProtoBuf definition.
@@ -7814,6 +8689,13 @@ impl VtsiEvent {
             Self::CallAudioStreamConnected => "VTSI_EVENT_CALL_AUDIO_STREAM_CONNECTED",
             Self::CallAudioStreamDisconnected => "VTSI_EVENT_CALL_AUDIO_STREAM_DISCONNECTED",
             Self::CallUpdated => "VTSI_EVENT_CALL_UPDATED",
+            Self::CallDtmfSent => "VTSI_EVENT_CALL_DTMF_SENT",
+            Self::CallWarmIntroStarted => "VTSI_EVENT_CALL_WARM_INTRO_STARTED",
+            Self::CallWarmIntroAccepted => "VTSI_EVENT_CALL_WARM_INTRO_ACCEPTED",
+            Self::CallWarmIntroDeclined => "VTSI_EVENT_CALL_WARM_INTRO_DECLINED",
+            Self::CallWarmIntroNoDecision => "VTSI_EVENT_CALL_WARM_INTRO_NO_DECISION",
+            Self::CallWarmIntroTargetUnavailable => "VTSI_EVENT_CALL_WARM_INTRO_TARGET_UNAVAILABLE",
+            Self::CallWarmTransferOutcomeNoticeUndelivered => "VTSI_EVENT_CALL_WARM_TRANSFER_OUTCOME_NOTICE_UNDELIVERED",
             Self::CallerStarted => "VTSI_EVENT_CALLER_STARTED",
             Self::CallerStartFailed => "VTSI_EVENT_CALLER_START_FAILED",
             Self::CallerStopped => "VTSI_EVENT_CALLER_STOPPED",
@@ -7888,6 +8770,12 @@ impl VtsiEvent {
             Self::EventSubscriptionCreated => "VTSI_EVENT_EVENT_SUBSCRIPTION_CREATED",
             Self::EventSubscriptionUpdated => "VTSI_EVENT_EVENT_SUBSCRIPTION_UPDATED",
             Self::EventSubscriptionDeleted => "VTSI_EVENT_EVENT_SUBSCRIPTION_DELETED",
+            Self::IvrMenuCreated => "VTSI_EVENT_IVR_MENU_CREATED",
+            Self::IvrMenuUpdated => "VTSI_EVENT_IVR_MENU_UPDATED",
+            Self::IvrMenuDeleted => "VTSI_EVENT_IVR_MENU_DELETED",
+            Self::IvrMenuPublished => "VTSI_EVENT_IVR_MENU_PUBLISHED",
+            Self::IvrMenuPublishFailed => "VTSI_EVENT_IVR_MENU_PUBLISH_FAILED",
+            Self::IvrMenuTested => "VTSI_EVENT_IVR_MENU_TESTED",
         }
     }
     /// Creates an enum from field names used in the ProtoBuf definition.
@@ -7917,6 +8805,13 @@ impl VtsiEvent {
             "VTSI_EVENT_CALL_AUDIO_STREAM_CONNECTED" => Some(Self::CallAudioStreamConnected),
             "VTSI_EVENT_CALL_AUDIO_STREAM_DISCONNECTED" => Some(Self::CallAudioStreamDisconnected),
             "VTSI_EVENT_CALL_UPDATED" => Some(Self::CallUpdated),
+            "VTSI_EVENT_CALL_DTMF_SENT" => Some(Self::CallDtmfSent),
+            "VTSI_EVENT_CALL_WARM_INTRO_STARTED" => Some(Self::CallWarmIntroStarted),
+            "VTSI_EVENT_CALL_WARM_INTRO_ACCEPTED" => Some(Self::CallWarmIntroAccepted),
+            "VTSI_EVENT_CALL_WARM_INTRO_DECLINED" => Some(Self::CallWarmIntroDeclined),
+            "VTSI_EVENT_CALL_WARM_INTRO_NO_DECISION" => Some(Self::CallWarmIntroNoDecision),
+            "VTSI_EVENT_CALL_WARM_INTRO_TARGET_UNAVAILABLE" => Some(Self::CallWarmIntroTargetUnavailable),
+            "VTSI_EVENT_CALL_WARM_TRANSFER_OUTCOME_NOTICE_UNDELIVERED" => Some(Self::CallWarmTransferOutcomeNoticeUndelivered),
             "VTSI_EVENT_CALLER_STARTED" => Some(Self::CallerStarted),
             "VTSI_EVENT_CALLER_START_FAILED" => Some(Self::CallerStartFailed),
             "VTSI_EVENT_CALLER_STOPPED" => Some(Self::CallerStopped),
@@ -7991,6 +8886,12 @@ impl VtsiEvent {
             "VTSI_EVENT_EVENT_SUBSCRIPTION_CREATED" => Some(Self::EventSubscriptionCreated),
             "VTSI_EVENT_EVENT_SUBSCRIPTION_UPDATED" => Some(Self::EventSubscriptionUpdated),
             "VTSI_EVENT_EVENT_SUBSCRIPTION_DELETED" => Some(Self::EventSubscriptionDeleted),
+            "VTSI_EVENT_IVR_MENU_CREATED" => Some(Self::IvrMenuCreated),
+            "VTSI_EVENT_IVR_MENU_UPDATED" => Some(Self::IvrMenuUpdated),
+            "VTSI_EVENT_IVR_MENU_DELETED" => Some(Self::IvrMenuDeleted),
+            "VTSI_EVENT_IVR_MENU_PUBLISHED" => Some(Self::IvrMenuPublished),
+            "VTSI_EVENT_IVR_MENU_PUBLISH_FAILED" => Some(Self::IvrMenuPublishFailed),
+            "VTSI_EVENT_IVR_MENU_TESTED" => Some(Self::IvrMenuTested),
             _ => None,
         }
     }
@@ -8028,6 +8929,802 @@ impl WebhookHttpMethod {
             "WEBHOOK_HTTP_METHOD_UNSPECIFIED" => Some(Self::Unspecified),
             "WEBHOOK_HTTP_METHOD_POST" => Some(Self::Post),
             "WEBHOOK_HTTP_METHOD_PUT" => Some(Self::Put),
+            _ => None,
+        }
+    }
+}
+// ////////////////////////////////////////////////////////////////////////////
+// Resources
+// ////////////////////////////////////////////////////////////////////////////
+
+/// <p>An IVR menu of a VTSI project. The graph fields (<code>entry_node_id</code>, <code>nodes</code>,
+/// <code>language_code</code>, <code>t2s_pipeline_id</code>) are versioned by <code>revision</code>; the routing
+/// fields (<code>inbound_phone_numbers</code>, <code>default_inbound</code>, <code>disabled</code>) take effect on the
+/// next publish.</p>
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct IvrMenu {
+    /// Output only. Resource name of the menu.
+    /// The format is: <pre><code>projects/&lt;project_uuid&gt;/ivr_menus/&lt;ivr_menu_uuid&gt;</code></pre>
+    #[prost(string, tag="1")]
+    pub name: ::prost::alloc::string::String,
+    /// Required. Unique within the project, 1 to 128 characters. Sent sanitized to a bot as
+    /// <code>X-ondewo-ivr-menu</code>.
+    #[prost(string, tag="2")]
+    pub display_name: ::prost::alloc::string::String,
+    /// At most 1000 characters.
+    #[prost(string, tag="3")]
+    pub description: ::prost::alloc::string::String,
+    /// Required. The node a caller enters first; must name a node of <code>nodes</code>.
+    #[prost(string, tag="4")]
+    pub entry_node_id: ::prost::alloc::string::String,
+    /// Required. The nodes, 1 to <code>ONDEWO_VTSI_IVR_MAX_NODES</code>; order is irrelevant. Every node must be
+    /// reachable from <code>entry_node_id</code>.
+    #[prost(message, repeated, tag="5")]
+    pub nodes: ::prost::alloc::vec::Vec<IvrNode>,
+    /// Language of the text prompts for text-to-speech, e.g. <code>de-DE</code>. Empty: the project&apos;s default.
+    #[prost(string, tag="6")]
+    pub language_code: ::prost::alloc::string::String,
+    /// Text-to-speech pipeline of the text prompts. Empty: the project&apos;s default pipeline.
+    #[prost(string, tag="7")]
+    pub t2s_pipeline_id: ::prost::alloc::string::String,
+    /// E.164 phone numbers (DIDs) of the project&apos;s SIP trunk routed into this menu once it is published. A number
+    /// can be bound by one menu only.
+    #[prost(string, repeated, tag="8")]
+    pub inbound_phone_numbers: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    /// Whether this menu takes every inbound number no menu names. At most one menu per project.
+    #[prost(bool, tag="9")]
+    pub default_inbound: bool,
+    /// <code>true</code>: the menu&apos;s numbers are unrouted on the next publish (the menu is kept).
+    #[prost(bool, tag="10")]
+    pub disabled: bool,
+    /// Output only. Publication state.
+    #[prost(enumeration="IvrMenuState", tag="11")]
+    pub state: i32,
+    /// Output only. The current revision, +1 per accepted graph change; 1 after create.
+    #[prost(int64, tag="12")]
+    pub revision: i64,
+    /// Output only. The published revision; <code>0</code> = never published.
+    #[prost(int64, tag="13")]
+    pub published_revision: i64,
+    /// Output only. Why the last publish failed (bounded text without personal data); empty otherwise.
+    #[prost(string, tag="14")]
+    pub state_message: ::prost::alloc::string::String,
+    /// Canvas positions of the nodes for the editor, keyed by <code>node_id</code>. Opaque to the server and not
+    /// versioned.
+    #[prost(map="string, message", tag="15")]
+    pub layout: ::std::collections::HashMap<::prost::alloc::string::String, IvrNodePosition>,
+    /// Output only. The user who created the menu.
+    #[prost(string, tag="16")]
+    pub created_by: ::prost::alloc::string::String,
+    /// Output only. Creation time.
+    #[prost(message, optional, tag="17")]
+    pub created_at: ::core::option::Option<::prost_types::Timestamp>,
+    /// Output only. The user who saved the current revision.
+    #[prost(string, tag="18")]
+    pub modified_by: ::prost::alloc::string::String,
+    /// Output only. When the current revision was saved.
+    #[prost(message, optional, tag="19")]
+    pub modified_at: ::core::option::Option<::prost_types::Timestamp>,
+    /// Output only. When the published revision was published.
+    #[prost(message, optional, tag="20")]
+    pub published_at: ::core::option::Option<::prost_types::Timestamp>,
+    /// Output only. The user who published it.
+    #[prost(string, tag="21")]
+    pub published_by: ::prost::alloc::string::String,
+    /// Output only, and only with the <code>field_mask</code> path <code>node_stats</code>: how often callers entered
+    /// each node, keyed by <code>node_id</code>, for EVERY call through the menu (also those routed straight to a
+    /// person, which leave no call record). Approximate: counted in the Asterisk and collected about once a minute.
+    #[prost(map="string, message", tag="22")]
+    pub node_stats: ::std::collections::HashMap<::prost::alloc::string::String, IvrNodeStats>,
+    /// Output only, with <code>node_stats</code>: when the counters were last collected.
+    #[prost(message, optional, tag="23")]
+    pub node_stats_updated_at: ::core::option::Option<::prost_types::Timestamp>,
+}
+/// <p>One node of an IVR menu. Which fields apply depends on <code>type</code>; a field set on a node type it does not
+/// apply to is refused with <code>INVALID_ARGUMENT</code>.</p>
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct IvrNode {
+    /// Required. <code>^\[a-z0-9_-\]{1,64}$</code>, unique within the menu.
+    #[prost(string, tag="1")]
+    pub node_id: ::prost::alloc::string::String,
+    /// At most 128 characters: the node&apos;s name in the editor and its label in <code>X-ondewo-ivr-path</code>
+    /// (reduced to <code>\[A-Za-z0-9_-\]{1,32}</code>).
+    #[prost(string, tag="2")]
+    pub display_name: ::prost::alloc::string::String,
+    /// Required. The kind of node.
+    #[prost(enumeration="IvrNodeType", tag="3")]
+    pub r#type: i32,
+    /// MENU (required) and PLAY (required): played when the node is entered.
+    #[prost(message, optional, tag="4")]
+    pub prompt: ::core::option::Option<IvrPrompt>,
+    /// MENU: one option per key, 1 to 12.
+    #[prost(message, repeated, tag="5")]
+    pub options: ::prost::alloc::vec::Vec<IvrOption>,
+    /// MENU: seconds to wait for a key after the prompt; <code>0</code> = 5, valid 1 - 30.
+    #[prost(uint32, tag="6")]
+    pub timeout_s: u32,
+    /// MENU: how often an invalid key or a timeout replays the prompt before
+    /// <code>invalid_next_node_id</code> / <code>timeout_next_node_id</code>; <code>0</code> = 2, valid 1 - 5.
+    #[prost(uint32, tag="7")]
+    pub max_retries: u32,
+    /// MENU: the node after the last retry without a key; empty: hang up.
+    #[prost(string, tag="8")]
+    pub timeout_next_node_id: ::prost::alloc::string::String,
+    /// MENU: the node after the last invalid key; empty: <code>timeout_next_node_id</code>.
+    #[prost(string, tag="9")]
+    pub invalid_next_node_id: ::prost::alloc::string::String,
+    /// PLAY: the node after the prompt. SCHEDULE: the node inside the opening hours.
+    #[prost(string, tag="10")]
+    pub next_node_id: ::prost::alloc::string::String,
+    /// ROUTE (required): <code>phone_number</code> (must pass <code>VtsiProject.transfer_phone_number_allowlist</code>),
+    /// <code>softphone_account_name</code>, <code>listener_name</code> or <code>listener_queue</code> of the same
+    /// project; <code>ivr_menu_name</code> is refused (use a GOTO_MENU node).
+    #[prost(message, optional, tag="11")]
+    pub route_target: ::core::option::Option<CallTarget>,
+    /// SCHEDULE (required): the opening hours, as a time zone and weekly slots.
+    #[prost(message, optional, tag="12")]
+    pub schedule: ::core::option::Option<CampaignCallingWindow>,
+    /// SCHEDULE: the node outside the opening hours.
+    #[prost(string, tag="13")]
+    pub closed_next_node_id: ::prost::alloc::string::String,
+    /// ROUTE: the node when the target does not answer or is busy; empty: a busy announcement, then hang up.
+    #[prost(string, tag="14")]
+    pub busy_next_node_id: ::prost::alloc::string::String,
+    /// MENU: played on an invalid key or a timeout before the prompt is repeated; unset: none.
+    #[prost(message, optional, tag="15")]
+    pub reprompt: ::core::option::Option<IvrPrompt>,
+    /// GOTO_MENU (required): another menu of the same project,
+    /// <pre><code>projects/&lt;project_uuid&gt;/ivr_menus/&lt;ivr_menu_uuid&gt;</code></pre>. The caller enters
+    /// that menu&apos;s PUBLISHED revision at its entry node; the hop limit counts across menus, so a cycle of menus
+    /// ends after <code>ONDEWO_VTSI_IVR_MAX_HOPS</code> entries. Naming the menu itself is refused.
+    #[prost(string, tag="16")]
+    pub goto_menu_name: ::prost::alloc::string::String,
+}
+/// <p>One key of a MENU node</p>
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+pub struct IvrOption {
+    /// Required. Exactly one of <code>0-9 * #</code>, unique within the node.
+    #[prost(string, tag="1")]
+    pub dtmf: ::prost::alloc::string::String,
+    /// Required. The node the key leads to.
+    #[prost(string, tag="2")]
+    pub next_node_id: ::prost::alloc::string::String,
+    /// At most 64 characters: the edge label in the editor and in <code>X-ondewo-ivr-path</code> (sanitized as
+    /// <code>IvrNode.display_name</code>).
+    #[prost(string, tag="3")]
+    pub label: ::prost::alloc::string::String,
+}
+/// <p>An audio prompt. Exactly one source must be set.</p>
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+pub struct IvrPrompt {
+    /// Output only. SHA-256 (hex) of the rendered audio; empty before the first publish.
+    #[prost(string, tag="4")]
+    pub sha256: ::prost::alloc::string::String,
+    /// The source of the audio
+    #[prost(oneof="ivr_prompt::Source", tags="1, 2, 3")]
+    pub source: ::core::option::Option<ivr_prompt::Source>,
+}
+/// Nested message and enum types in `IvrPrompt`.
+pub mod ivr_prompt {
+    /// The source of the audio
+    #[derive(Clone, PartialEq, Eq, Hash, ::prost::Oneof)]
+    pub enum Source {
+        /// Text, 1 to 1000 characters, synthesized by VTSI with text-to-speech at publish (cached by content).
+        #[prost(string, tag="1")]
+        Text(::prost::alloc::string::String),
+        /// A RIFF WAV file: PCM 16 bit mono at 8000 or 16000 Hz (not transcoded), at most
+        /// <code>ONDEWO_VTSI_IVR_MAX_PROMPT_BYTES</code> and 120 seconds.
+        #[prost(bytes, tag="2")]
+        Wav(::prost::alloc::vec::Vec<u8>),
+        /// A stock Asterisk sound from the allowlist in <code>docs/ivr_menus.md</code>, e.g. <code>beep</code>.
+        #[prost(string, tag="3")]
+        AsteriskSound(::prost::alloc::string::String),
+    }
+}
+/// <p>Position of a node on the editor canvas</p>
+#[derive(Clone, Copy, PartialEq, ::prost::Message)]
+pub struct IvrNodePosition {
+    /// Horizontal position
+    #[prost(double, tag="1")]
+    pub x: f64,
+    /// Vertical position
+    #[prost(double, tag="2")]
+    pub y: f64,
+}
+/// <p>Traffic counters of one node, in <code>IvrMenu.node_stats</code>. Approximate.</p>
+#[derive(Clone, Copy, PartialEq, Eq, Hash, ::prost::Message)]
+pub struct IvrNodeStats {
+    /// Entries into the node in the published revision since it was published.
+    #[prost(int64, tag="1")]
+    pub published_revision_entries: i64,
+    /// Entries into the node over every revision still rendered in the Asterisk.
+    #[prost(int64, tag="2")]
+    pub total_entries: i64,
+}
+// ////////////////////////////////////////////////////////////////////////////
+// Requests and responses
+// ////////////////////////////////////////////////////////////////////////////
+
+/// Request to create an IVR menu
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct CreateIvrMenuRequest {
+    /// Required. The project: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    #[prost(string, tag="1")]
+    pub vtsi_project_name: ::prost::alloc::string::String,
+    /// Required. The menu; its output-only fields must be unset.
+    #[prost(message, optional, tag="2")]
+    pub ivr_menu: ::core::option::Option<IvrMenu>,
+    /// Optional. Partial response: the <code>IvrMenu</code> field paths to return. <code>name</code> is always
+    /// returned. Unset or empty returns every field except <code>node_stats</code>.
+    #[prost(message, optional, tag="3")]
+    pub field_mask: ::core::option::Option<::prost_types::FieldMask>,
+    /// Optional client idempotency key with the semantics of
+    /// <a href="index.html#ondewo.vtsi.CreateCampaignRequest">CreateCampaignRequest.idempotency_key</a>: at most 255
+    /// printable ASCII characters, scoped to the project and to this RPC, kept 24 hours.
+    #[prost(string, tag="4")]
+    pub idempotency_key: ::prost::alloc::string::String,
+    /// Optional. Run every check and return the would-be menu; write and emit nothing.
+    #[prost(bool, tag="5")]
+    pub validate_only: bool,
+}
+/// Request to get an IVR menu
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+pub struct GetIvrMenuRequest {
+    /// The project: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>. Required with
+    /// <code>display_name</code>; checked against <code>name</code> when both are set.
+    #[prost(string, tag="3")]
+    pub vtsi_project_name: ::prost::alloc::string::String,
+    /// Optional. Partial response, as <code>CreateIvrMenuRequest.field_mask</code>. The path <code>node_stats</code>
+    /// adds the traffic counters, which are never returned otherwise.
+    #[prost(message, optional, tag="4")]
+    pub field_mask: ::core::option::Option<::prost_types::FieldMask>,
+    /// The menu, by resource name or display name
+    #[prost(oneof="get_ivr_menu_request::IvrMenu", tags="1, 2")]
+    pub ivr_menu: ::core::option::Option<get_ivr_menu_request::IvrMenu>,
+}
+/// Nested message and enum types in `GetIvrMenuRequest`.
+pub mod get_ivr_menu_request {
+    /// The menu, by resource name or display name
+    #[derive(Clone, PartialEq, Eq, Hash, ::prost::Oneof)]
+    pub enum IvrMenu {
+        /// <pre><code>projects/&lt;project_uuid&gt;/ivr_menus/&lt;ivr_menu_uuid&gt;</code></pre>
+        #[prost(string, tag="1")]
+        Name(::prost::alloc::string::String),
+        /// The display name, resolved within <code>vtsi_project_name</code>
+        #[prost(string, tag="2")]
+        DisplayName(::prost::alloc::string::String),
+    }
+}
+/// Request to update an IVR menu
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct UpdateIvrMenuRequest {
+    /// Required. The menu, identified by <code>ivr_menu.name</code>, carrying the new values of the fields named in
+    /// <code>update_mask</code>.
+    #[prost(message, optional, tag="1")]
+    pub ivr_menu: ::core::option::Option<IvrMenu>,
+    /// Required. Paths within <code>ivr_menu</code> WITHOUT an <code>ivr_menu.</code> prefix, e.g.
+    /// <code>nodes</code>, <code>inbound_phone_numbers</code>, <code>layout</code>. Repeated and map fields are
+    /// replaced whole. A path named but not set clears the field. An unknown or output-only path is refused with
+    /// <code>INVALID_ARGUMENT</code> naming it.
+    #[prost(message, optional, tag="2")]
+    pub update_mask: ::core::option::Option<::prost_types::FieldMask>,
+    /// Optional. Partial response, as <code>CreateIvrMenuRequest.field_mask</code>.
+    #[prost(message, optional, tag="3")]
+    pub field_mask: ::core::option::Option<::prost_types::FieldMask>,
+    /// Optional. Run every check and return the would-be menu; write and emit nothing.
+    #[prost(bool, tag="4")]
+    pub validate_only: bool,
+    /// Optional. <code>0</code>: no check. Otherwise the revision the client edited; a different current revision is
+    /// refused with <code>ABORTED</code> <code>reason=revision-mismatch</code> and nothing is written.
+    #[prost(int64, tag="5")]
+    pub expected_revision: i64,
+}
+/// Request to delete an IVR menu
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+pub struct DeleteIvrMenuRequest {
+    /// The project, required with <code>display_name</code>.
+    #[prost(string, tag="3")]
+    pub vtsi_project_name: ::prost::alloc::string::String,
+    /// <code>false</code> refuses a PUBLISHED menu with bound phone numbers (<code>FAILED_PRECONDITION</code>
+    /// <code>reason=menu-published</code>); <code>true</code> unroutes them and deletes.
+    #[prost(bool, tag="4")]
+    pub force: bool,
+    /// The menu, by resource name or display name
+    #[prost(oneof="delete_ivr_menu_request::IvrMenu", tags="1, 2")]
+    pub ivr_menu: ::core::option::Option<delete_ivr_menu_request::IvrMenu>,
+}
+/// Nested message and enum types in `DeleteIvrMenuRequest`.
+pub mod delete_ivr_menu_request {
+    /// The menu, by resource name or display name
+    #[derive(Clone, PartialEq, Eq, Hash, ::prost::Oneof)]
+    pub enum IvrMenu {
+        /// <pre><code>projects/&lt;project_uuid&gt;/ivr_menus/&lt;ivr_menu_uuid&gt;</code></pre>
+        #[prost(string, tag="1")]
+        Name(::prost::alloc::string::String),
+        /// The display name, resolved within <code>vtsi_project_name</code>
+        #[prost(string, tag="2")]
+        DisplayName(::prost::alloc::string::String),
+    }
+}
+/// Response to the deletion of an IVR menu
+#[derive(Clone, Copy, PartialEq, Eq, Hash, ::prost::Message)]
+pub struct DeleteIvrMenuResponse {
+    /// How many phone numbers now fall back to the project&apos;s routing without a menu.
+    #[prost(int32, tag="1")]
+    pub unrouted_phone_numbers: i32,
+    /// Whether the deleted menu was the project&apos;s <code>default_inbound</code> menu.
+    #[prost(bool, tag="2")]
+    pub default_inbound_removed: bool,
+}
+/// Filter of <code>ListIvrMenus</code>; every set field must match
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+pub struct IvrMenuFilter {
+    /// Case-insensitive substring of <code>display_name</code>; empty does not filter.
+    #[prost(string, tag="1")]
+    pub display_name_contains: ::prost::alloc::string::String,
+    /// <code>IVR_MENU_STATE_UNSPECIFIED</code>: any state.
+    #[prost(enumeration="IvrMenuState", tag="2")]
+    pub state: i32,
+    /// Exact E.164 number of <code>inbound_phone_numbers</code>; empty does not filter.
+    #[prost(string, tag="3")]
+    pub inbound_phone_number: ::prost::alloc::string::String,
+}
+/// Request to list the IVR menus of a project
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+pub struct ListIvrMenusRequest {
+    /// Required. The project: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    #[prost(string, tag="1")]
+    pub vtsi_project_name: ::prost::alloc::string::String,
+    /// Optional. Narrows the listed menus.
+    #[prost(message, optional, tag="2")]
+    pub filter: ::core::option::Option<IvrMenuFilter>,
+    /// Optional. Maximum menus per page. <code>0</code> means 20; values above 1000 are clamped to 1000; negative
+    /// values are refused with <code>INVALID_ARGUMENT</code>.
+    #[prost(int32, tag="3")]
+    pub page_size: i32,
+    /// Optional. The <code>next_page_token</code> of a previous response; valid only with the same project, filter
+    /// and order.
+    #[prost(string, optional, tag="4")]
+    pub page_token: ::core::option::Option<::prost::alloc::string::String>,
+    /// Optional. Partial response: the <code>IvrMenu</code> field paths of each listed menu, as
+    /// <code>CreateIvrMenuRequest.field_mask</code>.
+    #[prost(message, optional, tag="5")]
+    pub field_mask: ::core::option::Option<::prost_types::FieldMask>,
+    /// Optional. Sort order.
+    #[prost(enumeration="IvrMenuOrderBy", tag="6")]
+    pub order_by: i32,
+}
+/// Response to list the IVR menus of a project
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct ListIvrMenusResponse {
+    /// The menus of this page.
+    #[prost(message, repeated, tag="1")]
+    pub ivr_menus: ::prost::alloc::vec::Vec<IvrMenu>,
+    /// Token of the next page; empty on the last page.
+    #[prost(string, tag="2")]
+    pub next_page_token: ::prost::alloc::string::String,
+}
+/// Request to validate an IVR menu draft
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct ValidateIvrMenuRequest {
+    /// Required. The project: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    #[prost(string, tag="1")]
+    pub vtsi_project_name: ::prost::alloc::string::String,
+    /// Required. The draft as edited; <code>name</code> may be empty for a menu not created yet.
+    #[prost(message, optional, tag="2")]
+    pub ivr_menu: ::core::option::Option<IvrMenu>,
+}
+/// <p>One problem of an IVR menu draft</p>
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+pub struct IvrMenuIssue {
+    /// Whether the issue blocks a save or a publish
+    #[prost(enumeration="IvrMenuIssueSeverity", tag="1")]
+    pub severity: i32,
+    /// Stable kebab-case token, e.g. <code>dangling-next-node</code>, <code>duplicate-key</code>,
+    /// <code>unreachable-node</code>, <code>keyless-cycle</code>, <code>number-not-allowed</code>,
+    /// <code>unknown-softphone</code>, <code>unknown-listener</code>, <code>unknown-menu</code>,
+    /// <code>self-goto</code>, <code>number-bound-twice</code>, <code>second-default-inbound</code>,
+    /// <code>prompt-format</code>, <code>prompt-too-large</code>, <code>field-not-for-node-type</code>,
+    /// <code>menu-without-prompt</code> (a WARNING). The list in <code>docs/ivr_menus.md</code> is complete.
+    #[prost(string, tag="2")]
+    pub code: ::prost::alloc::string::String,
+    /// Path of the offending field, e.g. <code>nodes\[node_id=billing\].options\[dtmf=2\].next_node_id</code>.
+    #[prost(string, tag="3")]
+    pub path: ::prost::alloc::string::String,
+    /// The node of the issue; empty for an issue of the whole menu.
+    #[prost(string, tag="4")]
+    pub node_id: ::prost::alloc::string::String,
+    /// English description for logs; a user interface translates by <code>code</code>.
+    #[prost(string, tag="5")]
+    pub message: ::prost::alloc::string::String,
+}
+/// Response to validate an IVR menu draft
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct ValidateIvrMenuResponse {
+    /// Every issue found
+    #[prost(message, repeated, tag="1")]
+    pub issues: ::prost::alloc::vec::Vec<IvrMenuIssue>,
+    /// Whether no issue is an ERROR
+    #[prost(bool, tag="2")]
+    pub valid: bool,
+}
+/// Request to publish an IVR menu
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+pub struct PublishIvrMenuRequest {
+    /// Required. <pre><code>projects/&lt;project_uuid&gt;/ivr_menus/&lt;ivr_menu_uuid&gt;</code></pre>
+    #[prost(string, tag="1")]
+    pub name: ::prost::alloc::string::String,
+    /// <code>0</code>: the current revision. Any other revision must be the current one, else <code>ABORTED</code>
+    /// <code>reason=revision-mismatch</code>.
+    #[prost(int64, tag="2")]
+    pub revision: i64,
+}
+/// Request to clone an IVR menu. The clone has no <code>inbound_phone_numbers</code>, <code>default_inbound</code>
+/// <code>false</code> and the state DRAFT.
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+pub struct CloneIvrMenuRequest {
+    /// Required. The source menu: <pre><code>projects/&lt;project_uuid&gt;/ivr_menus/&lt;ivr_menu_uuid&gt;</code></pre>
+    #[prost(string, tag="1")]
+    pub name: ::prost::alloc::string::String,
+    /// Required. The clone&apos;s display name, unique within the project.
+    #[prost(string, tag="2")]
+    pub display_name: ::prost::alloc::string::String,
+    /// The source revision; <code>0</code>: the current one.
+    #[prost(int64, tag="3")]
+    pub revision: i64,
+    /// Optional client idempotency key, as <code>CreateIvrMenuRequest.idempotency_key</code>.
+    #[prost(string, tag="4")]
+    pub idempotency_key: ::prost::alloc::string::String,
+}
+/// Request to list the revisions of an IVR menu
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+pub struct ListIvrMenuRevisionsRequest {
+    /// Required. <pre><code>projects/&lt;project_uuid&gt;/ivr_menus/&lt;ivr_menu_uuid&gt;</code></pre>
+    #[prost(string, tag="1")]
+    pub name: ::prost::alloc::string::String,
+    /// Optional. Maximum revisions per page. <code>0</code> means 20; values above 100 are clamped to 100.
+    #[prost(int32, tag="2")]
+    pub page_size: i32,
+    /// Optional. The <code>next_page_token</code> of a previous response for the same menu.
+    #[prost(string, optional, tag="3")]
+    pub page_token: ::core::option::Option<::prost::alloc::string::String>,
+}
+/// <p>One saved revision of an IVR menu</p>
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct IvrMenuRevision {
+    /// The revision number
+    #[prost(int64, tag="1")]
+    pub revision: i64,
+    /// The graph fields as saved at that revision (no <code>layout</code>, no routing fields, no output-only
+    /// fields)
+    #[prost(message, optional, tag="2")]
+    pub snapshot: ::core::option::Option<IvrMenu>,
+    /// Who saved it
+    #[prost(string, tag="3")]
+    pub modified_by: ::prost::alloc::string::String,
+    /// When it was saved
+    #[prost(message, optional, tag="4")]
+    pub modified_at: ::core::option::Option<::prost_types::Timestamp>,
+    /// Whether it was ever published
+    #[prost(bool, tag="5")]
+    pub published: bool,
+    /// Whether it is still rendered in the Asterisk (it is published, or a caller may still be inside it)
+    #[prost(bool, tag="6")]
+    pub live: bool,
+}
+/// Response to list the revisions of an IVR menu
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct ListIvrMenuRevisionsResponse {
+    /// The revisions of this page, newest first
+    #[prost(message, repeated, tag="1")]
+    pub revisions: ::prost::alloc::vec::Vec<IvrMenuRevision>,
+    /// Token of the next page; empty on the last page.
+    #[prost(string, tag="2")]
+    pub next_page_token: ::prost::alloc::string::String,
+}
+/// <p>One step of the key script of a test call</p>
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+pub struct IvrTestStep {
+    /// Milliseconds to wait after the previous step (for the first step: after the call entered the menu) before
+    /// <code>dtmf</code> is pressed. <code>0</code> means 1000; at most 30000. A key pressed during a prompt
+    /// interrupts it, as for a real caller.
+    #[prost(uint32, tag="1")]
+    pub wait_ms: u32,
+    /// The keys to press, <code>^\[0-9*#\]{0,8}$</code>; empty presses nothing, so the next step waits out the
+    /// node&apos;s timeout (the timeout path).
+    #[prost(string, tag="2")]
+    pub dtmf: ::prost::alloc::string::String,
+}
+/// Request to start a test call through the published revision of an IVR menu
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct TestIvrMenuRequest {
+    /// Required. <pre><code>projects/&lt;project_uuid&gt;/ivr_menus/&lt;ivr_menu_uuid&gt;</code></pre>
+    #[prost(string, tag="1")]
+    pub name: ::prost::alloc::string::String,
+    /// The key script, at most 20 steps. Empty: no key is pressed.
+    #[prost(message, repeated, tag="2")]
+    pub steps: ::prost::alloc::vec::Vec<IvrTestStep>,
+    /// Seconds the test call may last after its last step; <code>0</code> means 60, at most
+    /// <code>ONDEWO_VTSI_IVR_TEST_MAX_DURATION_S</code> (300). A test still in a menu then is
+    /// <code>IVR_MENU_TEST_STATE_TIMED_OUT</code>.
+    #[prost(uint32, tag="3")]
+    pub max_duration_s: u32,
+}
+/// Request to get a test call of an IVR menu
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+pub struct GetIvrMenuTestRequest {
+    /// Required. The test, as <code>IvrMenuTest.name</code>.
+    #[prost(string, tag="1")]
+    pub name: ::prost::alloc::string::String,
+}
+/// <p>One node entry of a test call</p>
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+pub struct IvrTraversalStep {
+    /// The node entered (of the menu named by <code>ivr_menu_name</code>, which changes after a GOTO_MENU node)
+    #[prost(string, tag="1")]
+    pub node_id: ::prost::alloc::string::String,
+    /// What led out of the node: the key, <code>t</code> (timeout) or <code>i</code> (invalid key); empty for a node
+    /// left without input
+    #[prost(string, tag="2")]
+    pub input: ::prost::alloc::string::String,
+    /// The node entered next; empty for the last node
+    #[prost(string, tag="3")]
+    pub next_node_id: ::prost::alloc::string::String,
+    /// When the node was entered, to the millisecond (the Asterisk&apos;s clock)
+    #[prost(message, optional, tag="4")]
+    pub entered_at: ::core::option::Option<::prost_types::Timestamp>,
+    /// The menu of <code>node_id</code>:
+    /// <pre><code>projects/&lt;project_uuid&gt;/ivr_menus/&lt;ivr_menu_uuid&gt;</code></pre>
+    #[prost(string, tag="5")]
+    pub ivr_menu_name: ::prost::alloc::string::String,
+}
+/// <p>A test call of an IVR menu, started by <code>TestIvrMenu</code>. Leaves no call record and no NLU session.</p>
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct IvrMenuTest {
+    /// Resource name of the test.
+    /// The format is:
+    /// <pre><code>projects/&lt;project_uuid&gt;/ivr_menus/&lt;ivr_menu_uuid&gt;/tests/&lt;test_id&gt;</code></pre>
+    #[prost(string, tag="1")]
+    pub name: ::prost::alloc::string::String,
+    /// The test id: 32 lower-case hex characters.
+    #[prost(string, tag="2")]
+    pub test_id: ::prost::alloc::string::String,
+    /// The state of the test
+    #[prost(enumeration="IvrMenuTestState", tag="3")]
+    pub state: i32,
+    /// The revision traversed (the published revision when the test started)
+    #[prost(int64, tag="4")]
+    pub revision: i64,
+    /// The nodes entered so far, in order
+    #[prost(message, repeated, tag="5")]
+    pub path: ::prost::alloc::vec::Vec<IvrTraversalStep>,
+    /// The last node entered; empty before the first
+    #[prost(string, tag="6")]
+    pub final_node_id: ::prost::alloc::string::String,
+    /// What the terminal ROUTE stub recorded, <code>route:&lt;kind&gt;:&lt;target&gt;</code> (<code>kind</code>
+    /// being <code>phone_number</code> with the number masked to its last 3 digits, <code>softphone</code>,
+    /// <code>listener</code> or <code>listener_queue</code>); empty when the test did not end on a ROUTE node
+    #[prost(string, tag="7")]
+    pub route: ::prost::alloc::string::String,
+    /// Why the test failed; empty otherwise
+    #[prost(string, tag="8")]
+    pub error_message: ::prost::alloc::string::String,
+    /// When the test call started
+    #[prost(message, optional, tag="9")]
+    pub started_at: ::core::option::Option<::prost_types::Timestamp>,
+    /// When it ended; unset while it runs
+    #[prost(message, optional, tag="10")]
+    pub finished_at: ::core::option::Option<::prost_types::Timestamp>,
+}
+/// Request to get the rendered dialplan of an IVR menu revision
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+pub struct GetIvrMenuDialplanRequest {
+    /// Required. <pre><code>projects/&lt;project_uuid&gt;/ivr_menus/&lt;ivr_menu_uuid&gt;</code></pre>
+    #[prost(string, tag="1")]
+    pub name: ::prost::alloc::string::String,
+    /// <code>0</code>: the published revision.
+    #[prost(int64, tag="2")]
+    pub revision: i64,
+}
+/// Response with the rendered dialplan of an IVR menu revision
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+pub struct GetIvrMenuDialplanResponse {
+    /// The rendered dialplan contexts of that revision
+    #[prost(string, tag="1")]
+    pub dialplan: ::prost::alloc::string::String,
+    /// Absolute paths of its prompt files inside the Asterisk container
+    #[prost(string, repeated, tag="2")]
+    pub prompt_files: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+}
+/// <p>The kind of an IVR node</p>
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
+#[repr(i32)]
+pub enum IvrNodeType {
+    /// Not allowed
+    Unspecified = 0,
+    /// A prompt and one key (<code>options</code>)
+    Menu = 1,
+    /// A prompt, then <code>next_node_id</code>
+    Play = 2,
+    /// Leave the menu to <code>route_target</code> (terminal unless <code>busy_next_node_id</code>)
+    Route = 3,
+    /// Hang up (terminal)
+    Hangup = 4,
+    /// Opening hours: <code>next_node_id</code> inside, <code>closed_next_node_id</code> outside
+    Schedule = 5,
+    /// Continue in another published menu of the project (<code>goto_menu_name</code>)
+    GotoMenu = 6,
+}
+impl IvrNodeType {
+    /// String value of the enum field names used in the ProtoBuf definition.
+    ///
+    /// The values are not transformed in any way and thus are considered stable
+    /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    pub fn as_str_name(&self) -> &'static str {
+        match self {
+            Self::Unspecified => "IVR_NODE_TYPE_UNSPECIFIED",
+            Self::Menu => "IVR_NODE_TYPE_MENU",
+            Self::Play => "IVR_NODE_TYPE_PLAY",
+            Self::Route => "IVR_NODE_TYPE_ROUTE",
+            Self::Hangup => "IVR_NODE_TYPE_HANGUP",
+            Self::Schedule => "IVR_NODE_TYPE_SCHEDULE",
+            Self::GotoMenu => "IVR_NODE_TYPE_GOTO_MENU",
+        }
+    }
+    /// Creates an enum from field names used in the ProtoBuf definition.
+    pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+        match value {
+            "IVR_NODE_TYPE_UNSPECIFIED" => Some(Self::Unspecified),
+            "IVR_NODE_TYPE_MENU" => Some(Self::Menu),
+            "IVR_NODE_TYPE_PLAY" => Some(Self::Play),
+            "IVR_NODE_TYPE_ROUTE" => Some(Self::Route),
+            "IVR_NODE_TYPE_HANGUP" => Some(Self::Hangup),
+            "IVR_NODE_TYPE_SCHEDULE" => Some(Self::Schedule),
+            "IVR_NODE_TYPE_GOTO_MENU" => Some(Self::GotoMenu),
+            _ => None,
+        }
+    }
+}
+/// <p>Publication state of an IVR menu</p>
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
+#[repr(i32)]
+pub enum IvrMenuState {
+    /// Not set
+    Unspecified = 0,
+    /// The current revision is not published (<code>revision &gt; published_revision</code>)
+    Draft = 1,
+    /// The current revision is published
+    Published = 2,
+    /// The last publish failed; the previous published revision, if any, stays live
+    PublishFailed = 3,
+}
+impl IvrMenuState {
+    /// String value of the enum field names used in the ProtoBuf definition.
+    ///
+    /// The values are not transformed in any way and thus are considered stable
+    /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    pub fn as_str_name(&self) -> &'static str {
+        match self {
+            Self::Unspecified => "IVR_MENU_STATE_UNSPECIFIED",
+            Self::Draft => "IVR_MENU_STATE_DRAFT",
+            Self::Published => "IVR_MENU_STATE_PUBLISHED",
+            Self::PublishFailed => "IVR_MENU_STATE_PUBLISH_FAILED",
+        }
+    }
+    /// Creates an enum from field names used in the ProtoBuf definition.
+    pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+        match value {
+            "IVR_MENU_STATE_UNSPECIFIED" => Some(Self::Unspecified),
+            "IVR_MENU_STATE_DRAFT" => Some(Self::Draft),
+            "IVR_MENU_STATE_PUBLISHED" => Some(Self::Published),
+            "IVR_MENU_STATE_PUBLISH_FAILED" => Some(Self::PublishFailed),
+            _ => None,
+        }
+    }
+}
+/// Sort order of <code>ListIvrMenus</code>
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
+#[repr(i32)]
+pub enum IvrMenuOrderBy {
+    /// Same as <code>IVR_MENU_ORDER_BY_DISPLAY_NAME</code>
+    Unspecified = 0,
+    /// By display name, ascending
+    DisplayName = 1,
+    /// By <code>modified_at</code>, newest first
+    ModifiedAtDesc = 2,
+}
+impl IvrMenuOrderBy {
+    /// String value of the enum field names used in the ProtoBuf definition.
+    ///
+    /// The values are not transformed in any way and thus are considered stable
+    /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    pub fn as_str_name(&self) -> &'static str {
+        match self {
+            Self::Unspecified => "IVR_MENU_ORDER_BY_UNSPECIFIED",
+            Self::DisplayName => "IVR_MENU_ORDER_BY_DISPLAY_NAME",
+            Self::ModifiedAtDesc => "IVR_MENU_ORDER_BY_MODIFIED_AT_DESC",
+        }
+    }
+    /// Creates an enum from field names used in the ProtoBuf definition.
+    pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+        match value {
+            "IVR_MENU_ORDER_BY_UNSPECIFIED" => Some(Self::Unspecified),
+            "IVR_MENU_ORDER_BY_DISPLAY_NAME" => Some(Self::DisplayName),
+            "IVR_MENU_ORDER_BY_MODIFIED_AT_DESC" => Some(Self::ModifiedAtDesc),
+            _ => None,
+        }
+    }
+}
+/// Severity of an <code>IvrMenuIssue</code>
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
+#[repr(i32)]
+pub enum IvrMenuIssueSeverity {
+    /// Not set
+    Unspecified = 0,
+    /// Create, Update and Publish refuse the menu
+    Error = 1,
+    /// Accepted, but probably not intended
+    Warning = 2,
+}
+impl IvrMenuIssueSeverity {
+    /// String value of the enum field names used in the ProtoBuf definition.
+    ///
+    /// The values are not transformed in any way and thus are considered stable
+    /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    pub fn as_str_name(&self) -> &'static str {
+        match self {
+            Self::Unspecified => "IVR_MENU_ISSUE_SEVERITY_UNSPECIFIED",
+            Self::Error => "IVR_MENU_ISSUE_SEVERITY_ERROR",
+            Self::Warning => "IVR_MENU_ISSUE_SEVERITY_WARNING",
+        }
+    }
+    /// Creates an enum from field names used in the ProtoBuf definition.
+    pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+        match value {
+            "IVR_MENU_ISSUE_SEVERITY_UNSPECIFIED" => Some(Self::Unspecified),
+            "IVR_MENU_ISSUE_SEVERITY_ERROR" => Some(Self::Error),
+            "IVR_MENU_ISSUE_SEVERITY_WARNING" => Some(Self::Warning),
+            _ => None,
+        }
+    }
+}
+/// <p>State of a test call of an IVR menu</p>
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
+#[repr(i32)]
+pub enum IvrMenuTestState {
+    /// Not set
+    Unspecified = 0,
+    /// The test call is still in the menu
+    Running = 1,
+    /// The test call reached a terminal node (ROUTE stub or HANGUP)
+    Succeeded = 2,
+    /// The test call was still in a menu after <code>max_duration_s</code>
+    TimedOut = 3,
+    /// The test call could not run or ended unexpectedly; <code>error_message</code> says why
+    Failed = 4,
+}
+impl IvrMenuTestState {
+    /// String value of the enum field names used in the ProtoBuf definition.
+    ///
+    /// The values are not transformed in any way and thus are considered stable
+    /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    pub fn as_str_name(&self) -> &'static str {
+        match self {
+            Self::Unspecified => "IVR_MENU_TEST_STATE_UNSPECIFIED",
+            Self::Running => "IVR_MENU_TEST_STATE_RUNNING",
+            Self::Succeeded => "IVR_MENU_TEST_STATE_SUCCEEDED",
+            Self::TimedOut => "IVR_MENU_TEST_STATE_TIMED_OUT",
+            Self::Failed => "IVR_MENU_TEST_STATE_FAILED",
+        }
+    }
+    /// Creates an enum from field names used in the ProtoBuf definition.
+    pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+        match value {
+            "IVR_MENU_TEST_STATE_UNSPECIFIED" => Some(Self::Unspecified),
+            "IVR_MENU_TEST_STATE_RUNNING" => Some(Self::Running),
+            "IVR_MENU_TEST_STATE_SUCCEEDED" => Some(Self::Succeeded),
+            "IVR_MENU_TEST_STATE_TIMED_OUT" => Some(Self::TimedOut),
+            "IVR_MENU_TEST_STATE_FAILED" => Some(Self::Failed),
             _ => None,
         }
     }
@@ -9051,6 +10748,11 @@ pub struct SoftphoneAccount {
     /// not locked).
     #[prost(string, tag="21")]
     pub locked_reason: ::prost::alloc::string::String,
+    /// The person or role behind the account, e.g. <code>Buchhaltung, Rechnungsfragen</code>: the context a warm
+    /// intro&apos;s briefing gives the target when the call is transferred to this account (see
+    /// <code>WarmTransferConfig.callee_description</code>). At most 512 characters. Updatable.
+    #[prost(string, tag="22")]
+    pub description: ::prost::alloc::string::String,
 }
 /// A client certificate issued to a softphone account by the project&apos;s SOFTPHONE certificate
 /// authority. Carries public material only: the private key exists solely inside the PKCS#12 bundle that
@@ -9419,7 +11121,7 @@ pub struct UpdateSoftphoneAccountRequest {
     /// Required. The fields to update. Paths are field paths within <code>softphone_account</code> WITHOUT a
     /// <code>softphone_account.</code> prefix. Updatable paths:
     /// <code>display_name</code>, <code>transport_security</code>, <code>enabled</code>,
-    /// <code>max_contacts</code>, <code>labels</code>, <code>allowed_destinations</code>.
+    /// <code>max_contacts</code>, <code>labels</code>, <code>allowed_destinations</code>, <code>description</code>.
     /// Semantics:
     /// <ul>
     ///    <li>Mask unset or empty: rejected with <code>INVALID_ARGUMENT</code>. There is no implicit

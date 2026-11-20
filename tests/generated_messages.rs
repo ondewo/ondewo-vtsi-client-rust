@@ -74,6 +74,7 @@ fn sample_project() -> vtsi::VtsiProject {
         }),
         trunk_registration_state: vtsi::TrunkRegistrationState::Registered as i32,
         asterisk_version_effective: "20.4.0".to_string(),
+        ..Default::default()
     }
 }
 

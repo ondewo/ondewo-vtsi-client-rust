@@ -3347,6 +3347,30 @@ pub mod calls_client {
                 .insert(GrpcMethod::new("ondewo.vtsi.Calls", "SetCallMediaControl"));
             self.inner.unary(req, path, codec).await
         }
+        pub async fn send_call_dtmf(
+            &mut self,
+            request: impl tonic::IntoRequest<super::SendCallDtmfRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::SendCallDtmfResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.Calls/SendCallDtmf",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("ondewo.vtsi.Calls", "SendCallDtmf"));
+            self.inner.unary(req, path, codec).await
+        }
         pub async fn stream_call_audio(
             &mut self,
             request: impl tonic::IntoStreamingRequest<
@@ -3738,6 +3762,13 @@ pub mod calls_server {
             request: tonic::Request<super::SetCallMediaControlRequest>,
         ) -> std::result::Result<
             tonic::Response<super::SetCallMediaControlResponse>,
+            tonic::Status,
+        >;
+        async fn send_call_dtmf(
+            &self,
+            request: tonic::Request<super::SendCallDtmfRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::SendCallDtmfResponse>,
             tonic::Status,
         >;
         /// Server streaming response type for the StreamCallAudio method.
@@ -5909,6 +5940,51 @@ pub mod calls_server {
                     };
                     Box::pin(fut)
                 }
+                "/ondewo.vtsi.Calls/SendCallDtmf" => {
+                    #[allow(non_camel_case_types)]
+                    struct SendCallDtmfSvc<T: Calls>(pub Arc<T>);
+                    impl<
+                        T: Calls,
+                    > tonic::server::UnaryService<super::SendCallDtmfRequest>
+                    for SendCallDtmfSvc<T> {
+                        type Response = super::SendCallDtmfResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::SendCallDtmfRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as Calls>::send_call_dtmf(&inner, request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = SendCallDtmfSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
                 "/ondewo.vtsi.Calls/StreamCallAudio" => {
                     #[allow(non_camel_case_types)]
                     struct StreamCallAudioSvc<T: Calls>(pub Arc<T>);
@@ -7285,6 +7361,1101 @@ pub mod events_server {
     /// Generated gRPC service name
     pub const SERVICE_NAME: &str = "ondewo.vtsi.Events";
     impl<T> tonic::server::NamedService for EventsServer<T> {
+        const NAME: &'static str = SERVICE_NAME;
+    }
+}
+/// Generated client implementations.
+pub mod ivr_menus_client {
+    #![allow(
+        unused_variables,
+        dead_code,
+        missing_docs,
+        clippy::wildcard_imports,
+        clippy::let_unit_value,
+    )]
+    use tonic::codegen::*;
+    use tonic::codegen::http::Uri;
+    #[derive(Debug, Clone)]
+    pub struct IvrMenusClient<T> {
+        inner: tonic::client::Grpc<T>,
+    }
+    impl IvrMenusClient<tonic::transport::Channel> {
+        /// Attempt to create a new client by connecting to a given endpoint.
+        pub async fn connect<D>(dst: D) -> Result<Self, tonic::transport::Error>
+        where
+            D: TryInto<tonic::transport::Endpoint>,
+            D::Error: Into<StdError>,
+        {
+            let conn = tonic::transport::Endpoint::new(dst)?.connect().await?;
+            Ok(Self::new(conn))
+        }
+    }
+    impl<T> IvrMenusClient<T>
+    where
+        T: tonic::client::GrpcService<tonic::body::Body>,
+        T::Error: Into<StdError>,
+        T::ResponseBody: Body<Data = Bytes> + std::marker::Send + 'static,
+        <T::ResponseBody as Body>::Error: Into<StdError> + std::marker::Send,
+    {
+        pub fn new(inner: T) -> Self {
+            let inner = tonic::client::Grpc::new(inner);
+            Self { inner }
+        }
+        pub fn with_origin(inner: T, origin: Uri) -> Self {
+            let inner = tonic::client::Grpc::with_origin(inner, origin);
+            Self { inner }
+        }
+        pub fn with_interceptor<F>(
+            inner: T,
+            interceptor: F,
+        ) -> IvrMenusClient<InterceptedService<T, F>>
+        where
+            F: tonic::service::Interceptor,
+            T::ResponseBody: Default,
+            T: tonic::codegen::Service<
+                http::Request<tonic::body::Body>,
+                Response = http::Response<
+                    <T as tonic::client::GrpcService<tonic::body::Body>>::ResponseBody,
+                >,
+            >,
+            <T as tonic::codegen::Service<
+                http::Request<tonic::body::Body>,
+            >>::Error: Into<StdError> + std::marker::Send + std::marker::Sync,
+        {
+            IvrMenusClient::new(InterceptedService::new(inner, interceptor))
+        }
+        /// Compress requests with the given encoding.
+        ///
+        /// This requires the server to support it otherwise it might respond with an
+        /// error.
+        #[must_use]
+        pub fn send_compressed(mut self, encoding: CompressionEncoding) -> Self {
+            self.inner = self.inner.send_compressed(encoding);
+            self
+        }
+        /// Enable decompressing responses.
+        #[must_use]
+        pub fn accept_compressed(mut self, encoding: CompressionEncoding) -> Self {
+            self.inner = self.inner.accept_compressed(encoding);
+            self
+        }
+        /// Limits the maximum size of a decoded message.
+        ///
+        /// Default: `4MB`
+        #[must_use]
+        pub fn max_decoding_message_size(mut self, limit: usize) -> Self {
+            self.inner = self.inner.max_decoding_message_size(limit);
+            self
+        }
+        /// Limits the maximum size of an encoded message.
+        ///
+        /// Default: `usize::MAX`
+        #[must_use]
+        pub fn max_encoding_message_size(mut self, limit: usize) -> Self {
+            self.inner = self.inner.max_encoding_message_size(limit);
+            self
+        }
+        pub async fn create_ivr_menu(
+            &mut self,
+            request: impl tonic::IntoRequest<super::CreateIvrMenuRequest>,
+        ) -> std::result::Result<tonic::Response<super::IvrMenu>, tonic::Status> {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.IvrMenus/CreateIvrMenu",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("ondewo.vtsi.IvrMenus", "CreateIvrMenu"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn get_ivr_menu(
+            &mut self,
+            request: impl tonic::IntoRequest<super::GetIvrMenuRequest>,
+        ) -> std::result::Result<tonic::Response<super::IvrMenu>, tonic::Status> {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.IvrMenus/GetIvrMenu",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("ondewo.vtsi.IvrMenus", "GetIvrMenu"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn update_ivr_menu(
+            &mut self,
+            request: impl tonic::IntoRequest<super::UpdateIvrMenuRequest>,
+        ) -> std::result::Result<tonic::Response<super::IvrMenu>, tonic::Status> {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.IvrMenus/UpdateIvrMenu",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("ondewo.vtsi.IvrMenus", "UpdateIvrMenu"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn delete_ivr_menu(
+            &mut self,
+            request: impl tonic::IntoRequest<super::DeleteIvrMenuRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::DeleteIvrMenuResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.IvrMenus/DeleteIvrMenu",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("ondewo.vtsi.IvrMenus", "DeleteIvrMenu"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn list_ivr_menus(
+            &mut self,
+            request: impl tonic::IntoRequest<super::ListIvrMenusRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::ListIvrMenusResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.IvrMenus/ListIvrMenus",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("ondewo.vtsi.IvrMenus", "ListIvrMenus"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn validate_ivr_menu(
+            &mut self,
+            request: impl tonic::IntoRequest<super::ValidateIvrMenuRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::ValidateIvrMenuResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.IvrMenus/ValidateIvrMenu",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("ondewo.vtsi.IvrMenus", "ValidateIvrMenu"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn publish_ivr_menu(
+            &mut self,
+            request: impl tonic::IntoRequest<super::PublishIvrMenuRequest>,
+        ) -> std::result::Result<tonic::Response<super::IvrMenu>, tonic::Status> {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.IvrMenus/PublishIvrMenu",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("ondewo.vtsi.IvrMenus", "PublishIvrMenu"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn clone_ivr_menu(
+            &mut self,
+            request: impl tonic::IntoRequest<super::CloneIvrMenuRequest>,
+        ) -> std::result::Result<tonic::Response<super::IvrMenu>, tonic::Status> {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.IvrMenus/CloneIvrMenu",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("ondewo.vtsi.IvrMenus", "CloneIvrMenu"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn list_ivr_menu_revisions(
+            &mut self,
+            request: impl tonic::IntoRequest<super::ListIvrMenuRevisionsRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::ListIvrMenuRevisionsResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.IvrMenus/ListIvrMenuRevisions",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("ondewo.vtsi.IvrMenus", "ListIvrMenuRevisions"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn test_ivr_menu(
+            &mut self,
+            request: impl tonic::IntoRequest<super::TestIvrMenuRequest>,
+        ) -> std::result::Result<tonic::Response<super::IvrMenuTest>, tonic::Status> {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.IvrMenus/TestIvrMenu",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("ondewo.vtsi.IvrMenus", "TestIvrMenu"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn get_ivr_menu_test(
+            &mut self,
+            request: impl tonic::IntoRequest<super::GetIvrMenuTestRequest>,
+        ) -> std::result::Result<tonic::Response<super::IvrMenuTest>, tonic::Status> {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.IvrMenus/GetIvrMenuTest",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("ondewo.vtsi.IvrMenus", "GetIvrMenuTest"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn get_ivr_menu_dialplan(
+            &mut self,
+            request: impl tonic::IntoRequest<super::GetIvrMenuDialplanRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::GetIvrMenuDialplanResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic_prost::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/ondewo.vtsi.IvrMenus/GetIvrMenuDialplan",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("ondewo.vtsi.IvrMenus", "GetIvrMenuDialplan"));
+            self.inner.unary(req, path, codec).await
+        }
+    }
+}
+/// Generated server implementations.
+pub mod ivr_menus_server {
+    #![allow(
+        unused_variables,
+        dead_code,
+        missing_docs,
+        clippy::wildcard_imports,
+        clippy::let_unit_value,
+    )]
+    use tonic::codegen::*;
+    /// Generated trait containing gRPC methods that should be implemented for use with IvrMenusServer.
+    #[async_trait]
+    pub trait IvrMenus: std::marker::Send + std::marker::Sync + 'static {
+        async fn create_ivr_menu(
+            &self,
+            request: tonic::Request<super::CreateIvrMenuRequest>,
+        ) -> std::result::Result<tonic::Response<super::IvrMenu>, tonic::Status>;
+        async fn get_ivr_menu(
+            &self,
+            request: tonic::Request<super::GetIvrMenuRequest>,
+        ) -> std::result::Result<tonic::Response<super::IvrMenu>, tonic::Status>;
+        async fn update_ivr_menu(
+            &self,
+            request: tonic::Request<super::UpdateIvrMenuRequest>,
+        ) -> std::result::Result<tonic::Response<super::IvrMenu>, tonic::Status>;
+        async fn delete_ivr_menu(
+            &self,
+            request: tonic::Request<super::DeleteIvrMenuRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::DeleteIvrMenuResponse>,
+            tonic::Status,
+        >;
+        async fn list_ivr_menus(
+            &self,
+            request: tonic::Request<super::ListIvrMenusRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::ListIvrMenusResponse>,
+            tonic::Status,
+        >;
+        async fn validate_ivr_menu(
+            &self,
+            request: tonic::Request<super::ValidateIvrMenuRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::ValidateIvrMenuResponse>,
+            tonic::Status,
+        >;
+        async fn publish_ivr_menu(
+            &self,
+            request: tonic::Request<super::PublishIvrMenuRequest>,
+        ) -> std::result::Result<tonic::Response<super::IvrMenu>, tonic::Status>;
+        async fn clone_ivr_menu(
+            &self,
+            request: tonic::Request<super::CloneIvrMenuRequest>,
+        ) -> std::result::Result<tonic::Response<super::IvrMenu>, tonic::Status>;
+        async fn list_ivr_menu_revisions(
+            &self,
+            request: tonic::Request<super::ListIvrMenuRevisionsRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::ListIvrMenuRevisionsResponse>,
+            tonic::Status,
+        >;
+        async fn test_ivr_menu(
+            &self,
+            request: tonic::Request<super::TestIvrMenuRequest>,
+        ) -> std::result::Result<tonic::Response<super::IvrMenuTest>, tonic::Status>;
+        async fn get_ivr_menu_test(
+            &self,
+            request: tonic::Request<super::GetIvrMenuTestRequest>,
+        ) -> std::result::Result<tonic::Response<super::IvrMenuTest>, tonic::Status>;
+        async fn get_ivr_menu_dialplan(
+            &self,
+            request: tonic::Request<super::GetIvrMenuDialplanRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::GetIvrMenuDialplanResponse>,
+            tonic::Status,
+        >;
+    }
+    #[derive(Debug)]
+    pub struct IvrMenusServer<T> {
+        inner: Arc<T>,
+        accept_compression_encodings: EnabledCompressionEncodings,
+        send_compression_encodings: EnabledCompressionEncodings,
+        max_decoding_message_size: Option<usize>,
+        max_encoding_message_size: Option<usize>,
+    }
+    impl<T> IvrMenusServer<T> {
+        pub fn new(inner: T) -> Self {
+            Self::from_arc(Arc::new(inner))
+        }
+        pub fn from_arc(inner: Arc<T>) -> Self {
+            Self {
+                inner,
+                accept_compression_encodings: Default::default(),
+                send_compression_encodings: Default::default(),
+                max_decoding_message_size: None,
+                max_encoding_message_size: None,
+            }
+        }
+        pub fn with_interceptor<F>(
+            inner: T,
+            interceptor: F,
+        ) -> InterceptedService<Self, F>
+        where
+            F: tonic::service::Interceptor,
+        {
+            InterceptedService::new(Self::new(inner), interceptor)
+        }
+        /// Enable decompressing requests with the given encoding.
+        #[must_use]
+        pub fn accept_compressed(mut self, encoding: CompressionEncoding) -> Self {
+            self.accept_compression_encodings.enable(encoding);
+            self
+        }
+        /// Compress responses with the given encoding, if the client supports it.
+        #[must_use]
+        pub fn send_compressed(mut self, encoding: CompressionEncoding) -> Self {
+            self.send_compression_encodings.enable(encoding);
+            self
+        }
+        /// Limits the maximum size of a decoded message.
+        ///
+        /// Default: `4MB`
+        #[must_use]
+        pub fn max_decoding_message_size(mut self, limit: usize) -> Self {
+            self.max_decoding_message_size = Some(limit);
+            self
+        }
+        /// Limits the maximum size of an encoded message.
+        ///
+        /// Default: `usize::MAX`
+        #[must_use]
+        pub fn max_encoding_message_size(mut self, limit: usize) -> Self {
+            self.max_encoding_message_size = Some(limit);
+            self
+        }
+    }
+    impl<T, B> tonic::codegen::Service<http::Request<B>> for IvrMenusServer<T>
+    where
+        T: IvrMenus,
+        B: Body + std::marker::Send + 'static,
+        B::Error: Into<StdError> + std::marker::Send + 'static,
+    {
+        type Response = http::Response<tonic::body::Body>;
+        type Error = std::convert::Infallible;
+        type Future = BoxFuture<Self::Response, Self::Error>;
+        fn poll_ready(
+            &mut self,
+            _cx: &mut Context<'_>,
+        ) -> Poll<std::result::Result<(), Self::Error>> {
+            Poll::Ready(Ok(()))
+        }
+        fn call(&mut self, req: http::Request<B>) -> Self::Future {
+            match req.uri().path() {
+                "/ondewo.vtsi.IvrMenus/CreateIvrMenu" => {
+                    #[allow(non_camel_case_types)]
+                    struct CreateIvrMenuSvc<T: IvrMenus>(pub Arc<T>);
+                    impl<
+                        T: IvrMenus,
+                    > tonic::server::UnaryService<super::CreateIvrMenuRequest>
+                    for CreateIvrMenuSvc<T> {
+                        type Response = super::IvrMenu;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::CreateIvrMenuRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as IvrMenus>::create_ivr_menu(&inner, request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = CreateIvrMenuSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/ondewo.vtsi.IvrMenus/GetIvrMenu" => {
+                    #[allow(non_camel_case_types)]
+                    struct GetIvrMenuSvc<T: IvrMenus>(pub Arc<T>);
+                    impl<
+                        T: IvrMenus,
+                    > tonic::server::UnaryService<super::GetIvrMenuRequest>
+                    for GetIvrMenuSvc<T> {
+                        type Response = super::IvrMenu;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::GetIvrMenuRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as IvrMenus>::get_ivr_menu(&inner, request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = GetIvrMenuSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/ondewo.vtsi.IvrMenus/UpdateIvrMenu" => {
+                    #[allow(non_camel_case_types)]
+                    struct UpdateIvrMenuSvc<T: IvrMenus>(pub Arc<T>);
+                    impl<
+                        T: IvrMenus,
+                    > tonic::server::UnaryService<super::UpdateIvrMenuRequest>
+                    for UpdateIvrMenuSvc<T> {
+                        type Response = super::IvrMenu;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::UpdateIvrMenuRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as IvrMenus>::update_ivr_menu(&inner, request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = UpdateIvrMenuSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/ondewo.vtsi.IvrMenus/DeleteIvrMenu" => {
+                    #[allow(non_camel_case_types)]
+                    struct DeleteIvrMenuSvc<T: IvrMenus>(pub Arc<T>);
+                    impl<
+                        T: IvrMenus,
+                    > tonic::server::UnaryService<super::DeleteIvrMenuRequest>
+                    for DeleteIvrMenuSvc<T> {
+                        type Response = super::DeleteIvrMenuResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::DeleteIvrMenuRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as IvrMenus>::delete_ivr_menu(&inner, request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = DeleteIvrMenuSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/ondewo.vtsi.IvrMenus/ListIvrMenus" => {
+                    #[allow(non_camel_case_types)]
+                    struct ListIvrMenusSvc<T: IvrMenus>(pub Arc<T>);
+                    impl<
+                        T: IvrMenus,
+                    > tonic::server::UnaryService<super::ListIvrMenusRequest>
+                    for ListIvrMenusSvc<T> {
+                        type Response = super::ListIvrMenusResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::ListIvrMenusRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as IvrMenus>::list_ivr_menus(&inner, request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = ListIvrMenusSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/ondewo.vtsi.IvrMenus/ValidateIvrMenu" => {
+                    #[allow(non_camel_case_types)]
+                    struct ValidateIvrMenuSvc<T: IvrMenus>(pub Arc<T>);
+                    impl<
+                        T: IvrMenus,
+                    > tonic::server::UnaryService<super::ValidateIvrMenuRequest>
+                    for ValidateIvrMenuSvc<T> {
+                        type Response = super::ValidateIvrMenuResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::ValidateIvrMenuRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as IvrMenus>::validate_ivr_menu(&inner, request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = ValidateIvrMenuSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/ondewo.vtsi.IvrMenus/PublishIvrMenu" => {
+                    #[allow(non_camel_case_types)]
+                    struct PublishIvrMenuSvc<T: IvrMenus>(pub Arc<T>);
+                    impl<
+                        T: IvrMenus,
+                    > tonic::server::UnaryService<super::PublishIvrMenuRequest>
+                    for PublishIvrMenuSvc<T> {
+                        type Response = super::IvrMenu;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::PublishIvrMenuRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as IvrMenus>::publish_ivr_menu(&inner, request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = PublishIvrMenuSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/ondewo.vtsi.IvrMenus/CloneIvrMenu" => {
+                    #[allow(non_camel_case_types)]
+                    struct CloneIvrMenuSvc<T: IvrMenus>(pub Arc<T>);
+                    impl<
+                        T: IvrMenus,
+                    > tonic::server::UnaryService<super::CloneIvrMenuRequest>
+                    for CloneIvrMenuSvc<T> {
+                        type Response = super::IvrMenu;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::CloneIvrMenuRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as IvrMenus>::clone_ivr_menu(&inner, request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = CloneIvrMenuSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/ondewo.vtsi.IvrMenus/ListIvrMenuRevisions" => {
+                    #[allow(non_camel_case_types)]
+                    struct ListIvrMenuRevisionsSvc<T: IvrMenus>(pub Arc<T>);
+                    impl<
+                        T: IvrMenus,
+                    > tonic::server::UnaryService<super::ListIvrMenuRevisionsRequest>
+                    for ListIvrMenuRevisionsSvc<T> {
+                        type Response = super::ListIvrMenuRevisionsResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::ListIvrMenuRevisionsRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as IvrMenus>::list_ivr_menu_revisions(&inner, request)
+                                    .await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = ListIvrMenuRevisionsSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/ondewo.vtsi.IvrMenus/TestIvrMenu" => {
+                    #[allow(non_camel_case_types)]
+                    struct TestIvrMenuSvc<T: IvrMenus>(pub Arc<T>);
+                    impl<
+                        T: IvrMenus,
+                    > tonic::server::UnaryService<super::TestIvrMenuRequest>
+                    for TestIvrMenuSvc<T> {
+                        type Response = super::IvrMenuTest;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::TestIvrMenuRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as IvrMenus>::test_ivr_menu(&inner, request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = TestIvrMenuSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/ondewo.vtsi.IvrMenus/GetIvrMenuTest" => {
+                    #[allow(non_camel_case_types)]
+                    struct GetIvrMenuTestSvc<T: IvrMenus>(pub Arc<T>);
+                    impl<
+                        T: IvrMenus,
+                    > tonic::server::UnaryService<super::GetIvrMenuTestRequest>
+                    for GetIvrMenuTestSvc<T> {
+                        type Response = super::IvrMenuTest;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::GetIvrMenuTestRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as IvrMenus>::get_ivr_menu_test(&inner, request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = GetIvrMenuTestSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/ondewo.vtsi.IvrMenus/GetIvrMenuDialplan" => {
+                    #[allow(non_camel_case_types)]
+                    struct GetIvrMenuDialplanSvc<T: IvrMenus>(pub Arc<T>);
+                    impl<
+                        T: IvrMenus,
+                    > tonic::server::UnaryService<super::GetIvrMenuDialplanRequest>
+                    for GetIvrMenuDialplanSvc<T> {
+                        type Response = super::GetIvrMenuDialplanResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::GetIvrMenuDialplanRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as IvrMenus>::get_ivr_menu_dialplan(&inner, request)
+                                    .await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = GetIvrMenuDialplanSvc(inner);
+                        let codec = tonic_prost::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                _ => {
+                    Box::pin(async move {
+                        let mut response = http::Response::new(
+                            tonic::body::Body::default(),
+                        );
+                        let headers = response.headers_mut();
+                        headers
+                            .insert(
+                                tonic::Status::GRPC_STATUS,
+                                (tonic::Code::Unimplemented as i32).into(),
+                            );
+                        headers
+                            .insert(
+                                http::header::CONTENT_TYPE,
+                                tonic::metadata::GRPC_CONTENT_TYPE,
+                            );
+                        Ok(response)
+                    })
+                }
+            }
+        }
+    }
+    impl<T> Clone for IvrMenusServer<T> {
+        fn clone(&self) -> Self {
+            let inner = self.inner.clone();
+            Self {
+                inner,
+                accept_compression_encodings: self.accept_compression_encodings,
+                send_compression_encodings: self.send_compression_encodings,
+                max_decoding_message_size: self.max_decoding_message_size,
+                max_encoding_message_size: self.max_encoding_message_size,
+            }
+        }
+    }
+    /// Generated gRPC service name
+    pub const SERVICE_NAME: &str = "ondewo.vtsi.IvrMenus";
+    impl<T> tonic::server::NamedService for IvrMenusServer<T> {
         const NAME: &'static str = SERVICE_NAME;
     }
 }

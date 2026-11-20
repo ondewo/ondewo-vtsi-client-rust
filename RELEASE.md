@@ -2,6 +2,15 @@
 
 *****************
 
+## Release ONDEWO VTSI Rust Client 9.5.0
+
+### Improvements
+
+* Tracking API Version [9.5.0](https://github.com/ondewo/ondewo-vtsi-api/releases/tag/9.5.0) ( [Documentation](https://ondewo.github.io/ondewo-vtsi-api/) )
+* Generated with ondewo-proto-compiler 5.17.0; runtime floors: prost / prost-types 0.14.6, tonic / tonic-prost 0.14.9.
+
+*****************
+
 ## Release ONDEWO VTSI Rust Client 9.3.0
 
 ### Improvements
