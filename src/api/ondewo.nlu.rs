@@ -4879,8 +4879,11 @@ pub enum CcaiServiceProvider {
     /// Microsoft Azure as the CCAI service provider, using Microsoft&apos;s Azure cognitive services
     /// <a href="<https://azure.microsoft.com/en-us/products/cognitive-services/openai-service/">Azure> OpenAI</a>
     MicrosoftAzureOpenai = 3,
-    /// Microsoft AutoGen as the CCAI service provider
-    /// <a href="<https://github.com/microsoft/autogen">AutoGen</a>>
+    /// Deprecated: Microsoft AutoGen as the CCAI service provider
+    /// <a href="<https://github.com/microsoft/autogen">AutoGen</a>.>
+    /// The server no longer runs AutoGen and refuses to create services with this provider; stored AutoGen
+    /// services are migrated to AI Teams v2 (LangChain / LangGraph). The value is kept for wire
+    /// compatibility and may still appear on data written before the migration.
     MicrosoftAutogen = 4,
     /// Ollama as the CCAI service provider, typically associated with specific OLLAMA AI tools
     /// <a href="<https://github.com/ollama/ollama">Ollama</a>>
@@ -10131,7 +10134,7 @@ pub struct LlmTokenUsage {
 /// Metadata for one tool call executed by the LLM.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct LlmToolCallMetadata {
-    /// Stable id assigned by the upstream framework (autogen / langchain).
+    /// Stable id assigned by the upstream framework (e.g. langchain).
     #[prost(string, tag="1")]
     pub tool_call_id: ::prost::alloc::string::String,
     /// Name of the tool / function invoked.
@@ -10182,7 +10185,8 @@ pub struct LlmThinkingMetadata {
 /// Telemetry for a single LLM invocation inside one DetectIntent turn.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct LlmTelemetry {
-    /// Provider tag: "autogen" | "langchain" | "openai" | "anthropic" | ...
+    /// Provider tag: "langchain" | "openai" | "anthropic" | ... ("autogen" only on telemetry recorded before AutoGen
+    /// was removed).
     #[prost(string, tag="1")]
     pub provider: ::prost::alloc::string::String,
     /// Concrete model identifier (e.g. "Qwen/Qwen3.6-27b-fp8").
@@ -10290,28 +10294,29 @@ pub struct LlmTelemetry {
     /// LangSmith run URL for direct click-through when LangSmith tracing is active.
     #[prost(string, tag="35")]
     pub langsmith_run_url: ::prost::alloc::string::String,
-    /// Autogen team display name owning the call.
+    /// Display name of the agent team owning the call; empty for a single agent.
     #[prost(string, tag="36")]
     pub team_name: ::prost::alloc::string::String,
-    /// Autogen team identifier (UUID).
+    /// Identifier (UUID) of the agent team owning the call.
     #[prost(string, tag="37")]
     pub team_id: ::prost::alloc::string::String,
-    /// Autogen agent role tag (user_proxy | assistant | tool_executor | reflection).
+    /// Role tag of the agent that made the call inside its team.
     #[prost(string, tag="38")]
     pub agent_role: ::prost::alloc::string::String,
-    /// Name of the autogen agent that produced the message.
+    /// Name of the agent that produced the message.
     #[prost(string, tag="39")]
     pub sender_agent: ::prost::alloc::string::String,
-    /// Name of the autogen agent that received the message.
+    /// Name of the agent that received the message.
     #[prost(string, tag="40")]
     pub recipient_agent: ::prost::alloc::string::String,
-    /// Zero-based position of this LLM call inside the autogen <code>run_stream()</code> sequence.
+    /// Zero-based position of this LLM call inside the agent run&apos;s sequence of LLM calls.
     #[prost(int32, tag="41")]
     pub turn_index: i32,
-    /// Number of reflection loops executed in <code>robust_assistant_agent</code> for this call.
+    /// Deprecated: number of reflection loops of the removed AutoGen <code>robust_assistant_agent</code> for this
+    /// call. No current agent runs reflection loops, so it is 0.
     #[prost(int32, tag="42")]
     pub reflection_iterations: i32,
-    /// Autogen <code>TaskResult.stop_reason</code> string when surfaced.
+    /// Stop reason of the agent team run when surfaced (formerly AutoGen <code>TaskResult.stop_reason</code>).
     #[prost(string, tag="43")]
     pub termination_reason: ::prost::alloc::string::String,
     /// Join key linking this LLM call to an evaluator run (see llm_evaluation.proto).
@@ -10398,7 +10403,7 @@ pub struct LlmTelemetry {
     /// <code>llm_call_id</code> (<code>LlmLlmCallStartedEvent</code>,
     /// <code>LlmToolCallStartedEvent</code>, ...), so an aggregate or a persisted row can be
     /// correlated back to the live event stream. Distinct from <code>run_id</code> (field 11),
-    /// which is the UPSTREAM framework's id (autogen / langchain).
+    /// which is the UPSTREAM framework's id (e.g. langchain).
     #[prost(string, tag="63")]
     pub llm_call_id: ::prost::alloc::string::String,
 }
@@ -10703,7 +10708,7 @@ pub struct LlmToolUsage {
     #[prost(string, tag="9")]
     pub llm_call_id: ::prost::alloc::string::String,
     /// Stable id of the representative invocation, assigned by the upstream framework
-    /// (autogen / langchain).
+    /// (e.g. langchain).
     #[prost(string, tag="10")]
     pub tool_call_id: ::prost::alloc::string::String,
 }
@@ -10882,7 +10887,8 @@ pub struct LlmCallStartedEvent {
     /// Collector-assigned id grouping all events emitted for this LLM call.
     #[prost(string, tag="1")]
     pub llm_call_id: ::prost::alloc::string::String,
-    /// Provider tag: "autogen" | "langchain" | "openai" | "anthropic" | ...
+    /// Provider tag: "langchain" | "openai" | "anthropic" | ... ("autogen" only on telemetry recorded before AutoGen
+    /// was removed).
     #[prost(string, tag="2")]
     pub provider: ::prost::alloc::string::String,
     /// Concrete model identifier (e.g. "claude-3-5-sonnet-20241022").
@@ -10914,7 +10920,7 @@ pub struct LlmCallFinishedEvent {
 /// Emitted on a streaming DetectIntent when a tool call starts.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct LlmToolCallStartedEvent {
-    /// Stable id assigned by the upstream framework (autogen / langchain).
+    /// Stable id assigned by the upstream framework (e.g. langchain).
     #[prost(string, tag="1")]
     pub tool_call_id: ::prost::alloc::string::String,
     /// Name of the tool / function invoked.
