@@ -4,7 +4,7 @@
 // Configuration Message //
 // /////////////////////////
 
-/// <p>Configuration for a request to transcribe audio</p>
+/// Configuration for a request to transcribe audio
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct TranscribeRequestConfig {
     /// Required. id of the pipeline (model setup) that will generate audio
@@ -110,7 +110,7 @@ pub mod transcribe_request_config {
         ReturnOptions(super::TranscriptionReturnOptions),
     }
 }
-/// <p>Configuration for cloud provider settings for Speech-to-Text (S2T).</p>
+/// Configuration for cloud provider settings for Speech-to-Text (S2T).
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct S2tCloudProviderConfig {
     /// Optional. Configuration for Amazon web service speech-to-text provider.
@@ -126,7 +126,7 @@ pub struct S2tCloudProviderConfig {
     #[prost(message, optional, tag="4")]
     pub s2t_cloud_provider_config_microsoft: ::core::option::Option<S2tCloudProviderConfigMicrosoft>,
 }
-/// <p>Configuration details specific to the Amazon web service speech-to-text provider.</p>
+/// Configuration details specific to the Amazon web service speech-to-text provider.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct S2tCloudProviderConfigAmazon {
     /// Optional. Enables or disables <code>partial_results_stabilization</code> feature. More details at:
@@ -149,7 +149,7 @@ pub struct S2tCloudProviderConfigAmazon {
     #[prost(string, optional, tag="4")]
     pub vocabulary_name: ::core::option::Option<::prost::alloc::string::String>,
 }
-/// <p>Configuration details specific to the Deepgram speech-to-text provider.</p>
+/// Configuration details specific to the Deepgram speech-to-text provider.
 #[derive(Clone, Copy, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct S2tCloudProviderConfigDeepgram {
     /// Optional. Enables or disables <code>punctuate</code> feature of Deepgram to add punctuations to the resulted transcript.
@@ -174,7 +174,7 @@ pub struct S2tCloudProviderConfigDeepgram {
     #[prost(bool, optional, tag="5")]
     pub dictation: ::core::option::Option<bool>,
 }
-/// <p>Configuration details specific to the Google speech-to-text provider.</p>
+/// Configuration details specific to the Google speech-to-text provider.
 #[derive(Clone, Copy, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct S2tCloudProviderConfigGoogle {
     /// Optional. Enables or disables <code>automatic_punctuation</code> feature of Google s2t to add punctuations to the resulted
@@ -199,7 +199,7 @@ pub struct S2tCloudProviderConfigGoogle {
     #[prost(int32, optional, tag="5")]
     pub max_alternatives: ::core::option::Option<i32>,
 }
-/// <p>Configuration details specific to the Microsoft Azure speech-to-text provider.</p>
+/// Configuration details specific to the Microsoft Azure speech-to-text provider.
 #[derive(Clone, Copy, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct S2tCloudProviderConfigMicrosoft {
     /// Optional. Enables or disables the Microsoft Azure fast transcription API. It is faster than SDK but is in
@@ -212,7 +212,7 @@ pub struct S2tCloudProviderConfigMicrosoft {
     #[prost(bool, optional, tag="2")]
     pub use_detailed_output_format: ::core::option::Option<bool>,
 }
-/// <p>Configuration of the return values of a transcribe request</p>
+/// Configuration of the return values of a transcribe request
 #[derive(Clone, Copy, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct TranscriptionReturnOptions {
     /// should server make response indicating that the beginning of the speech was detected
@@ -249,7 +249,7 @@ pub struct TranscriptionReturnOptions {
     #[prost(bool, tag="9")]
     pub return_end_of_speech_candidate: bool,
 }
-/// <p>Configuration of the options to detect utterances</p>
+/// Configuration of the options to detect utterances
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct UtteranceDetectionOptions {
     /// if time between audio chunks exceeds next_chunk_timeout, stream will be stopped
@@ -300,7 +300,7 @@ pub mod utterance_detection_options {
         TurnDetection(super::TurnDetectionOptions),
     }
 }
-/// <p>Configuration of the post-processing options</p>
+/// Configuration of the post-processing options
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct PostProcessingOptions {
     /// Whether to use spelling correction
@@ -321,7 +321,7 @@ pub struct PostProcessingOptions {
 //   TRANSCRIPTION TYPE  //
 // /////////////////////////
 
-/// <p>The transcription message</p>
+/// The transcription message
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Transcription {
     /// The transcribed text
@@ -338,7 +338,7 @@ pub struct Transcription {
     #[prost(message, repeated, tag="4")]
     pub alternatives: ::prost::alloc::vec::Vec<TranscriptionAlternative>,
 }
-/// <p>The alternative transcription message</p>
+/// The alternative transcription message
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct TranscriptionAlternative {
     /// The alternative transcribed text
@@ -352,7 +352,7 @@ pub struct TranscriptionAlternative {
     #[prost(message, repeated, tag="3")]
     pub words: ::prost::alloc::vec::Vec<WordDetail>,
 }
-/// <p>WordDetail provides word-specific information for recognized words.</p>
+/// WordDetail provides word-specific information for recognized words.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct WordDetail {
     /// The start time of the spoken word relative to the beginning of the audio.
@@ -373,7 +373,7 @@ pub struct WordDetail {
     #[prost(message, repeated, tag="5")]
     pub word_alternatives: ::prost::alloc::vec::Vec<WordAlternative>,
 }
-/// <p>The word alternative message</p>
+/// The word alternative message
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct WordAlternative {
     /// The recognized word corresponding to this set of information.
@@ -387,7 +387,7 @@ pub struct WordAlternative {
 // TRANSCRIBE STREAM //
 // /////////////////////
 
-/// <p>Request to transcribe an audio stream</p>
+/// Request to transcribe an audio stream
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct TranscribeStreamRequest {
     /// wav file to transcribe
@@ -403,7 +403,7 @@ pub struct TranscribeStreamRequest {
     #[prost(bool, tag="4")]
     pub mute_audio: bool,
 }
-/// <p>The response message of a stream transcription</p>
+/// The response message of a stream transcription
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct TranscribeStreamResponse {
     /// List of transcriptions with confidence level
@@ -460,7 +460,7 @@ pub mod transcribe_stream_response {
 // TRANSCRIBE FILE //
 // ///////////////////
 
-/// <p>A request to transcribe an audio file</p>
+/// A request to transcribe an audio file
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct TranscribeFileRequest {
     /// wav file to transcribe
@@ -470,7 +470,7 @@ pub struct TranscribeFileRequest {
     #[prost(message, optional, tag="2")]
     pub config: ::core::option::Option<TranscribeRequestConfig>,
 }
-/// <p>The response message for a transcribe file request</p>
+/// The response message for a transcribe file request
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct TranscribeFileResponse {
     /// List of transcriptions with confidence level
@@ -487,7 +487,7 @@ pub struct TranscribeFileResponse {
 // GET S2T PIPELINE //
 // ////////////////////
 
-/// <p>The pipeline id for a specific pipeline configuration</p>
+/// The pipeline id for a specific pipeline configuration
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct S2tPipelineId {
     /// id of the model that will generate audio
@@ -498,7 +498,7 @@ pub struct S2tPipelineId {
 // LIST S2T PIPELINES //
 // //////////////////////
 
-/// <p>Request to list all speech-to-text pipelines. Optionally also filter criteria can be set</p>
+/// Request to list all speech-to-text pipelines. Optionally also filter criteria can be set
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct ListS2tPipelinesRequest {
     /// Filter for languages
@@ -515,7 +515,7 @@ pub struct ListS2tPipelinesRequest {
     #[prost(bool, tag="4")]
     pub registered_only: bool,
 }
-/// <p>ListS2tPipelinesResponse is used to return a list of all speech-to-text pipelines.</p>
+/// ListS2tPipelinesResponse is used to return a list of all speech-to-text pipelines.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ListS2tPipelinesResponse {
     /// A list of <code>Speech2TextConfig</code> message instances containing the configuration of each pipeline.
@@ -528,7 +528,7 @@ pub struct ListS2tPipelinesResponse {
 // LIST S2T LANGUAGES //
 // //////////////////////
 
-/// <p>ListS2tLanguagesRequest is used to request a list of available languages. Optionally, filters can be set.</p>
+/// ListS2tLanguagesRequest is used to request a list of available languages. Optionally, filters can be set.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct ListS2tLanguagesRequest {
     /// Filter for domains.  Example: \[&quot;medical&quot;, &quot;finance&quot;\]
@@ -539,7 +539,7 @@ pub struct ListS2tLanguagesRequest {
     #[prost(string, repeated, tag="2")]
     pub pipeline_owners: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
 }
-/// <p>Response message to list available languages</p>
+/// Response message to list available languages
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct ListS2tLanguagesResponse {
     /// available languages
@@ -550,7 +550,7 @@ pub struct ListS2tLanguagesResponse {
 // LIST S2T DOMAINS //
 // ////////////////////
 
-/// <p>Request message to list available domains. Optionally also filters can be set.</p>
+/// Request message to list available domains. Optionally also filters can be set.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct ListS2tDomainsRequest {
     /// Filter for languages
@@ -560,7 +560,7 @@ pub struct ListS2tDomainsRequest {
     #[prost(string, repeated, tag="2")]
     pub pipeline_owners: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
 }
-/// <p>Response message to list available domains</p>
+/// Response message to list available domains
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct ListS2tDomainsResponse {
     /// domains available. Example: \[&quot;medical&quot;, &quot;finance&quot;\]
@@ -571,7 +571,7 @@ pub struct ListS2tDomainsResponse {
 // GET SERVICE INFO //
 // ////////////////////
 
-/// <p>S2tGetServiceInfoResponse is used to return version information about the speech-to-text service.</p>
+/// S2tGetServiceInfoResponse is used to return version information about the speech-to-text service.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct S2tGetServiceInfoResponse {
     /// Version number based on semantic versioning, e.g. &quot;4.2.0&quot;.
@@ -582,7 +582,7 @@ pub struct S2tGetServiceInfoResponse {
 // SPEECH-2-TEXT PIPELINE CONFIG //
 // /////////////////////////////////
 
-/// <p>Speech2TextConfig is a configuration message for the speech-to-text pipeline</p>
+/// Speech2TextConfig is a configuration message for the speech-to-text pipeline
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Speech2TextConfig {
     /// Unique identifier for the configuration.
@@ -610,7 +610,7 @@ pub struct Speech2TextConfig {
     #[prost(message, optional, tag="8")]
     pub logging: ::core::option::Option<Logging>,
 }
-/// <p>S2tDescription contains descriptive information about the speech-to-text pipeline.</p>
+/// S2tDescription contains descriptive information about the speech-to-text pipeline.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct S2tDescription {
     /// Language of the speech-to-text system.
@@ -626,7 +626,7 @@ pub struct S2tDescription {
     #[prost(string, tag="4")]
     pub comments: ::prost::alloc::string::String,
 }
-/// <p>S2tInference contains information about inference models used in the speech-to-text pipeline.</p>
+/// S2tInference contains information about inference models used in the speech-to-text pipeline.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct S2tInference {
     /// Configuration for the acoustic models.
@@ -639,7 +639,7 @@ pub struct S2tInference {
     #[prost(enumeration="InferenceBackend", tag="3")]
     pub inference_backend: i32,
 }
-/// <p>AcousticModels contains information about different types of acoustic models.</p>
+/// AcousticModels contains information about different types of acoustic models.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct AcousticModels {
     /// Type of the acoustic model.
@@ -673,7 +673,7 @@ pub struct AcousticModels {
     #[prost(message, optional, tag="10")]
     pub parakeet: ::core::option::Option<Parakeet>,
 }
-/// <p>S2tCloudServiceAmazon message contains settings for the Amazon web service Cloud service inference.</p>
+/// S2tCloudServiceAmazon message contains settings for the Amazon web service Cloud service inference.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct S2tCloudServiceAmazon {
     /// Language of the audio to transcribe by Amazon web service s2t cloud service. It should be 4-letter language code
@@ -704,7 +704,7 @@ pub struct S2tCloudServiceAmazon {
     #[prost(string, tag="6")]
     pub vocabulary_name: ::prost::alloc::string::String,
 }
-/// <p>S2tCloudServiceDeepgram message contains settings for the Deepgram Cloud service inference.</p>
+/// S2tCloudServiceDeepgram message contains settings for the Deepgram Cloud service inference.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct S2tCloudServiceDeepgram {
     /// Model name from one of the speech-to-text models provided by Deepgram for the desired use-case.
@@ -737,7 +737,7 @@ pub struct S2tCloudServiceDeepgram {
     #[prost(bool, tag="7")]
     pub dictation: bool,
 }
-/// <p>S2tCloudServiceGoogle message contains settings for the Google Cloud service inference.</p>
+/// S2tCloudServiceGoogle message contains settings for the Google Cloud service inference.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct S2tCloudServiceGoogle {
     /// Model name from one of the speech-to-text models provided by Google for the desired use-case.
@@ -770,7 +770,7 @@ pub struct S2tCloudServiceGoogle {
     #[prost(int32, tag="7")]
     pub max_alternatives: i32,
 }
-/// <p>S2tCloudServiceMicrosoft message contains settings for the Microsoft Azure Cloud service inference.</p>
+/// S2tCloudServiceMicrosoft message contains settings for the Microsoft Azure Cloud service inference.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct S2tCloudServiceMicrosoft {
     /// Language of the audio to transcribe by Microsoft Azure s2t cloud service. It should be 4-letter language code
@@ -786,7 +786,7 @@ pub struct S2tCloudServiceMicrosoft {
     #[prost(bool, tag="3")]
     pub use_detailed_output_format: bool,
 }
-/// <p>Whisper contains information about the Whisper model.</p>
+/// Whisper contains information about the Whisper model.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct Whisper {
     /// Path to the model.
@@ -802,7 +802,7 @@ pub struct Whisper {
     #[prost(string, tag="4")]
     pub task: ::prost::alloc::string::String,
 }
-/// <p>WhisperTriton contains information about the Whisper model using Triton.</p>
+/// WhisperTriton contains information about the Whisper model using Triton.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct WhisperTriton {
     /// Path to the processor.
@@ -830,7 +830,7 @@ pub struct WhisperTriton {
     #[prost(int64, tag="8")]
     pub triton_server_port: i64,
 }
-/// <p>Wav2Vec contains information about the Wav2Vec model.</p>
+/// Wav2Vec contains information about the Wav2Vec model.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct Wav2Vec {
     /// Path to the model.
@@ -840,7 +840,7 @@ pub struct Wav2Vec {
     #[prost(bool, tag="2")]
     pub use_gpu: bool,
 }
-/// <p>Wav2VecTriton contains information about the Wav2Vec model using Triton.</p>
+/// Wav2VecTriton contains information about the Wav2Vec model using Triton.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct Wav2VecTriton {
     /// Path to the processor.
@@ -862,7 +862,7 @@ pub struct Wav2VecTriton {
     #[prost(int64, tag="6")]
     pub triton_server_port: i64,
 }
-/// <p>Parakeet contains information about the Parakeet model.</p>
+/// Parakeet contains information about the Parakeet model.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct Parakeet {
     /// Name of the Triton model.
@@ -881,7 +881,7 @@ pub struct Parakeet {
     #[prost(int64, tag="5")]
     pub triton_server_port: i64,
 }
-/// <p>PtFiles contains information about PT files.</p>
+/// PtFiles contains information about PT files.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct PtFiles {
     /// Path to the PT files.
@@ -891,14 +891,14 @@ pub struct PtFiles {
     #[prost(string, tag="2")]
     pub step: ::prost::alloc::string::String,
 }
-/// <p>CkptFile contains information about checkpoint files.</p>
+/// CkptFile contains information about checkpoint files.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct CkptFile {
     /// Path to the checkpoint file.
     #[prost(string, tag="1")]
     pub path: ::prost::alloc::string::String,
 }
-/// <p>LanguageModels contains information about language models.</p>
+/// LanguageModels contains information about language models.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct LanguageModels {
     /// Path to the directory of language models.
@@ -917,7 +917,7 @@ pub struct LanguageModels {
     #[prost(float, tag="5")]
     pub beam_search_scorer_beta: f32,
 }
-/// <p>StreamingServer contains information about the streaming server.</p>
+/// StreamingServer contains information about the streaming server.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct StreamingServer {
     /// Hostname of the streaming server.
@@ -933,7 +933,7 @@ pub struct StreamingServer {
     #[prost(message, optional, tag="4")]
     pub streaming_speech_recognition: ::core::option::Option<StreamingSpeechRecognition>,
 }
-/// <p>StreamingSpeechRecognition contains information about streaming speech recognition settings.</p>
+/// StreamingSpeechRecognition contains information about streaming speech recognition settings.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct StreamingSpeechRecognition {
     /// Indicates whether to transcribe non-final results for every stream of this pipeline. Unset: the server
@@ -966,14 +966,9 @@ pub struct StreamingSpeechRecognition {
     #[prost(float, optional, tag="7")]
     pub transcribe_not_final_period_seconds: ::core::option::Option<f32>,
 }
-/// <p>TurnDetectionOptions configures turn detection: deciding, at a pause of the caller, whether the caller has
-/// finished the turn. Exactly one turn detector is chosen by <code>oneof_turn_detector</code>; the fields outside it
-/// apply to every detector.</p>
-/// <p>Precedence for every field: the request config's value
-/// (<code>TranscribeRequestConfig.utterance_detection.turn_detection</code>), then the pipeline config's value
-/// (<code>StreamingSpeechRecognition.turn_detection</code>), then the server's configured value. When the request
-/// config chooses a different detector than the pipeline config, the request config's detector is used with only
-/// its own fields: none of the pipeline config's detector fields carry over.</p>
+/// TurnDetectionOptions configures turn detection: deciding, at a pause of the caller, whether the caller has finished the turn. Exactly one turn detector is chosen by <code>oneof_turn_detector</code>; the fields outside it apply to every detector.
+///
+/// Precedence for every field: the request config's value (<code>TranscribeRequestConfig.utterance_detection.turn_detection</code>), then the pipeline config's value (<code>StreamingSpeechRecognition.turn_detection</code>), then the server's configured value. When the request config chooses a different detector than the pipeline config, the request config's detector is used with only its own fields: none of the pipeline config's detector fields carry over.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct TurnDetectionOptions {
     /// Optional. Indicates if the turn-detection feature is active.
@@ -1052,8 +1047,7 @@ pub mod turn_detection_options {
         TurnDetectionPipecatSmartTurnOptions(super::TurnDetectionPipecatSmartTurnOptions),
     }
 }
-/// <p>TurnDetectionChatLlmOptions configures a chat LLM as the turn detector: the LLM is asked, with the prompts
-/// below and the transcription of the turn, whether the caller has finished.</p>
+/// TurnDetectionChatLlmOptions configures a chat LLM as the turn detector: the LLM is asked, with the prompts below and the transcription of the turn, whether the caller has finished.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct TurnDetectionChatLlmOptions {
     /// Optional. The OpenAI-compatible endpoint and model of the chat LLM. Unset fields take the server's
@@ -1068,10 +1062,7 @@ pub struct TurnDetectionChatLlmOptions {
     #[prost(string, optional, tag="3")]
     pub user_prompt: ::core::option::Option<::prost::alloc::string::String>,
 }
-/// <p>TurnDetectionEndOfUtteranceLlmOptions configures an end-of-utterance LLM (LiveKit-shaped, e.g.
-/// <code>livekit/turn-detector</code>) as the turn detector: the model scores the probability of the
-/// end-of-utterance token after the turn's transcription and, when
-/// <code>TurnDetectionOptions.turn_detection_conversation_context</code> is set, the turns before it.</p>
+/// TurnDetectionEndOfUtteranceLlmOptions configures an end-of-utterance LLM (LiveKit-shaped, e.g. <code>livekit/turn-detector</code>) as the turn detector: the model scores the probability of the end-of-utterance token after the turn's transcription and, when <code>TurnDetectionOptions.turn_detection_conversation_context</code> is set, the turns before it.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct TurnDetectionEndOfUtteranceLlmOptions {
     /// Optional. The OpenAI-compatible endpoint and served model name. Unset fields take the server's configured
@@ -1101,8 +1092,7 @@ pub struct TurnDetectionEndOfUtteranceLlmOptions {
     #[prost(bool, optional, tag="5")]
     pub exact_probability: ::core::option::Option<bool>,
 }
-/// <p>TurnDetectionOndewoDeOptions configures the ONDEWO German turn-detection model as the turn detector. It judges
-/// the turn from its text and word timing and is served by vLLM.</p>
+/// TurnDetectionOndewoDeOptions configures the ONDEWO German turn-detection model as the turn detector. It judges the turn from its text and word timing and is served by vLLM.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct TurnDetectionOndewoDeOptions {
     /// Optional. The vLLM deployment: <code>base_url</code>, <code>api_key</code> and <code>timeout</code> address
@@ -1118,9 +1108,7 @@ pub struct TurnDetectionOndewoDeOptions {
     #[prost(float, optional, tag="2")]
     pub end_of_turn_probability_threshold: ::core::option::Option<f32>,
 }
-/// <p>TurnDetectionOndewoDeFusionOptions configures the ONDEWO German fusion turn detector. It combines the ONDEWO
-/// German text model on vLLM, acoustic heads on Triton and signals computed from the stream into one end-of-turn
-/// probability. The Triton heads, the text model's served name and the weights file are server settings.</p>
+/// TurnDetectionOndewoDeFusionOptions configures the ONDEWO German fusion turn detector. It combines the ONDEWO German text model on vLLM, acoustic heads on Triton and signals computed from the stream into one end-of-turn probability. The Triton heads, the text model's served name and the weights file are server settings.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct TurnDetectionOndewoDeFusionOptions {
     /// Optional. Addresses the vLLM deployment of the text model (<code>base_url</code>, <code>api_key</code>,
@@ -1133,9 +1121,9 @@ pub struct TurnDetectionOndewoDeFusionOptions {
     #[prost(float, optional, tag="2")]
     pub end_of_turn_probability_threshold: ::core::option::Option<f32>,
 }
-/// <p>TurnDetectionPipecatSmartTurnOptions configures pipecat Smart Turn v3.2 as the turn detector. It judges the
-/// turn from the caller's audio alone and is served by Triton.</p>
-/// <p>Model: <a href="<https://github.com/pipecat-ai/smart-turn">pipecat> Smart Turn</a></p>
+/// TurnDetectionPipecatSmartTurnOptions configures pipecat Smart Turn v3.2 as the turn detector. It judges the turn from the caller's audio alone and is served by Triton.
+///
+/// Model: <a href="<https://github.com/pipecat-ai/smart-turn">pipecat> Smart Turn</a>
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct TurnDetectionPipecatSmartTurnOptions {
     /// Optional. Full name of the Triton model. Unset = the server's configured value (default:
@@ -1170,9 +1158,7 @@ pub struct TurnDetectionPipecatSmartTurnOptions {
     #[prost(float, optional, tag="6")]
     pub end_of_turn_probability_threshold: ::core::option::Option<f32>,
 }
-/// <p>TurnDetectionConversationContext carries the latest turns of the conversation for
-/// <code>TurnDetectionEndOfUtteranceLlmOptions</code> (see
-/// <code>TurnDetectionOptions.turn_detection_conversation_context</code>). No other detector reads it.</p>
+/// TurnDetectionConversationContext carries the latest turns of the conversation for <code>TurnDetectionEndOfUtteranceLlmOptions</code> (see <code>TurnDetectionOptions.turn_detection_conversation_context</code>). No other detector reads it.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct TurnDetectionConversationContext {
     /// The turns of the conversation, oldest first. They EXCLUDE the caller's utterance under evaluation, which
@@ -1180,8 +1166,7 @@ pub struct TurnDetectionConversationContext {
     #[prost(message, repeated, tag="1")]
     pub turn_detection_context_turns: ::prost::alloc::vec::Vec<TurnDetectionContextTurn>,
 }
-/// <p>One turn of the conversation context of the turn detection, read only by
-/// <code>TurnDetectionEndOfUtteranceLlmOptions</code>.</p>
+/// One turn of the conversation context of the turn detection, read only by <code>TurnDetectionEndOfUtteranceLlmOptions</code>.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct TurnDetectionContextTurn {
     /// Who spoke the turn.
@@ -1193,7 +1178,7 @@ pub struct TurnDetectionContextTurn {
 }
 /// Nested message and enum types in `TurnDetectionContextTurn`.
 pub mod turn_detection_context_turn {
-    /// <p>Who spoke the turn.</p>
+    /// Who spoke the turn.
     #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
     #[repr(i32)]
     pub enum Role {
@@ -1228,8 +1213,7 @@ pub mod turn_detection_context_turn {
         }
     }
 }
-/// <p>TurnDetectionHoldBands carries the hold bands of <code>TurnDetectionEndOfUtteranceLlmOptions</code>. No other
-/// detector reads them.</p>
+/// TurnDetectionHoldBands carries the hold bands of <code>TurnDetectionEndOfUtteranceLlmOptions</code>. No other detector reads them.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct TurnDetectionHoldBands {
     /// The bands, each holding a turn judged finished with a probability below its upper bound: the first band,
@@ -1238,7 +1222,7 @@ pub struct TurnDetectionHoldBands {
     #[prost(message, repeated, tag="1")]
     pub turn_detection_hold_bands: ::prost::alloc::vec::Vec<TurnDetectionHoldBand>,
 }
-/// <p>One hold band of <code>TurnDetectionEndOfUtteranceLlmOptions</code>.</p>
+/// One hold band of <code>TurnDetectionEndOfUtteranceLlmOptions</code>.
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
 pub struct TurnDetectionHoldBand {
     /// The exclusive upper bound of the end-of-utterance probabilities this band covers, valid range: 0 - 1.
@@ -1249,7 +1233,7 @@ pub struct TurnDetectionHoldBand {
     #[prost(float, tag="2")]
     pub max_silence_seconds: f32,
 }
-/// <p>Configuration options for OpenAI client chat completion requests used in turn detection and LLM post-processing.</p>
+/// Configuration options for OpenAI client chat completion requests used in turn detection and LLM post-processing.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct OpenaiLlmOptions {
     /// Optional. The API key used to authenticate with the OpenAI API.
@@ -1398,7 +1382,7 @@ pub struct OpenaiLlmOptions {
     #[prost(message, optional, tag="34")]
     pub extra_body: ::core::option::Option<::prost_types::Struct>,
 }
-/// <p>VoiceActivityDetection contains information about voice activity detection settings.</p>
+/// VoiceActivityDetection contains information about voice activity detection settings.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct VoiceActivityDetection {
     /// Deprecated in favour of <code>vad_method</code>, but still honoured so that configurations
@@ -1430,8 +1414,9 @@ pub struct VoiceActivityDetection {
     #[prost(enumeration="TsdMethod", tag="7")]
     pub tsd_method: i32,
 }
-/// <p>Pyannote contains configuration for the Pyannote voice activity detection model.</p>
-/// <p>Library: <a href="<https://github.com/pyannote/pyannote-audio/blob/develop/tutorials/voice_activity_detection.ipynb">pyannote-audio</a></p>>
+/// Pyannote contains configuration for the Pyannote voice activity detection model.
+///
+/// Library: <a href="<https://github.com/pyannote/pyannote-audio/blob/develop/tutorials/voice_activity_detection.ipynb">pyannote-audio</a>>
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Pyannote {
     /// Full name of the Pyannote model.
@@ -1455,11 +1440,11 @@ pub struct Pyannote {
     #[prost(int64, tag="6")]
     pub triton_server_port: i64,
 }
-/// <p>Silero contains configuration for the Silero voice activity detection model.</p>
-/// <p>Unlike <code>Pyannote</code>, Silero is configured with its own parameters rather than
-/// <code>(min_duration_on, min_duration_off)</code>. They carry exactly the meaning they have
-/// upstream in <code>get_speech_timestamps</code> / <code>VADIterator</code>.</p>
-/// <p>Library: <a href="<https://github.com/snakers4/silero-vad">silero-vad</a></p>>
+/// Silero contains configuration for the Silero voice activity detection model.
+///
+/// Unlike <code>Pyannote</code>, Silero is configured with its own parameters rather than <code>(min_duration_on, min_duration_off)</code>. They carry exactly the meaning they have upstream in <code>get_speech_timestamps</code> / <code>VADIterator</code>.
+///
+/// Library: <a href="<https://github.com/snakers4/silero-vad">silero-vad</a>>
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Silero {
     /// Full name of the Silero model.
@@ -1497,11 +1482,9 @@ pub struct Silero {
     #[prost(int64, tag="8")]
     pub triton_server_port: i64,
 }
-/// <p>WespeakerTsd contains configuration for the WeSpeaker target-speaker detection (TSD)
-/// model. Given a reference speaker embedding, it decides whether a newly detected utterance
-/// was spoken by the same person, so that speech from a different speaker (e.g. background
-/// noise, crosstalk, or a barge-in) can be rejected.</p>
-/// <p>Library: <a href="<https://huggingface.co/pyannote/wespeaker-voxceleb-resnet34-LM">wespeaker-voxceleb-resnet34-LM</a></p>>
+/// WespeakerTsd contains configuration for the WeSpeaker target-speaker detection (TSD) model. Given a reference speaker embedding, it decides whether a newly detected utterance was spoken by the same person, so that speech from a different speaker (e.g. background noise, crosstalk, or a barge-in) can be rejected.
+///
+/// Library: <a href="<https://huggingface.co/pyannote/wespeaker-voxceleb-resnet34-LM">wespeaker-voxceleb-resnet34-LM</a>>
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct WespeakerTsd {
     /// Indicates if target-speaker detection is active.
@@ -1533,7 +1516,7 @@ pub struct WespeakerTsd {
     #[prost(float, tag="7")]
     pub reference_max_length: f32,
 }
-/// <p>PostProcessing contains the configuration for post-processing.</p>
+/// PostProcessing contains the configuration for post-processing.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct PostProcessing {
     /// List of names of active post-processors.
@@ -1543,7 +1526,7 @@ pub struct PostProcessing {
     #[prost(message, optional, tag="2")]
     pub post_processors: ::core::option::Option<PostProcessors>,
 }
-/// <p>PostProcessors contains configurations for post-processors.</p>
+/// PostProcessors contains configurations for post-processors.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct PostProcessors {
     /// Configuration of the SymSpell spelling correction.
@@ -1556,7 +1539,7 @@ pub struct PostProcessors {
     #[prost(message, optional, tag="3")]
     pub llm_post_processing: ::core::option::Option<S2tLlmPostProcessing>,
 }
-/// <p>SymSpell contains configuration for the SymSpell spelling correction.</p>
+/// SymSpell contains configuration for the SymSpell spelling correction.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct SymSpell {
     /// Path to the dictionary used by symspell
@@ -1570,7 +1553,7 @@ pub struct SymSpell {
     #[prost(int64, tag="3")]
     pub prefix_length: i64,
 }
-/// <p>S2tNormalization contains configuration for the speech-to-text normalization.</p>
+/// S2tNormalization contains configuration for the speech-to-text normalization.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct S2tNormalization {
     /// Language for normalization of transcriptions.
@@ -1580,7 +1563,7 @@ pub struct S2tNormalization {
     #[prost(string, repeated, tag="2")]
     pub pipeline: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
 }
-/// <p>S2tLlmPostProcessing contains configuration for the speech-to-text postprocessing with LLM.</p>
+/// S2tLlmPostProcessing contains configuration for the speech-to-text postprocessing with LLM.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct S2tLlmPostProcessing {
     /// Optional. Configuration options for the OpenAI client used for post-processing.
@@ -1620,7 +1603,7 @@ pub struct S2tLlmPostProcessing {
     #[prost(message, optional, tag="12")]
     pub s2t_llm_post_processing_user_prompt_options: ::core::option::Option<S2tLlmPostProcessingSubTaskOptions>,
 }
-/// <p>Configuration of the options to translation task in LLM post-processing.</p>
+/// Configuration of the options to translation task in LLM post-processing.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct S2tLlmPostProcessingTranslationOptions {
     /// Optional. Indicates if the translation task of LLM post-processing is active.
@@ -1633,7 +1616,7 @@ pub struct S2tLlmPostProcessingTranslationOptions {
     #[prost(string, optional, tag="3")]
     pub prompt: ::core::option::Option<::prost::alloc::string::String>,
 }
-/// <p>Configuration of the options to inverse-normalization task in LLM post-processing.</p>
+/// Configuration of the options to inverse-normalization task in LLM post-processing.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct S2tLlmPostProcessingInverseNormalizationOptions {
     /// Optional. Indicates if the inverse-normalization task of LLM post-processing is active.
@@ -1658,7 +1641,7 @@ pub struct S2tLlmPostProcessingInverseNormalizationOptions {
     #[prost(message, optional, tag="7")]
     pub time_zone: ::core::option::Option<S2tLlmPostProcessingSubTaskOptions>,
 }
-/// <p>Configuration of the options to normalization task in LLM post-processing.</p>
+/// Configuration of the options to normalization task in LLM post-processing.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct S2tLlmPostProcessingNormalizationOptions {
     /// Optional. Indicates if the normalization task of LLM post-processing is active.
@@ -1683,7 +1666,7 @@ pub struct S2tLlmPostProcessingNormalizationOptions {
     #[prost(message, optional, tag="7")]
     pub time_zone: ::core::option::Option<S2tLlmPostProcessingSubTaskOptions>,
 }
-/// <p>Configuration of the options to summarization task in LLM post-processing.</p>
+/// Configuration of the options to summarization task in LLM post-processing.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct S2tLlmPostProcessingSummarizationOptions {
     /// Optional. Indicates if the summarization task of LLM post-processing is active.
@@ -1699,9 +1682,7 @@ pub struct S2tLlmPostProcessingSummarizationOptions {
     #[prost(int32, optional, tag="4")]
     pub max_chars: ::core::option::Option<i32>,
 }
-/// <p>Common configuration for an individual LLM post-processing sub-task (e.g. email, phone number,
-/// date and time, credit card number, social security number, time zone).
-/// Used by both normalization and inverse-normalization tasks.</p>
+/// Common configuration for an individual LLM post-processing sub-task (e.g. email, phone number, date and time, credit card number, social security number, time zone). Used by both normalization and inverse-normalization tasks.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct S2tLlmPostProcessingSubTaskOptions {
     /// Optional. Indicates if this sub-task is active.
@@ -1712,7 +1693,7 @@ pub struct S2tLlmPostProcessingSubTaskOptions {
     #[prost(string, optional, tag="2")]
     pub prompt: ::core::option::Option<::prost::alloc::string::String>,
 }
-/// <p>Logging contains configuration for logging.</p>
+/// Logging contains configuration for logging.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct Logging {
     /// Type of logging.
@@ -1726,7 +1707,7 @@ pub struct Logging {
 // GET LIST OF AVAILABLE LANGUAGE MODELS //
 // /////////////////////////////////////////
 
-/// <p>ListS2tLanguageModelsRequest is used to request a list of available language models for specified pipelines.</p>
+/// ListS2tLanguageModelsRequest is used to request a list of available language models for specified pipelines.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct ListS2tLanguageModelsRequest {
     /// List of pipeline IDs to retrieve their available language models.
@@ -1734,7 +1715,7 @@ pub struct ListS2tLanguageModelsRequest {
     #[prost(string, repeated, tag="1")]
     pub ids: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
 }
-/// <p>LanguageModelPipelineId contains information about a pipeline and its available language models.</p>
+/// LanguageModelPipelineId contains information about a pipeline and its available language models.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct LanguageModelPipelineId {
     /// A pipeline ID. Example: &quot;pipeline_1&quot;
@@ -1744,7 +1725,7 @@ pub struct LanguageModelPipelineId {
     #[prost(string, repeated, tag="2")]
     pub model_names: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
 }
-/// <p>ListS2tLanguageModelsResponse is used to return the available language models for specified pipelines.</p>
+/// ListS2tLanguageModelsResponse is used to return the available language models for specified pipelines.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ListS2tLanguageModelsResponse {
     /// Response is a list of <code>LanguageModelPipelineId</code>, where each element contains a pipeline ID and its associated
@@ -1758,21 +1739,21 @@ pub struct ListS2tLanguageModelsResponse {
 // CUSTOM LANGUAGE MODEL FEATURES  //
 // ///////////////////////////////////
 
-/// <p>CreateUserLanguageModelRequest is used to request the creation of a new user-specific language model.</p>
+/// CreateUserLanguageModelRequest is used to request the creation of a new user-specific language model.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct CreateUserLanguageModelRequest {
     /// Name of the language model to create. Example: &quot;user_lm_1&quot;
     #[prost(string, tag="1")]
     pub language_model_name: ::prost::alloc::string::String,
 }
-/// <p>DeleteUserLanguageModelRequest is used to request the deletion of a user-specific language model.</p>
+/// DeleteUserLanguageModelRequest is used to request the deletion of a user-specific language model.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct DeleteUserLanguageModelRequest {
     /// Name of the language model to delete. Example: &quot;user_lm_1&quot;
     #[prost(string, tag="1")]
     pub language_model_name: ::prost::alloc::string::String,
 }
-/// <p>AddDataToUserLanguageModelRequest is used to request the addition of data to a user-specific language model.</p>
+/// AddDataToUserLanguageModelRequest is used to request the addition of data to a user-specific language model.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct AddDataToUserLanguageModelRequest {
     /// Name of the language model to which to add data. Example: &quot;user_lm_1&quot;
@@ -1783,7 +1764,7 @@ pub struct AddDataToUserLanguageModelRequest {
     #[prost(bytes="vec", tag="2")]
     pub zipped_data: ::prost::alloc::vec::Vec<u8>,
 }
-/// <p>TrainUserLanguageModelRequest is used to request the training of a user-specific language model.</p>
+/// TrainUserLanguageModelRequest is used to request the training of a user-specific language model.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct TrainUserLanguageModelRequest {
     /// Name of the language model to train. Example: &quot;user_lm_1&quot;
@@ -1797,15 +1778,16 @@ pub struct TrainUserLanguageModelRequest {
 // LIST OF S2T NORMALIZATION PIPELINES //
 // //////////////////////
 
-/// <p>The request message for <code>ListS2tNormalizationPipelines</code>.</p>
-/// <p>Filter pipelines by attributes in request.</p>
+/// The request message for <code>ListS2tNormalizationPipelines</code>.
+///
+/// Filter pipelines by attributes in request.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct ListS2tNormalizationPipelinesRequest {
     /// Optional. Define the language.
     #[prost(string, tag="1")]
     pub language: ::prost::alloc::string::String,
 }
-/// <p>The response message for <code>ListS2tNormalizationPipelines</code>.</p>
+/// The response message for <code>ListS2tNormalizationPipelines</code>.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct ListS2tNormalizationPipelinesResponse {
     /// Required. Representation of a list of normalization pipelines configurations.
@@ -1904,7 +1886,7 @@ impl InferenceBackend {
         }
     }
 }
-/// <p>Latency tier to use for processing an OpenAI request. Affects cost and throughput.</p>
+/// Latency tier to use for processing an OpenAI request. Affects cost and throughput.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
 pub enum ServiceTier {
@@ -1949,7 +1931,7 @@ impl ServiceTier {
         }
     }
 }
-/// <p>Verbosity level for the response output.</p>
+/// Verbosity level for the response output.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
 pub enum Verbosity {
@@ -1986,7 +1968,7 @@ impl Verbosity {
         }
     }
 }
-/// <p>Effort level for reasoning models (e.g., o1, o3). Controls the trade-off between speed and quality.</p>
+/// Effort level for reasoning models (e.g., o1, o3). Controls the trade-off between speed and quality.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
 pub enum ReasoningEffort {
@@ -2027,7 +2009,7 @@ impl ReasoningEffort {
         }
     }
 }
-/// <p>VadMethod selects the model used to split the audio stream into utterances.</p>
+/// VadMethod selects the model used to split the audio stream into utterances.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
 pub enum VadMethod {
@@ -2061,9 +2043,7 @@ impl VadMethod {
         }
     }
 }
-/// <p>TsdMethod selects the model used for target-speaker detection (TSD): deciding whether a
-/// newly detected utterance came from the main speaker of the call, so that speech from anyone
-/// else (crosstalk, background speakers, barge-in) can be rejected.</p>
+/// TsdMethod selects the model used for target-speaker detection (TSD): deciding whether a newly detected utterance came from the main speaker of the call, so that speech from anyone else (crosstalk, background speakers, barge-in) can be rejected.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
 pub enum TsdMethod {

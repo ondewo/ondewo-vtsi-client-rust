@@ -269,8 +269,7 @@ pub struct DeleteNotificationsRequest {
     #[prost(string, repeated, tag="1")]
     pub notification_names: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
 }
-/// Message for streaming notifications in real time via
-/// <a href="index.html#ondewo.nlu.Users.StreamNotifications">Users.StreamNotifications</a>.
+/// Message for streaming notifications in real time via <a href="index.html#ondewo.nlu.Users.StreamNotifications">Users.StreamNotifications</a>.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct StreamNotificationsRequest {
     /// Optional filter to narrow the stream down to specific notifications (same semantics as
@@ -862,8 +861,7 @@ pub struct DeleteAllContextsRequest {
     #[prost(string, tag="1")]
     pub session_id: ::prost::alloc::string::String,
 }
-/// Represents the metadata of the long-running operation that can be a parent operation for sub-operations or
-/// can be a sub-operation itself
+/// Represents the metadata of the long-running operation that can be a parent operation for sub-operations or can be a sub-operation itself
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct OperationMetadata {
     /// long-running operation status code
@@ -935,8 +933,7 @@ pub struct OperationMetadata {
 }
 /// Nested message and enum types in `OperationMetadata`.
 pub mod operation_metadata {
-    /// Structure to set status of operation.
-    /// An operation may not be started if NOT_STARTED is set, in progress if IN_PROGRESS, finished if DONE, interrupted if CANCELED or failed if FAILED.
+    /// Structure to set status of operation. An operation may not be started if NOT_STARTED is set, in progress if IN_PROGRESS, finished if DONE, interrupted if CANCELED or failed if FAILED.
     #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
     #[repr(i32)]
     pub enum Status {
@@ -981,8 +978,7 @@ pub mod operation_metadata {
             }
         }
     }
-    /// Type of operation.
-    /// It can be creating, importing, exporting, deleting, restoring, building cache, training or exporting benchmark an agent
+    /// Type of operation. It can be creating, importing, exporting, deleting, restoring, building cache, training or exporting benchmark an agent
     #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
     #[repr(i32)]
     pub enum OperationType {
@@ -1459,10 +1455,7 @@ pub struct RemoteOperationContainerStatus {
     #[prost(string, tag="19")]
     pub image: ::prost::alloc::string::String,
 }
-/// Describes one docker container started by a remote operation. A single operation may start several
-/// containers sequentially (hardware-check, GPU pre-allocation, build-cache, and one training container
-/// per algorithm), so containers are enumerated by
-/// <a href="index.html#ondewo.nlu.Operations.ListRemoteOperationContainers">Operations.ListRemoteOperationContainers</a>.
+/// Describes one docker container started by a remote operation. A single operation may start several containers sequentially (hardware-check, GPU pre-allocation, build-cache, and one training container per algorithm), so containers are enumerated by <a href="index.html#ondewo.nlu.Operations.ListRemoteOperationContainers">Operations.ListRemoteOperationContainers</a>.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct RemoteOperationContainer {
     /// The docker container id (64-hex). Empty until captured at launch.
@@ -1604,8 +1597,7 @@ impl RemoteOperationContainerLifecycleState {
         }
     }
 }
-/// Represents an intent.
-/// Intents convert a number of user expressions or patterns into an action. An action is an extraction of a user command or sentence semantics.
+/// Represents an intent. Intents convert a number of user expressions or patterns into an action. An action is an extraction of a user command or sentence semantics.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Intent {
     /// Required for all methods except <code>create</code> (<code>create</code> populates the name
@@ -1769,8 +1761,7 @@ pub mod intent {
     }
     /// Nested message and enum types in `TrainingPhrase`.
     pub mod training_phrase {
-        /// Represents an entity annotation in a training phrase. The entity can be annotated on the level of
-        /// entity type only or both entity type and entity value.
+        /// Represents an entity annotation in a training phrase. The entity can be annotated on the level of entity type only or both entity type and entity value.
         #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
         pub struct Entity {
             /// Required. The unique entity type identifier in format
@@ -3418,9 +3409,7 @@ pub struct ListTrainingPhrasesofIntentsWithEnrichmentResponse {
     #[prost(string, tag="2")]
     pub next_page_token: ::prost::alloc::string::String,
 }
-/// Represents the options for views of an intent.
-/// An intent can be a sizable object. Therefore, we provide a resource view that
-/// does not return training phrases in the response by default.
+/// Represents the options for views of an intent. An intent can be a sizable object. Therefore, we provide a resource view that does not return training phrases in the response by default.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
 pub enum IntentView {
@@ -4612,8 +4601,7 @@ pub struct UpdateCcaiProjectResponse {
     #[prost(string, tag="2")]
     pub error_message: ::prost::alloc::string::String,
 }
-/// Request to delete a CCAI service project
-/// If a deployed CCAI service project was deleted then it was undeployed beforehand automatically
+/// Request to delete a CCAI service project If a deployed CCAI service project was deleted then it was undeployed beforehand automatically
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct DeleteCcaiProjectRequest {
     /// CCAI service project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
@@ -4624,8 +4612,7 @@ pub struct DeleteCcaiProjectRequest {
     #[prost(string, tag="4")]
     pub nlu_project_name: ::prost::alloc::string::String,
 }
-/// Response to delete a CCAI service project
-/// If a deployed CCAI service project was deleted then it was undeployed beforehand automatically
+/// Response to delete a CCAI service project If a deployed CCAI service project was deleted then it was undeployed beforehand automatically
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct DeleteCcaiProjectResponse {
     /// CCAI service project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
@@ -4694,9 +4681,7 @@ impl CcaiProjectStatus {
 }
 /// Defines the types of CCAI (Call Center AI) services available in the system.
 ///
-/// Each service type represents a specific capability or module within the ONDEWO platform
-/// that enables comprehensive call center and customer interaction management. Services can be
-/// composed in workflows and are identified by their type, language code, and provider configuration.
+/// Each service type represents a specific capability or module within the ONDEWO platform that enables comprehensive call center and customer interaction management. Services can be composed in workflows and are identified by their type, language code, and provider configuration.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
 pub enum CcaiServiceType {
@@ -5100,9 +5085,7 @@ impl CcaiProjectView {
         }
     }
 }
-/// Represents an entity type.
-/// Entity types serve as a tool for extracting parameter values from natural
-/// language queries.
+/// Represents an entity type. Entity types serve as a tool for extracting parameter values from natural language queries.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct EntityType {
     /// Required for all methods except <code>create</code> (<code>create</code> populates the name
@@ -5289,9 +5272,7 @@ pub mod entity_type {
             }
         }
     }
-    /// Represents different entity type expansion modes. Automated expansion
-    /// allows an agent to recognize values that have not been explicitly listed in
-    /// the entity (for example, new kinds of shopping list items).
+    /// Represents different entity type expansion modes. Automated expansion allows an agent to recognize values that have not been explicitly listed in the entity (for example, new kinds of shopping list items).
     #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
     #[repr(i32)]
     pub enum AutoExpansionMode {
@@ -5864,9 +5845,7 @@ pub mod entity_value_sorting {
         }
     }
 }
-/// Represents the options for views of an entity type.
-/// An entity type can be a sizable object. Therefore, we provide a resource view that
-/// does not return all values and synonyms besides the full view that is set by default.
+/// Represents the options for views of an entity type. An entity type can be a sizable object. Therefore, we provide a resource view that does not return all values and synonyms besides the full view that is set by default.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
 pub enum EntityTypeView {
@@ -6359,8 +6338,7 @@ pub struct GetLlmEvaluationDatasetRequest {
     #[prost(string, tag="4")]
     pub language_code: ::prost::alloc::string::String,
 }
-/// Filter conditions for ListDatasets. All fields are optional; multiple fields
-/// set at the same time are combined via logical AND.
+/// Filter conditions for ListDatasets. All fields are optional; multiple fields set at the same time are combined via logical AND.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct LlmEvaluationDatasetFilter {
     /// Optional. Match only datasets whose display name contains this substring
@@ -6517,8 +6495,7 @@ pub struct GetLlmEvaluationExampleRequest {
     #[prost(string, tag="4")]
     pub language_code: ::prost::alloc::string::String,
 }
-/// Filter conditions for ListExamples. All fields are optional; multiple fields
-/// set at the same time are combined via logical AND.
+/// Filter conditions for ListExamples. All fields are optional; multiple fields set at the same time are combined via logical AND.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct LlmEvaluationExampleFilter {
     /// Optional. Match only examples whose display name contains this substring
@@ -6689,8 +6666,7 @@ pub struct GetLlmEvaluationExperimentRequest {
     #[prost(string, tag="4")]
     pub language_code: ::prost::alloc::string::String,
 }
-/// Filter conditions for ListExperiments. All fields are optional; multiple
-/// fields set at the same time are combined via logical AND.
+/// Filter conditions for ListExperiments. All fields are optional; multiple fields set at the same time are combined via logical AND.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct LlmEvaluationExperimentFilter {
     /// Optional. Match only experiments whose display name contains this substring
@@ -6855,8 +6831,7 @@ pub struct SubmitLlmEvaluationFeedbackRequest {
     #[prost(string, tag="5")]
     pub language_code: ::prost::alloc::string::String,
 }
-/// Filter conditions for ListFeedback. All fields are optional; multiple fields
-/// set at the same time are combined via logical AND.
+/// Filter conditions for ListFeedback. All fields are optional; multiple fields set at the same time are combined via logical AND.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct LlmEvaluationFeedbackFilter {
     /// Optional. Match only feedback attached to this experiment (resource name).
@@ -6995,8 +6970,7 @@ pub struct LlmEvaluationTurnResult {
 
 // region release gate domain messages
 
-/// Threshold set evaluated by a release gate. Nested in a dedicated message so
-/// presence can be detected at the message level (proto3 scalars carry no presence).
+/// Threshold set evaluated by a release gate. Nested in a dedicated message so presence can be detected at the message level (proto3 scalars carry no presence).
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
 pub struct LlmEvaluationReleaseGateThresholds {
     /// Minimum pass rate (0.0-1.0) the candidate experiment must reach.
@@ -7013,8 +6987,7 @@ pub struct LlmEvaluationReleaseGateThresholds {
     #[prost(bool, tag="4")]
     pub acceptance_must_pass: bool,
 }
-/// Safety section of a release gate: a separate adversarial experiment scored
-/// with safety evaluators.
+/// Safety section of a release gate: a separate adversarial experiment scored with safety evaluators.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct LlmEvaluationReleaseGateSafetyConfig {
     /// Whether the safety section is evaluated as part of gate runs.
@@ -7034,8 +7007,7 @@ pub struct LlmEvaluationReleaseGateSafetyConfig {
     #[prost(double, optional, tag="5")]
     pub max_bias: ::core::option::Option<f64>,
 }
-/// A release gate: a named set of thresholds over evaluator scores, regression
-/// deltas and telemetry that decides whether a candidate configuration ships.
+/// A release gate: a named set of thresholds over evaluator scores, regression deltas and telemetry that decides whether a candidate configuration ships.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct LlmEvaluationReleaseGate {
     /// The unique resource name of the release gate. Read-only; populated by the server.
@@ -7229,8 +7201,7 @@ pub struct GetLlmEvaluationReleaseGateRequest {
     #[prost(string, tag="4")]
     pub language_code: ::prost::alloc::string::String,
 }
-/// Filter conditions for ListReleaseGates. All fields are optional; multiple
-/// fields set at the same time are combined via logical AND.
+/// Filter conditions for ListReleaseGates. All fields are optional; multiple fields set at the same time are combined via logical AND.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct LlmEvaluationReleaseGateFilter {
     /// Optional. Match only gates whose display name contains this substring
@@ -7361,8 +7332,7 @@ pub struct GetLlmEvaluationReleaseGateRunRequest {
     #[prost(string, tag="4")]
     pub language_code: ::prost::alloc::string::String,
 }
-/// Filter conditions for ListReleaseGateRuns. All fields are optional; multiple
-/// fields set at the same time are combined via logical AND.
+/// Filter conditions for ListReleaseGateRuns. All fields are optional; multiple fields set at the same time are combined via logical AND.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct LlmEvaluationReleaseGateRunFilter {
     /// Optional. Match only runs of this gate (resource name).
@@ -7433,8 +7403,7 @@ pub struct LlmEvaluationScorecardComponent {
     #[prost(string, tag="4")]
     pub evaluator_name: ::prost::alloc::string::String,
 }
-/// A scorecard: a named weighted multi-criteria roll-up definition applied to
-/// experiments for release reporting.
+/// A scorecard: a named weighted multi-criteria roll-up definition applied to experiments for release reporting.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct LlmEvaluationScorecard {
     /// The unique resource name of the scorecard. Read-only; populated by the server.
@@ -7502,8 +7471,7 @@ pub struct GetLlmEvaluationScorecardRequest {
     #[prost(string, tag="4")]
     pub language_code: ::prost::alloc::string::String,
 }
-/// Filter conditions for ListScorecards. All fields are optional; multiple
-/// fields set at the same time are combined via logical AND.
+/// Filter conditions for ListScorecards. All fields are optional; multiple fields set at the same time are combined via logical AND.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct LlmEvaluationScorecardFilter {
     /// Optional. Match only scorecards whose display name contains this substring
@@ -7965,8 +7933,7 @@ pub struct GetLlmEvaluationScheduleRequest {
     #[prost(string, tag="4")]
     pub language_code: ::prost::alloc::string::String,
 }
-/// Filter conditions for ListSchedules. All fields are optional; multiple fields
-/// set at the same time are combined via logical AND.
+/// Filter conditions for ListSchedules. All fields are optional; multiple fields set at the same time are combined via logical AND.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct LlmEvaluationScheduleFilter {
     /// Optional. Match only schedules whose display name contains this substring
@@ -8060,8 +8027,7 @@ pub struct DeleteLlmEvaluationScheduleRequest {
 
 // region report messages
 
-/// An immutable persisted report artifact (release summaries, gate sign-offs,
-/// exported evaluation snapshots).
+/// An immutable persisted report artifact (release summaries, gate sign-offs, exported evaluation snapshots).
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct LlmEvaluationReport {
     /// The unique resource name of the report. Read-only; populated by the server.
@@ -8140,8 +8106,7 @@ pub struct GetLlmEvaluationReportRequest {
     #[prost(string, tag="4")]
     pub language_code: ::prost::alloc::string::String,
 }
-/// Filter conditions for ListReports. All fields are optional; multiple fields
-/// set at the same time are combined via logical AND.
+/// Filter conditions for ListReports. All fields are optional; multiple fields set at the same time are combined via logical AND.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct LlmEvaluationReportFilter {
     /// Optional. Match only reports whose display name contains this substring
@@ -8222,13 +8187,7 @@ pub struct LlmEvaluationAbTrafficConfig {
     #[prost(string, tag="2")]
     pub assignment_salt: ::prost::alloc::string::String,
 }
-/// RAGFlow variant override for an A/B experiment running on a RAG-classifier
-/// project (<code>IntentRagflowClassifier</code>). Where an IntentAgent variant
-/// overrides the LLM via <code>ccai_service_names</code>, a RAG variant overrides
-/// the project's chat-assistant LLM CcaiService and the retrieval parameters used
-/// when answering the assigned sessions. Override-or-inherit semantics apply per
-/// field: an empty / zero value means "inherit the project's base
-/// IntentRagflowClassifier config for this field".
+/// RAGFlow variant override for an A/B experiment running on a RAG-classifier project (<code>IntentRagflowClassifier</code>). Where an IntentAgent variant overrides the LLM via <code>ccai_service_names</code>, a RAG variant overrides the project's chat-assistant LLM CcaiService and the retrieval parameters used when answering the assigned sessions. Override-or-inherit semantics apply per field: an empty / zero value means "inherit the project's base IntentRagflowClassifier config for this field".
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct RagVariantConfig {
     /// CcaiService name whose LLM connection details back the chat-assistant LLM
@@ -8259,19 +8218,7 @@ pub struct RagVariantConfig {
     #[prost(string, tag="5")]
     pub rerank_model_ccai_service_name: ::prost::alloc::string::String,
 }
-/// One routing variant of an A/B experiment. The variant overrides the model used
-/// for the sessions assigned to it. A variant is one of two shapes depending on
-/// the project's classifier:
-/// <ul>
-///    <li><b>IntentAgent projects</b> — the variant overrides the LLM connection
-///        via <code>ccai_service_names</code> (+ optional <code>model_name</code> /
-///        <code>prompt_version</code>).</li>
-///    <li><b>RAG projects</b> (<code>IntentRagflowClassifier</code>) — the variant
-///        overrides the chat-assistant LLM CcaiService and retrieval parameters via
-///        <code>rag_variant_config</code>.</li>
-/// </ul>
-/// The two override shapes are mutually exclusive per variant; the server applies
-/// whichever matches the project's classifier type.
+/// One routing variant of an A/B experiment. The variant overrides the model used for the sessions assigned to it. A variant is one of two shapes depending on the project's classifier: <ul> <li><b>IntentAgent projects</b> — the variant overrides the LLM connection via <code>ccai_service_names</code> (+ optional <code>model_name</code> / <code>prompt_version</code>).</li> <li><b>RAG projects</b> (<code>IntentRagflowClassifier</code>) — the variant overrides the chat-assistant LLM CcaiService and retrieval parameters via <code>rag_variant_config</code>.</li> </ul> The two override shapes are mutually exclusive per variant; the server applies whichever matches the project's classifier type.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct LlmEvaluationAbVariant {
     /// Required. Stable slug identifying the variant within its experiment
@@ -8312,8 +8259,7 @@ pub struct LlmEvaluationAbVariant {
     #[prost(message, optional, tag="9")]
     pub rag_variant_config: ::core::option::Option<RagVariantConfig>,
 }
-/// An A/B experiment: a set of routing variants split over live DetectIntent
-/// traffic for a (project, language_code) scope.
+/// An A/B experiment: a set of routing variants split over live DetectIntent traffic for a (project, language_code) scope.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct LlmEvaluationAbExperiment {
     /// The unique resource name of the A/B experiment. Read-only; populated by the server.
@@ -8428,8 +8374,7 @@ pub struct GetLlmEvaluationAbExperimentRequest {
     #[prost(string, tag="4")]
     pub language_code: ::prost::alloc::string::String,
 }
-/// Filter conditions for ListAbExperiments. All fields are optional; multiple
-/// fields set at the same time are combined via logical AND.
+/// Filter conditions for ListAbExperiments. All fields are optional; multiple fields set at the same time are combined via logical AND.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct LlmEvaluationAbExperimentFilter {
     /// Optional. Match only experiments whose display name contains this substring
@@ -8572,12 +8517,7 @@ pub struct GetLlmEvaluationAbExperimentResultsResponse {
     #[prost(message, repeated, tag="2")]
     pub variant_results: ::prost::alloc::vec::Vec<LlmEvaluationAbVariantResult>,
 }
-/// A computed, read-only rollout recommendation for an A/B experiment: which
-/// variant currently wins against the control on the chosen optimize metric,
-/// under the requested statistical guard-rails. Stateless — recomputed on demand
-/// by <code>LlmEvaluationGetAbRolloutRecommendation</code> from the per-variant
-/// results rollup; nothing is persisted and no traffic / config changes. The
-/// operator decides whether to apply it via <code>LlmEvaluationApplyAbRollout</code>.
+/// A computed, read-only rollout recommendation for an A/B experiment: which variant currently wins against the control on the chosen optimize metric, under the requested statistical guard-rails. Stateless — recomputed on demand by <code>LlmEvaluationGetAbRolloutRecommendation</code> from the per-variant results rollup; nothing is persisted and no traffic / config changes. The operator decides whether to apply it via <code>LlmEvaluationApplyAbRollout</code>.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct LlmEvaluationAbRolloutRecommendation {
     /// The metric the recommendation was computed against (echoed from the request).
@@ -8617,13 +8557,7 @@ pub struct LlmEvaluationAbRolloutRecommendation {
     #[prost(string, tag="9")]
     pub reason: ::prost::alloc::string::String,
 }
-/// The persisted audit record of an A/B rollout that an operator explicitly
-/// applied: it captures which variant's config was promoted to the project's
-/// classifier default, on which metric, and the statistics at the moment of
-/// application. Written + returned by <code>LlmEvaluationApplyAbRollout</code>;
-/// read back via <code>LlmEvaluationGetAbRolloutDecision</code> /
-/// <code>LlmEvaluationListAbRolloutDecisions</code>. There is no auto-rollout —
-/// every decision row corresponds to an explicit operator action.
+/// The persisted audit record of an A/B rollout that an operator explicitly applied: it captures which variant's config was promoted to the project's classifier default, on which metric, and the statistics at the moment of application. Written + returned by <code>LlmEvaluationApplyAbRollout</code>; read back via <code>LlmEvaluationGetAbRolloutDecision</code> / <code>LlmEvaluationListAbRolloutDecisions</code>. There is no auto-rollout — every decision row corresponds to an explicit operator action.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct LlmEvaluationAbRolloutDecision {
     /// The unique resource name of the rollout decision. Read-only; populated by the server.
@@ -8676,10 +8610,7 @@ pub struct LlmEvaluationAbRolloutDecision {
 
 // region a/b rollout RPC messages
 
-/// Request to compute a rollout recommendation for an A/B experiment. Read-only /
-/// stateless — computes the winner-vs-control statistics on demand under the
-/// supplied guard-rails and returns a LlmEvaluationAbRolloutRecommendation
-/// without mutating anything.
+/// Request to compute a rollout recommendation for an A/B experiment. Read-only / stateless — computes the winner-vs-control statistics on demand under the supplied guard-rails and returns a LlmEvaluationAbRolloutRecommendation without mutating anything.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetLlmEvaluationAbRolloutRecommendationRequest {
     /// Resource name of the experiment to evaluate.
@@ -8711,10 +8642,7 @@ pub struct GetLlmEvaluationAbRolloutRecommendationRequest {
     #[prost(string, tag="7")]
     pub language_code: ::prost::alloc::string::String,
 }
-/// Request to apply an A/B rollout: promotes the chosen variant's config to the
-/// project's classifier default, stops the experiment and writes the audit
-/// decision. Idempotent — re-applying the same already-applied experiment returns
-/// the existing decision rather than promoting twice.
+/// Request to apply an A/B rollout: promotes the chosen variant's config to the project's classifier default, stops the experiment and writes the audit decision. Idempotent — re-applying the same already-applied experiment returns the existing decision rather than promoting twice.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct ApplyLlmEvaluationAbRolloutRequest {
     /// Resource name of the experiment to roll out.
@@ -8737,8 +8665,7 @@ pub struct ApplyLlmEvaluationAbRolloutRequest {
     #[prost(string, tag="5")]
     pub language_code: ::prost::alloc::string::String,
 }
-/// Request to get a single A/B rollout decision (the applied audit record) for an
-/// experiment.
+/// Request to get a single A/B rollout decision (the applied audit record) for an experiment.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct GetLlmEvaluationAbRolloutDecisionRequest {
     /// Resource name of the rollout decision to fetch.
@@ -8756,8 +8683,7 @@ pub struct GetLlmEvaluationAbRolloutDecisionRequest {
     #[prost(string, tag="4")]
     pub language_code: ::prost::alloc::string::String,
 }
-/// Filter conditions for ListAbRolloutDecisions. All fields are optional;
-/// multiple fields set at the same time are combined via logical AND.
+/// Filter conditions for ListAbRolloutDecisions. All fields are optional; multiple fields set at the same time are combined via logical AND.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct LlmEvaluationAbRolloutDecisionFilter {
     /// Optional. Match only decisions applied to this A/B experiment (resource name).
@@ -8768,8 +8694,7 @@ pub struct LlmEvaluationAbRolloutDecisionFilter {
     #[prost(string, tag="2")]
     pub applied_by: ::prost::alloc::string::String,
 }
-/// Request to list A/B rollout decisions within a project, optionally narrowed by
-/// filter (typically by experiment).
+/// Request to list A/B rollout decisions within a project, optionally narrowed by filter (typically by experiment).
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct ListLlmEvaluationAbRolloutDecisionsRequest {
     /// Project owning the decisions.
@@ -8813,9 +8738,7 @@ pub struct ListLlmEvaluationAbRolloutDecisionsResponse {
 
 // region online evaluation domain messages
 
-/// Optional filter narrowing which already-persisted live session steps an
-/// online-evaluation config samples. All fields are optional; multiple fields set
-/// at the same time are combined via logical AND.
+/// Optional filter narrowing which already-persisted live session steps an online-evaluation config samples. All fields are optional; multiple fields set at the same time are combined via logical AND.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct LlmEvaluationOnlineSessionFilter {
     /// Optional. Match only session steps whose session carries every one of these
@@ -8835,11 +8758,7 @@ pub struct LlmEvaluationOnlineSessionFilter {
     #[prost(bool, tag="4")]
     pub require_telemetry: bool,
 }
-/// An online-evaluation config: a per-(project, language_code) definition that a
-/// swarm-safe background worker uses to sample already-persisted live session
-/// steps, score the recorded answer with a reference-free evaluator set, and
-/// enqueue failing steps into the annotation queue. Mirrors the LlmEvaluationSchedule
-/// scoping / audit / enabled-flag shape.
+/// An online-evaluation config: a per-(project, language_code) definition that a swarm-safe background worker uses to sample already-persisted live session steps, score the recorded answer with a reference-free evaluator set, and enqueue failing steps into the annotation queue. Mirrors the LlmEvaluationSchedule scoping / audit / enabled-flag shape.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct LlmEvaluationOnlineConfig {
     /// The unique resource name of the online config. Read-only; populated by the server.
@@ -8942,8 +8861,7 @@ pub struct GetLlmEvaluationOnlineConfigRequest {
     #[prost(string, tag="4")]
     pub language_code: ::prost::alloc::string::String,
 }
-/// Filter conditions for ListOnlineConfigs. All fields are optional; multiple
-/// fields set at the same time are combined via logical AND.
+/// Filter conditions for ListOnlineConfigs. All fields are optional; multiple fields set at the same time are combined via logical AND.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct LlmEvaluationOnlineConfigFilter {
     /// Optional. Match only configs whose display name contains this substring
@@ -9034,11 +8952,7 @@ pub struct DeleteLlmEvaluationOnlineConfigRequest {
 
 // region online result domain messages
 
-/// A self-contained online-evaluation result: one row per scored session step.
-/// Per-criterion feedbacks are stored as an embedded repeated LlmEvaluationFeedback
-/// list (exactly like LlmEvaluationTurnResult.feedbacks — NOT persisted into the
-/// experiment-scoped llm_feedback table). Produced by the online-evaluation worker;
-/// read-only over the API.
+/// A self-contained online-evaluation result: one row per scored session step. Per-criterion feedbacks are stored as an embedded repeated LlmEvaluationFeedback list (exactly like LlmEvaluationTurnResult.feedbacks — NOT persisted into the experiment-scoped llm_feedback table). Produced by the online-evaluation worker; read-only over the API.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct LlmEvaluationOnlineResult {
     /// The unique resource name of the result. Read-only; populated by the server.
@@ -9104,8 +9018,7 @@ pub struct GetLlmEvaluationOnlineResultRequest {
     #[prost(string, tag="4")]
     pub language_code: ::prost::alloc::string::String,
 }
-/// Filter conditions for ListOnlineResults. All fields are optional; multiple
-/// fields set at the same time are combined via logical AND.
+/// Filter conditions for ListOnlineResults. All fields are optional; multiple fields set at the same time are combined via logical AND.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct LlmEvaluationOnlineResultFilter {
     /// Optional. Match only results produced by this online config.
@@ -9160,9 +9073,7 @@ pub struct ListLlmEvaluationOnlineResultsResponse {
     #[prost(string, tag="2")]
     pub next_page_token: ::prost::alloc::string::String,
 }
-/// A human-review annotation-queue item: one per failing session step enqueued by
-/// the online-evaluation worker. The reviewer annotates (status / reason) and may
-/// promote the offending session into a regression dataset.
+/// A human-review annotation-queue item: one per failing session step enqueued by the online-evaluation worker. The reviewer annotates (status / reason) and may promote the offending session into a regression dataset.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct LlmEvaluationAnnotationQueueItem {
     /// The unique resource name of the queue item. Read-only; populated by the server.
@@ -9233,8 +9144,7 @@ pub struct GetLlmEvaluationAnnotationQueueItemRequest {
     #[prost(string, tag="4")]
     pub language_code: ::prost::alloc::string::String,
 }
-/// Filter conditions for ListAnnotationQueueItems. All fields are optional;
-/// multiple fields set at the same time are combined via logical AND.
+/// Filter conditions for ListAnnotationQueueItems. All fields are optional; multiple fields set at the same time are combined via logical AND.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct LlmEvaluationAnnotationQueueItemFilter {
     /// Optional. Match only items with this status.
@@ -9305,9 +9215,7 @@ pub struct UpdateLlmEvaluationAnnotationQueueItemRequest {
     #[prost(string, tag="5")]
     pub language_code: ::prost::alloc::string::String,
 }
-/// Request to promote an annotation-queue item into a regression dataset. Thin
-/// server-side composition over LlmEvaluationCreateExamplesFromSession; the item
-/// status is flipped to PROMOTED and the dataset name stamped on success.
+/// Request to promote an annotation-queue item into a regression dataset. Thin server-side composition over LlmEvaluationCreateExamplesFromSession; the item status is flipped to PROMOTED and the dataset name stamped on success.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct PromoteLlmEvaluationAnnotationQueueItemRequest {
     /// Resource name of the item to promote.
@@ -9787,12 +9695,7 @@ impl LlmEvaluationAbExperimentStatus {
 
 // region a/b rollout domain messages
 
-/// The metric an A/B rollout optimizes when comparing each variant against the
-/// control. Each value maps to a quantity already produced by the per-variant
-/// results rollup (see GetAbExperimentResults). Higher-is-better vs.
-/// lower-is-better is implied by the metric (e.g. PASS_RATE / CRITERION_SCORE /
-/// SAFETY_SCORE are higher-is-better; ERROR_RATE / MEAN_LATENCY are
-/// lower-is-better) and applied server-side when picking the winner.
+/// The metric an A/B rollout optimizes when comparing each variant against the control. Each value maps to a quantity already produced by the per-variant results rollup (see GetAbExperimentResults). Higher-is-better vs. lower-is-better is implied by the metric (e.g. PASS_RATE / CRITERION_SCORE / SAFETY_SCORE are higher-is-better; ERROR_RATE / MEAN_LATENCY are lower-is-better) and applied server-side when picking the winner.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
 pub enum LlmEvaluationAbOptimizeMetric {
@@ -10162,8 +10065,7 @@ pub struct LlmToolCallMetadata {
     #[prost(string, tag="9")]
     pub error_message: ::prost::alloc::string::String,
 }
-/// Thinking / reasoning block emitted by the model (e.g. Anthropic extended thinking,
-/// OpenAI o-series reasoning).
+/// Thinking / reasoning block emitted by the model (e.g. Anthropic extended thinking, OpenAI o-series reasoning).
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct LlmThinkingMetadata {
     /// Token attribution for the thinking block when surfaced by the provider.
@@ -10424,11 +10326,7 @@ pub struct LlmSafetyFinding {
     #[prost(enumeration="LlmSafetyLocation", tag="4")]
     pub location: i32,
 }
-/// Native safety assessment for one LLM call, computed at telemetry build time by
-/// a dependency-free (regex / substring) assessor over the call's input / output
-/// text. Additive, optional: absent when safety scoring is disabled. This is the
-/// live MONITORING signal; the offline LLM-judge safety evaluators live in
-/// <code>llm_evaluation.proto</code>.
+/// Native safety assessment for one LLM call, computed at telemetry build time by a dependency-free (regex / substring) assessor over the call's input / output text. Additive, optional: absent when safety scoring is disabled. This is the live MONITORING signal; the offline LLM-judge safety evaluators live in <code>llm_evaluation.proto</code>.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct LlmSafetyAssessment {
     /// Detector categories that fired across input and output
@@ -10454,9 +10352,7 @@ pub struct LlmSafetyAssessment {
     #[prost(message, repeated, tag="6")]
     pub findings: ::prost::alloc::vec::Vec<LlmSafetyFinding>,
 }
-/// One retrieved RAG chunk surfaced during an LLM call. Mirrors the five-field
-/// chunk already emitted into <code>outputs.retrieved_chunks</code> (Struct) plus
-/// a typed <code>rank</code>.
+/// One retrieved RAG chunk surfaced during an LLM call. Mirrors the five-field chunk already emitted into <code>outputs.retrieved_chunks</code> (Struct) plus a typed <code>rank</code>.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct LlmRetrievedChunk {
     /// Source document identifier the chunk was retrieved from.
@@ -10479,9 +10375,7 @@ pub struct LlmRetrievedChunk {
     #[prost(int32, tag="6")]
     pub rank: i32,
 }
-/// Typed view of the chunks retrieved for one LLM call. Populated alongside the
-/// unstructured <code>outputs.retrieved_chunks</code> Struct (field 18 on
-/// LlmTelemetry, kept for back-compat); both carry the same chunk list.
+/// Typed view of the chunks retrieved for one LLM call. Populated alongside the unstructured <code>outputs.retrieved_chunks</code> Struct (field 18 on LlmTelemetry, kept for back-compat); both carry the same chunk list.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct LlmRetrievalMetadata {
     /// The retrieved chunks in retrieval-result order.
@@ -10628,9 +10522,7 @@ pub struct LlmCcaiServiceUsage {
     #[prost(string, repeated, tag="6")]
     pub model_names: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
 }
-/// Per-base-URL usage rollup across the scope. One entry per distinct
-/// <code>LlmTelemetry.base_url</code>; calls whose model configuration states no base URL are
-/// grouped under an empty <code>base_url</code>.
+/// Per-base-URL usage rollup across the scope. One entry per distinct <code>LlmTelemetry.base_url</code>; calls whose model configuration states no base URL are grouped under an empty <code>base_url</code>.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct LlmBaseUrlUsage {
     /// Base URL the calls went through (proxy / OpenAI-compatible endpoint), with embedded
@@ -10776,10 +10668,7 @@ pub struct LlmReasoningEffortStat {
     #[prost(message, optional, tag="4")]
     pub llm_token_usage: ::core::option::Option<LlmTokenUsage>,
 }
-/// Aggregated telemetry across all LLM calls in one DetectIntent turn, or across
-/// a session / agent-domain scope when used as a statistics report payload. The
-/// breakdown fields (6+) are populated only for the matching report type; a
-/// *_LLM_TOTAL_STATISTICS report populates all of them.
+/// Aggregated telemetry across all LLM calls in one DetectIntent turn, or across a session / agent-domain scope when used as a statistics report payload. The breakdown fields (6+) are populated only for the matching report type; a *_LLM_TOTAL_STATISTICS report populates all of them.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct LlmTelemetryReport {
     /// Summed LlmTokenUsage across llm_telemetries.
@@ -10863,8 +10752,7 @@ pub struct LlmSafetyCategoryStat {
     #[prost(double, tag="3")]
     pub rate: f64,
 }
-/// Native-safety breakdown aggregate across the LLM calls in scope. Computed from
-/// the per-call LlmSafetyAssessment records.
+/// Native-safety breakdown aggregate across the LLM calls in scope. Computed from the per-call LlmSafetyAssessment records.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct LlmSafetyStats {
     /// Number of LLM calls that carried a safety assessment in scope.
@@ -10984,9 +10872,7 @@ pub struct LlmTokenUsageUpdateEvent {
     #[prost(message, optional, tag="2")]
     pub llm_token_usage: ::core::option::Option<LlmTokenUsage>,
 }
-/// Emitted on a streaming DetectIntent when a node of an AI Team graph starts, completes or fails.
-/// A node inside a nested graph (a subgraph, or a member agent of a supervisor or swarm) is reported too,
-/// with its full <code>llm_agent_node_event_node_path</code>.
+/// Emitted on a streaming DetectIntent when a node of an AI Team graph starts, completes or fails. A node inside a nested graph (a subgraph, or a member agent of a supervisor or swarm) is reported too, with its full <code>llm_agent_node_event_node_path</code>.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct LlmAgentNodeEvent {
     /// Id of this run of the node. The <code>LLM_AGENT_NODE_PHASE_STARTED</code> event and the
@@ -11143,10 +11029,7 @@ pub struct QueryResult {
     #[prost(message, repeated, tag="18")]
     pub referenced_chunks: ::prost::alloc::vec::Vec<ReferencedChunk>,
 }
-/// The top-level message sent by the client to the <code>StreamingDetectIntent</code> method.
-/// Multiple request messages should be sent in order:
-/// 1.  The first message must contain <code>session</code>, <code>query_input</code> plus optionally <code>query_params</code> and/or <code>single_utterance</code>. The message must not contain <code>input_audio</code>.
-/// 2.  If <code>query_input</code> was set to a streaming input audio config, all subsequent messages must contain only <code>input_audio</code>. Otherwise, finish the request stream.
+/// The top-level message sent by the client to the <code>StreamingDetectIntent</code> method. Multiple request messages should be sent in order: 1.  The first message must contain <code>session</code>, <code>query_input</code> plus optionally <code>query_params</code> and/or <code>single_utterance</code>. The message must not contain <code>input_audio</code>. 2.  If <code>query_input</code> was set to a streaming input audio config, all subsequent messages must contain only <code>input_audio</code>. Otherwise, finish the request stream.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct StreamingDetectIntentRequest {
     /// Required. The name of the session the query is sent to.
@@ -11197,10 +11080,7 @@ pub struct StreamingDetectIntentRequest {
     #[prost(string, tag="8")]
     pub client_turn_id: ::prost::alloc::string::String,
 }
-/// The top-level message returned from the <code>StreamingDetectIntent</code> method.
-/// Multiple response messages can be returned in order:
-/// 1.  If the input was set to streaming audio, the first one or more messages contain <code>recognition_result</code>. Each <code>recognition_result</code> represents a more complete transcript of what the user said. The last <code>recognition_result</code> has <code>is_final</code> set to <code>true</code>.
-/// 2.  The next message contains <code>response_id</code>, <code>query_result</code> and optionally <code>webhook_status</code> if a WebHook was called.
+/// The top-level message returned from the <code>StreamingDetectIntent</code> method. Multiple response messages can be returned in order: 1.  If the input was set to streaming audio, the first one or more messages contain <code>recognition_result</code>. Each <code>recognition_result</code> represents a more complete transcript of what the user said. The last <code>recognition_result</code> has <code>is_final</code> set to <code>true</code>. 2.  The next message contains <code>response_id</code>, <code>query_result</code> and optionally <code>webhook_status</code> if a WebHook was called.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct StreamingDetectIntentResponse {
     /// The unique identifier of the response. It can be used to
@@ -11267,8 +11147,7 @@ pub mod streaming_detect_intent_response {
         LlmAgentNodeEvent(super::LlmAgentNodeEvent),
     }
 }
-/// Controls one turn of a session. Sent as <code>StreamingDetectIntentRequest.turn_control</code> on a call-length
-/// stream, or in an <code>InterruptTurnRequest</code>.
+/// Controls one turn of a session. Sent as <code>StreamingDetectIntentRequest.turn_control</code> on a call-length stream, or in an <code>InterruptTurnRequest</code>.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct TurnControl {
     /// The control to apply.
@@ -11293,8 +11172,7 @@ pub mod turn_control {
         DiscardDraft(super::DiscardDraft),
     }
 }
-/// Cancels a turn. At least one of <code>response_id</code> and <code>client_turn_id</code> must be set; when both
-/// are, <code>client_turn_id</code> is authoritative.
+/// Cancels a turn. At least one of <code>response_id</code> and <code>client_turn_id</code> must be set; when both are, <code>client_turn_id</code> is authoritative.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct CancelTurn {
     /// The server's <code>response_id</code> of the turn, when the client has already received it; empty otherwise.
@@ -11353,9 +11231,7 @@ pub struct HeardMessage {
     #[prost(string, tag="11")]
     pub filler_id: ::prost::alloc::string::String,
 }
-/// Reports what the user heard of a turn's answer. At least one of <code>response_id</code> and
-/// <code>client_turn_id</code> must be set. The server keeps the report with the highest <code>revision</code> per
-/// turn and ignores a lower or equal one.
+/// Reports what the user heard of a turn's answer. At least one of <code>response_id</code> and <code>client_turn_id</code> must be set. The server keeps the report with the highest <code>revision</code> per turn and ignores a lower or equal one.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct HeardReport {
     /// The server's <code>response_id</code> of the turn, when the client has already received it; empty otherwise.
@@ -11382,11 +11258,7 @@ pub struct HeardReport {
     #[prost(float, tag="7")]
     pub caller_overlap_duration_in_s: f32,
 }
-/// Discards the session step of a preemptive draft: a turn the client started speculatively on a partial
-/// transcript and then did not use. The server deletes the session step only when it belongs to this session and its
-/// request carried <code>QueryParameters.preemptive_draft</code> = true; it answers
-/// <code>TURN_CONTROL_ACK_STATUS_DRAFT_DISCARDED</code>. Any other step is kept and the server answers
-/// <code>TURN_CONTROL_ACK_STATUS_UNKNOWN_TURN</code>.
+/// Discards the session step of a preemptive draft: a turn the client started speculatively on a partial transcript and then did not use. The server deletes the session step only when it belongs to this session and its request carried <code>QueryParameters.preemptive_draft</code> = true; it answers <code>TURN_CONTROL_ACK_STATUS_DRAFT_DISCARDED</code>. Any other step is kept and the server answers <code>TURN_CONTROL_ACK_STATUS_UNKNOWN_TURN</code>.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct DiscardDraft {
     /// The server's <code>response_id</code> of the draft turn.
@@ -11429,11 +11301,7 @@ pub struct InterruptTurnResponse {
     #[prost(message, optional, tag="1")]
     pub turn_control_ack: ::core::option::Option<TurnControlAck>,
 }
-/// The configuration of one warm transfer intro, as resolved by the caller of
-/// <code>PrepareWarmTransferIntro</code>. A text left empty (or unset, for an <code>optional</code> field) falls back
-/// to the agent's default text for the language (<code>Agent.warm_transfer_settings</code>), then to the built-in
-/// default. Texts are spoken to the target, never to the caller, except <code>caller_declined_message</code> and
-/// <code>caller_unreachable_message</code>.
+/// The configuration of one warm transfer intro, as resolved by the caller of <code>PrepareWarmTransferIntro</code>. A text left empty (or unset, for an <code>optional</code> field) falls back to the agent's default text for the language (<code>Agent.warm_transfer_settings</code>), then to the built-in default. Texts are spoken to the target, never to the caller, except <code>caller_declined_message</code> and <code>caller_unreachable_message</code>.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct WarmTransferIntroConfig {
     /// The LLM instruction (<code>WARM_TRANSFER_INTRO_TEXT_SOURCE_LLM_SUMMARY</code>) or the template text
@@ -11575,8 +11443,7 @@ pub struct WarmTransferIntroOutcome {
 ///
 /// 3.  transcript: &quot;to be&quot;
 ///
-/// 4.  transcript: &quot;to be or not to be&quot;
-///      is_final: true
+/// 4.  transcript: &quot;to be or not to be&quot; is_final: true
 ///
 /// 5.  transcript: &quot; that&apos;s&quot;
 ///
@@ -11584,17 +11451,13 @@ pub struct WarmTransferIntroOutcome {
 ///
 /// 7.  recognition_event_type: <code>RECOGNITION_EVENT_END_OF_SINGLE_UTTERANCE</code>
 ///
-/// 8.  transcript: &quot; that is the question&quot;
-///      is_final: true
+/// 8.  transcript: &quot; that is the question&quot; is_final: true
 ///
 /// Only two of the responses contain final results (#4 and #8 indicated by <code>is_final: true</code>). Concatenating these generates the full transcript: <code>"to be or not to be that is the question"</code>.
 ///
 /// In each response we populate:
 ///
-/// <ul>
-///      <li>for <code>MESSAGE_TYPE_TRANSCRIPT</code>: <code>transcript</code> and possibly <code>is_final</code>.</li>
-///      <li>for <code>MESSAGE_TYPE_END_OF_SINGLE_UTTERANCE</code>: only <code>event_type</code>.</li>
-/// </ul>
+/// <ul> <li>for <code>MESSAGE_TYPE_TRANSCRIPT</code>: <code>transcript</code> and possibly <code>is_final</code>.</li> <li>for <code>MESSAGE_TYPE_END_OF_SINGLE_UTTERANCE</code>: only <code>event_type</code>.</li> </ul>
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct StreamingRecognitionResult {
     /// Type of the result message.
@@ -11702,9 +11565,7 @@ pub struct TextInput {
     #[prost(string, tag="2")]
     pub language_code: ::prost::alloc::string::String,
 }
-/// Events allow for matching intents by event name instead of the natural language input.
-/// For instance, input <code>&lt;event: { name: &quot;welcome_event&quot;, parameters: { name: &quot;Sam&quot; } }&gt;</code> can trigger a personalized welcome response.
-/// The parameter <code>name</code> may be used by the agent in the response: <code>&quot;Hello #welcome_event.name! What can I do for you today?&quot;</code>.
+/// Events allow for matching intents by event name instead of the natural language input. For instance, input <code>&lt;event: { name: &quot;welcome_event&quot;, parameters: { name: &quot;Sam&quot; } }&gt;</code> can trigger a personalized welcome response. The parameter <code>name</code> may be used by the agent in the response: <code>&quot;Hello #welcome_event.name! What can I do for you today?&quot;</code>.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct EventInput {
     /// Required. The unique identifier of the event.
@@ -11750,8 +11611,7 @@ pub struct Session {
 }
 /// Nested message and enum types in `Session`.
 pub mod session {
-    /// Represents the options for views of a session.
-    /// A session can be a sizable object. Therefore, we provide a resource view that does not return all data
+    /// Represents the options for views of a session. A session can be a sizable object. Therefore, we provide a resource view that does not return all data
     #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
     #[repr(i32)]
     pub enum View {
@@ -12296,8 +12156,7 @@ pub struct DeleteSessionRequest {
 }
 // *** SESSION-REVIEW RELATED MESSAGES *** //
 
-/// Request to persist a session review for a given session.
-/// As a side effect, training data in ondewo-cai may also be updated.
+/// Request to persist a session review for a given session. As a side effect, training data in ondewo-cai may also be updated.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct CreateSessionReviewRequest {
     /// The unique identifier for the session under review
@@ -12341,8 +12200,7 @@ pub struct SessionReview {
 }
 /// Nested message and enum types in `SessionReview`.
 pub mod session_review {
-    /// Represents the options for views of a session_review.
-    /// A session_review can be a sizable object. Therefore, we provide a resource view that does not return all data
+    /// Represents the options for views of a session_review. A session_review can be a sizable object. Therefore, we provide a resource view that does not return all data
     #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
     #[repr(i32)]
     pub enum View {
@@ -12904,12 +12762,7 @@ pub struct ListSessionCommentsResponse {
 }
 /// A single piece of user feedback about a whole session or a single session step (turn).
 ///
-/// The rating is intentionally extensible: <code>rating</code> carries the thumbs signal surfaced in the UI
-/// today, while <code>score</code> and <code>categorical_value</code> allow richer scales (star / NPS / CSAT)
-/// to be added later without a schema change. The feedback is pinned to the exact forensic context it is
-/// about (<code>session_id</code>, <code>session_step_id</code>, <code>response_id</code>,
-/// <code>session_step_llm_telemetry_id</code>) so the full conversation state up to the feedback can be
-/// reconstructed from the already-persisted session step.
+/// The rating is intentionally extensible: <code>rating</code> carries the thumbs signal surfaced in the UI today, while <code>score</code> and <code>categorical_value</code> allow richer scales (star / NPS / CSAT) to be added later without a schema change. The feedback is pinned to the exact forensic context it is about (<code>session_id</code>, <code>session_step_id</code>, <code>response_id</code>, <code>session_step_llm_telemetry_id</code>) so the full conversation state up to the feedback can be reconstructed from the already-persisted session step.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct SessionFeedback {
     /// The resource name of the feedback.
@@ -13079,9 +12932,7 @@ pub struct ListSessionFeedbackResponse {
     #[prost(int32, tag="3")]
     pub total_count: i32,
 }
-/// A key + up/down counts breakdown bucket (by language / intent / author type / ...).
-/// A feedback-native filter for feedback list + analytics requests, complementing SessionFilter (which
-/// filters the parent sessions). All set fields are AND-combined; repeated fields are OR-within-field.
+/// A key + up/down counts breakdown bucket (by language / intent / author type / ...). A feedback-native filter for feedback list + analytics requests, complementing SessionFilter (which filters the parent sessions). All set fields are AND-combined; repeated fields are OR-within-field.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct FeedbackFilter {
     /// Keep only feedback with one of these ratings (thumbs up / down / unspecified).
@@ -13719,8 +13570,7 @@ pub struct GetAudioFileOfSessionRequest {
     #[prost(message, optional, tag="4")]
     pub field_mask: ::core::option::Option<::prost_types::FieldMask>,
 }
-/// Identifies whether a transcription was produced by an automatic
-/// speech-to-text system or by a human annotator.
+/// Identifies whether a transcription was produced by an automatic speech-to-text system or by a human annotator.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
 pub enum TranscriptionType {
@@ -13753,8 +13603,7 @@ impl TranscriptionType {
         }
     }
 }
-/// Effort level for reasoning models (e.g. o1, o3). Controls the trade-off
-/// between speed and quality.
+/// Effort level for reasoning models (e.g. o1, o3). Controls the trade-off between speed and quality.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
 pub enum ReasoningEffort {
@@ -14203,8 +14052,7 @@ impl WarmTransferIntroStage {
         }
     }
 }
-/// Audio encoding of the audio content sent in the conversational query request.
-/// Refer to the <a href="/speech/docs/basics">Cloud Speech API documentation</a> for more details.
+/// Audio encoding of the audio content sent in the conversational query request. Refer to the <a href="/speech/docs/basics">Cloud Speech API documentation</a> for more details.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
 pub enum AudioEncoding {
@@ -14430,8 +14278,7 @@ impl FeedbackScope {
         }
     }
 }
-/// The calendar granularity of a feedback time series. When set (non-unspecified) it overrides the
-/// fixed-width bucket_width_seconds on the request.
+/// The calendar granularity of a feedback time series. When set (non-unspecified) it overrides the fixed-width bucket_width_seconds on the request.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
 pub enum FeedbackTimeGranularity {
@@ -14611,8 +14458,7 @@ pub struct Agent {
     #[prost(message, optional, tag="15")]
     pub warm_transfer_settings: ::core::option::Option<WarmTransferAgentSettings>,
 }
-/// The agent's settings of warm transfer intros. A text a <code>WarmTransferIntroConfig</code> leaves empty falls back
-/// to the agent's text for the intro's language, then to the built-in default.
+/// The agent's settings of warm transfer intros. A text a <code>WarmTransferIntroConfig</code> leaves empty falls back to the agent's text for the intro's language, then to the built-in default.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct WarmTransferAgentSettings {
     /// Whether warm transfer intros are enabled for the agent. Unset = enabled while the server's warm transfer
@@ -14631,8 +14477,7 @@ pub struct WarmTransferAgentSettings {
     #[prost(map="string, message", tag="4")]
     pub extra_lexicon: ::std::collections::HashMap<::prost::alloc::string::String, WarmTransferAgentLexicon>,
 }
-/// The default texts of warm transfer intros in one language. An empty text = the built-in default. The fields and
-/// placeholders are those of the same-named fields of <code>WarmTransferIntroConfig</code>.
+/// The default texts of warm transfer intros in one language. An empty text = the built-in default. The fields and placeholders are those of the same-named fields of <code>WarmTransferIntroConfig</code>.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct WarmTransferAgentTexts {
     /// The first question to the target (placeholder <code>{project}</code>).
@@ -14653,9 +14498,7 @@ pub struct WarmTransferAgentTexts {
     #[prost(string, tag="5")]
     pub caller_unreachable_message: ::prost::alloc::string::String,
 }
-/// Additional entries of the closed decision lexicon of warm transfer intros in one language, matched before an LLM
-/// classifies an answer. At most 50 entries in <code>accept_phrases</code> and <code>decline_phrases</code>
-/// together.
+/// Additional entries of the closed decision lexicon of warm transfer intros in one language, matched before an LLM classifies an answer. At most 50 entries in <code>accept_phrases</code> and <code>decline_phrases</code> together.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct WarmTransferAgentLexicon {
     /// Words and phrases that accept the call (and confirm the ready question), e.g. "übernehme".
@@ -16474,8 +16317,7 @@ pub struct CreateProjectTechnicalUserRequest {
     #[prost(string, tag="2")]
     pub name: ::prost::alloc::string::String,
 }
-/// Response with the freshly minted technical user's credentials.
-/// The password is returned ONCE and cannot be retrieved later.
+/// Response with the freshly minted technical user's credentials. The password is returned ONCE and cannot be retrieved later.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct CreateProjectTechnicalUserResponse {
     /// The technical user's id (Keycloak sub / UUID).
@@ -16548,8 +16390,7 @@ pub struct RotateProjectTechnicalUserPasswordRequest {
     #[prost(string, tag="2")]
     pub user_id: ::prost::alloc::string::String,
 }
-/// Response with the rotated password.
-/// The password is returned ONCE and cannot be retrieved later.
+/// Response with the rotated password. The password is returned ONCE and cannot be retrieved later.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct RotateProjectTechnicalUserPasswordResponse {
     /// The technical user's id (Keycloak sub / UUID).
@@ -17790,8 +17631,7 @@ impl IntentAlgorithms {
 // region Messages
 // ////////////////////////////////////////////////////////////////////////////
 
-/// A single captured log record. One record may span several physical lines: a Python traceback, a protobuf
-/// <code>str()</code> dump and a multi-line banner are all one record and are stored and returned as one entry.
+/// A single captured log record. One record may span several physical lines: a Python traceback, a protobuf <code>str()</code> dump and a multi-line banner are all one record and are stored and returned as one entry.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct CaiLogEntry {
     /// Ordering cursor. Assigned by the database, monotonically increasing WITHIN ONE LOG STREAM. It is NOT
@@ -17876,12 +17716,9 @@ pub struct CaiLogEntry {
     #[prost(string, tag="20")]
     pub phase: ::prost::alloc::string::String,
 }
-/// Narrows a log query. Every field is optional; an empty repeated field means &quot;do not filter on
-/// this&quot;. Fields are combined with AND; the values within one repeated field are combined with OR.
+/// Narrows a log query. Every field is optional; an empty repeated field means &quot;do not filter on this&quot;. Fields are combined with AND; the values within one repeated field are combined with OR.
 ///
-/// <p>Filters fall into two groups. IDENTITY filters (fields 1 to 19) select which log streams, operations and
-/// projects are of interest. CONTENT filters (fields 20 to 30) select which entries of those to return. The time
-/// window (fields 31, 32) is neither.</p>
+/// Filters fall into two groups. IDENTITY filters (fields 1 to 19) select which log streams, operations and projects are of interest. CONTENT filters (fields 20 to 30) select which entries of those to return. The time window (fields 31, 32) is neither.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct CaiLogFilter {
     // ////////////////////////////////////////////////////////////////////////////
@@ -17975,8 +17812,7 @@ pub struct CaiLogFilter {
     #[prost(message, optional, tag="32")]
     pub end_time: ::core::option::Option<::prost_types::Timestamp>,
 }
-/// One capture of one server process or of one container. A server process that restarts, and a container
-/// recreated under a new id, yield a NEW log stream.
+/// One capture of one server process or of one container. A server process that restarts, and a container recreated under a new id, yield a NEW log stream.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct CaiLogStream {
     /// Resource name of the log stream, in the form of
@@ -18080,9 +17916,7 @@ pub struct StreamLogsRequest {
     #[prost(message, optional, tag="5")]
     pub field_mask: ::core::option::Option<::prost_types::FieldMask>,
 }
-/// The response message for <a href="index.html#ondewo.nlu.Logs.StreamLogs">Logs.StreamLogs</a>. The stream
-/// carries an envelope rather than a bare entry so that a viewer can tell a healthy quiet source from a capture
-/// that has died.
+/// The response message for <a href="index.html#ondewo.nlu.Logs.StreamLogs">Logs.StreamLogs</a>. The stream carries an envelope rather than a bare entry so that a viewer can tell a healthy quiet source from a capture that has died.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct StreamLogsResponse {
     /// The entries in this batch, oldest first. May be empty, e.g. on the final message.
@@ -18412,8 +18246,7 @@ impl CaiLogStreamChannel {
         }
     }
 }
-/// The state of CAI&apos;s capture of one log stream. This describes the CAPTURE, not the process or the
-/// container.
+/// The state of CAI&apos;s capture of one log stream. This describes the CAPTURE, not the process or the container.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
 pub enum CaiLogCaptureState {
@@ -18456,9 +18289,7 @@ impl CaiLogCaptureState {
         }
     }
 }
-/// Identifies a field of <a href="index.html#ondewo.nlu.CaiLogFilter">CaiLogFilter</a>. Used by
-/// <a href="index.html#ondewo.nlu.ListLogsResponse">ListLogsResponse.scope_limited_filters</a> to declare which
-/// filters could only be applied inside the returned window.
+/// Identifies a field of <a href="index.html#ondewo.nlu.CaiLogFilter">CaiLogFilter</a>. Used by <a href="index.html#ondewo.nlu.ListLogsResponse">ListLogsResponse.scope_limited_filters</a> to declare which filters could only be applied inside the returned window.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
 pub enum CaiLogFilterField {
@@ -18507,9 +18338,7 @@ impl CaiLogFilterField {
         }
     }
 }
-/// Why the SERVER ended a <code>StreamLogs</code> stream. Carried by the final
-/// <a href="index.html#ondewo.nlu.StreamLogsResponse">StreamLogsResponse</a> beside the human-readable
-/// <code>end_reason</code>. A stream ended by the client has no final message.
+/// Why the SERVER ended a <code>StreamLogs</code> stream. Carried by the final <a href="index.html#ondewo.nlu.StreamLogsResponse">StreamLogsResponse</a> beside the human-readable <code>end_reason</code>. A stream ended by the client has no final message.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
 pub enum CaiLogStreamEndReason {
@@ -18558,8 +18387,7 @@ impl CaiLogStreamEndReason {
         }
     }
 }
-/// File format of an <a href="index.html#ondewo.nlu.Logs.ExportLogs">ExportLogs</a> export. Every format is UTF-8
-/// with <code>\n</code> line endings and one entry per record; a multi-line entry stays one record.
+/// File format of an <a href="index.html#ondewo.nlu.Logs.ExportLogs">ExportLogs</a> export. Every format is UTF-8 with <code>\n</code> line endings and one entry per record; a multi-line entry stays one record.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
 pub enum CaiLogExportFormat {
@@ -18670,8 +18498,7 @@ pub struct RagFileMetadata {
     #[prost(int64, tag="3")]
     pub size: i64,
 }
-/// On complete success: no fields set (empty message).
-/// On partial success/failure: both fields set.
+/// On complete success: no fields set (empty message). On partial success/failure: both fields set.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct RagPartialSuccess {
     /// Number of successful operations.
@@ -18721,24 +18548,7 @@ pub struct RagCreateDatasetRequest {
 }
 /// Document parser configuration.
 ///
-/// Used fields depend on the chunking method of the document.
-/// <ul>
-///      <li><code>naive</code>: uses the following fields (all optional)</li>
-///      <ul>
-///          <li><code>auto_keywords</code></li>
-///          <li><code>auto_questions</code></li>
-///          <li><code>chunk_token_num</code></li>
-///          <li><code>delimiter</code></li>
-///          <li><code>html4excel</code></li>
-///          <li><code>layout_recognize</code></li>
-///          <li><code>tag_kb_ids</code></li>
-///          <li><code>task_page_size</code></li>
-///          <li><code>raptor</code></li>
-///          <li><code>graphrag</code></li>
-///      </ul>
-///      <li><code>qa</code>, <code>manual</code>, <code>paper</code>, <code>book</code>, <code>laws</code>, <code>presentation</code>: uses only the <code>raptor</code> field</li>
-///      <li><code>table</code>, <code>picture</code>, <code>one</code>, <code>email</code>: does not use any field (expects empty message)</li>
-/// </ul>
+/// Used fields depend on the chunking method of the document. <ul> <li><code>naive</code>: uses the following fields (all optional)</li> <ul> <li><code>auto_keywords</code></li> <li><code>auto_questions</code></li> <li><code>chunk_token_num</code></li> <li><code>delimiter</code></li> <li><code>html4excel</code></li> <li><code>layout_recognize</code></li> <li><code>tag_kb_ids</code></li> <li><code>task_page_size</code></li> <li><code>raptor</code></li> <li><code>graphrag</code></li> </ul> <li><code>qa</code>, <code>manual</code>, <code>paper</code>, <code>book</code>, <code>laws</code>, <code>presentation</code>: uses only the <code>raptor</code> field</li> <li><code>table</code>, <code>picture</code>, <code>one</code>, <code>email</code>: does not use any field (expects empty message)</li> </ul>
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct RagParserConfig {
     /// Optional. Minimum 0, maximum 32, default 0. See <a href="<https://ragflow.io/docs/dev/autokeyword_autoquestion">https://ragflow.io/docs/dev/autokeyword_autoquestion</a>> for details.
@@ -18885,8 +18695,7 @@ pub struct RagDatasetParsingStatus {
     #[prost(int32, tag="5")]
     pub fail: i32,
 }
-/// Request message for updating an existing dataset.
-/// The same field constraints as for <code>RagCreateDatasetRequest</code> apply here.
+/// Request message for updating an existing dataset. The same field constraints as for <code>RagCreateDatasetRequest</code> apply here.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct RagUpdateDatasetRequest {
     /// Required. The agent to update the dataset for.
@@ -19160,8 +18969,7 @@ pub struct RagDownloadDocumentRequest {
     #[prost(string, tag="4")]
     pub document_id: ::prost::alloc::string::String,
 }
-/// File chunk for streaming downloads.<br>
-/// First chunk contains metadata, subsequent chunks only contain data.
+/// File chunk for streaming downloads.<br> First chunk contains metadata, subsequent chunks only contain data.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct RagFileChunk {
     /// Required in first chunk, ignored in later chunks. File metadata.
@@ -19252,8 +19060,7 @@ pub struct RagMetadataConditions {
     #[prost(message, repeated, tag="2")]
     pub conditions: ::prost::alloc::vec::Vec<RagMetadataCondition>,
 }
-/// Condition to filter document metadata on.
-/// String comparison is always case-insensitive.
+/// Condition to filter document metadata on. String comparison is always case-insensitive.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct RagMetadataCondition {
     /// Required. Metadata field name.
@@ -19321,8 +19128,7 @@ pub struct RagDocumentIdsRequest {
 // Chunk Management Types
 // ============================================================================
 
-/// Request message for retrieving chunks using vector similarity search.<br>
-/// Supports hybrid search combining vector similarity with keyword matching.
+/// Request message for retrieving chunks using vector similarity search.<br> Supports hybrid search combining vector similarity with keyword matching.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct RagRetrievalRequest {
     /// Required. The agent to retrieve chunks for.
@@ -19419,8 +19225,7 @@ pub struct RagRetrievalResponse {
     #[prost(string, tag="4")]
     pub next_page_token: ::prost::alloc::string::String,
 }
-/// Chunk of text extracted from a document.<br>
-/// Chunks are the basic retrieval units used for vector similarity search in RAG.
+/// Chunk of text extracted from a document.<br> Chunks are the basic retrieval units used for vector similarity search in RAG.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct RagChunk {
     /// Chunk ID (computed as xxhash of content combined with document_id).
@@ -19644,17 +19449,9 @@ pub struct RagUpdateCrawlerRequest {
 }
 /// RagCrawler definition.
 ///
-/// This object represents a reusable crawler profile that can be run multiple times.
-/// It is modeled after Crawl4AI concepts:
-/// <ul>
-///      <li>seed/sitemap discovery (<code>RagCrawlerSources</code>)</li>
-///      <li>URL/domain constraints (<code>RagCrawlerFilters</code>)</li>
-///      <li>authentication/session bootstrap (<code>RagCrawlerAuth</code>, <code>RagCrawlerBrowserConfig</code>)</li>
-///      <li>run behavior and extraction output (<code>RagCrawlerConfig</code>)</li>
-/// </ul>
+/// This object represents a reusable crawler profile that can be run multiple times. It is modeled after Crawl4AI concepts: <ul> <li>seed/sitemap discovery (<code>RagCrawlerSources</code>)</li> <li>URL/domain constraints (<code>RagCrawlerFilters</code>)</li> <li>authentication/session bootstrap (<code>RagCrawlerAuth</code>, <code>RagCrawlerBrowserConfig</code>)</li> <li>run behavior and extraction output (<code>RagCrawlerConfig</code>)</li> </ul>
 ///
-/// The same crawler can be executed multiple times; each execution creates
-/// a separate crawler run and result set.
+/// The same crawler can be executed multiple times; each execution creates a separate crawler run and result set.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct RagCrawler {
     /// Resource name of the RagCrawler
@@ -19704,9 +19501,7 @@ pub struct RagCrawler {
 }
 /// Crawl entry points.
 ///
-/// Both inputs can be provided at the same time:
-/// - Sitemaps are expanded into a crawl URL list (in discovery order)
-/// - Seed URLs are appended afterwards (in the order provided)
+/// Both inputs can be provided at the same time: - Sitemaps are expanded into a crawl URL list (in discovery order) - Seed URLs are appended afterwards (in the order provided)
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct RagCrawlerSources {
     /// Direct seed URLs to enqueue as starting points.
@@ -19719,11 +19514,7 @@ pub struct RagCrawlerSources {
 }
 /// URL and domain restrictions.
 ///
-/// Filters are evaluated during link discovery/scheduling and help avoid
-/// crawling irrelevant, duplicate, or unsafe sections (auth/logout pages,
-/// marketing subdomains, binary downloads, etc.).
-/// These include domains to be excluded in the sources (e.g. through sitemaps or seed URLs)
-/// and domains to be excluded in the deep crawl or extraction of pages to be crawled.
+/// Filters are evaluated during link discovery/scheduling and help avoid crawling irrelevant, duplicate, or unsafe sections (auth/logout pages, marketing subdomains, binary downloads, etc.). These include domains to be excluded in the sources (e.g. through sitemaps or seed URLs) and domains to be excluded in the deep crawl or extraction of pages to be crawled.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct RagCrawlerFilters {
     /// Optional. Domain allow-list (host-level gating).
@@ -19775,8 +19566,7 @@ pub struct RagCrawlerSeedUrlFilters {
 }
 /// Authentication configuration.
 ///
-/// Supports both browser/form login and HTTP auth patterns used by Crawl4AI pipelines when crawling protected content.
-/// HTTP Auth is used on all pages of the sources, while html_auth is a separate authentication flow used in the beginning of the crawl to extract the cookies. This is done through a login screen. If HTTP Auth is set, this would ALSO be used on the HTML auth page.
+/// Supports both browser/form login and HTTP auth patterns used by Crawl4AI pipelines when crawling protected content. HTTP Auth is used on all pages of the sources, while html_auth is a separate authentication flow used in the beginning of the crawl to extract the cookies. This is done through a login screen. If HTTP Auth is set, this would ALSO be used on the HTML auth page.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct RagCrawlerAuth {
     /// Optional. HTTP Basic auth settings.
@@ -19788,8 +19578,7 @@ pub struct RagCrawlerAuth {
 }
 /// Form/HTML login configuration.
 ///
-/// Selector types and selector strings identify login form fields in the page
-/// DOM. Credentials are then filled before form submission.
+/// Selector types and selector strings identify login form fields in the page DOM. Credentials are then filled before form submission.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct RagCrawlerHtmlAuth {
     /// Optional. Base URL used for auth/login navigation.
@@ -19829,9 +19618,7 @@ pub struct RagCrawlerHttpAuth {
 }
 /// Browser runtime configuration.
 ///
-/// This block maps closely to Crawl4AI BrowserConfig and controls browser
-/// process setup (engine, headless mode, viewport, context, proxy, cookies,
-/// user-agent behavior, and launch arguments).
+/// This block maps closely to Crawl4AI BrowserConfig and controls browser process setup (engine, headless mode, viewport, context, proxy, cookies, user-agent behavior, and launch arguments).
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct RagCrawlerBrowserConfig {
     /// Optional. HTTP headers sent on page/resource requests.
@@ -19871,8 +19658,7 @@ pub struct RagCrawlerConcurrencyConfig {
 }
 /// Crawl run behavior.
 ///
-/// This block controls scheduling, traversal, extraction outputs, retries,
-/// diagnostics capture, and deep crawling options for each crawler run.
+/// This block controls scheduling, traversal, extraction outputs, retries, diagnostics capture, and deep crawling options for each crawler run.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct RagCrawlerConfig {
     /// Optional. Concurrency and pacing controls for crawler requests.
@@ -19920,8 +19706,7 @@ pub struct RagCrawlerDeepCrawlerConfig {
 }
 /// Structured output configuration.
 ///
-/// Use this block to define result payload shape and metadata behavior,
-/// similar to Crawl4AI markdown/output-generation toggles.
+/// Use this block to define result payload shape and metadata behavior, similar to Crawl4AI markdown/output-generation toggles.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct RagCrawlerResultsConfig {
     /// Optional. Prepend the page's extracted metadata to the markdown as a YAML frontmatter block.
@@ -20018,8 +19803,7 @@ pub struct RagCrawlerStatusFilter {
 ///
 /// A page is reused from the most recent completed run of the same crawler when its sitemap/ <code>&lt;lastmod&gt;</code> is not newer than the <code>page_last_updated_date</code> of the copy that run holds. A reused page is part of the new run exactly like a freshly fetched one; only <code>RagCrawlerResult.last_crawled_date</code> still reports when its content was actually fetched.
 ///
-/// A page is always fetched when any of the following holds: its sitemap entry carries no <code>&lt;lastmod&gt;</code>; the most recent completed run did not contain it; there is no completed previous
-/// run; the crawler configuration changed since that run; or <code>max_age_days</code> has elapsed.
+/// A page is always fetched when any of the following holds: its sitemap entry carries no <code>&lt;lastmod&gt;</code>; the most recent completed run did not contain it; there is no completed previous run; the crawler configuration changed since that run; or <code>max_age_days</code> has elapsed.
 #[derive(Clone, Copy, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct RagCrawlerIncrementalConfig {
     /// Optional. Enable incremental crawling. Default <code>false</code>.
@@ -20054,8 +19838,7 @@ pub struct RagCrawlerExecutionInfo {
 }
 /// Crawler result entity.
 ///
-/// Each result corresponds to one crawled URL in a crawler run and includes
-/// extracted content, metadata, diagnostics, and optional binary artifacts.
+/// Each result corresponds to one crawled URL in a crawler run and includes extracted content, metadata, diagnostics, and optional binary artifacts.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct RagCrawlerResult {
     /// Resource name of the crawler result.
@@ -20089,8 +19872,7 @@ pub struct RagCrawlerResult {
 }
 /// Request message for running a crawler.
 ///
-/// This starts a long-running operation and returns immediately.
-/// Clients should poll operation status via <code>RagGetCrawlerRun</code>.
+/// This starts a long-running operation and returns immediately. Clients should poll operation status via <code>RagGetCrawlerRun</code>.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct RagStartCrawlerRequest {
     /// Required. The agent that owns the crawler.
@@ -20176,9 +19958,7 @@ pub struct RagListCrawlerRunsResponse {
 }
 /// Request message for deleting crawler runs.
 ///
-/// Deletion candidates are the union of:
-/// - explicit run names in <code>crawler_run_names</code>
-/// - all runs belonging to crawlers listed in <code>crawler_names</code>
+/// Deletion candidates are the union of: - explicit run names in <code>crawler_run_names</code> - all runs belonging to crawlers listed in <code>crawler_names</code>
 ///
 /// If both lists are empty, the call is a no-op.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
@@ -20237,14 +20017,9 @@ pub struct RagStopCrawlerResponse {
 }
 /// Request message for getting crawler results of a crawler run.
 ///
-/// Results are returned in pages. Request the first page with an empty
-/// <code>page_token</code>, then continue with each response <code>next_page_token</code>.
+/// Results are returned in pages. Request the first page with an empty <code>page_token</code>, then continue with each response <code>next_page_token</code>.
 ///
-/// Example:
-/// <pre><code>RagGetCrawlerResults(run_name, page_token="")
-/// -> next_page_token="..."
-/// RagGetCrawlerResults(run_name, page_token="...")
-/// </code></pre>
+/// Example: <pre><code>RagGetCrawlerResults(run_name, page_token="")&#10;-> next_page_token="..."&#10;RagGetCrawlerResults(run_name, page_token="...")&#10;</code></pre>
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct RagGetCrawlerResultsRequest {
     /// Required. The agent that owns the crawler run.
@@ -20326,8 +20101,7 @@ pub struct RagGetCrawlerResultRequest {
     #[prost(message, optional, tag="5")]
     pub field_mask: ::core::option::Option<::prost_types::FieldMask>,
 }
-/// Request message for adding crawler output to one or more datasets.<br>
-/// Either <code>crawler_names</code> or <code>crawler_result_names</code> (or both) must be provided.
+/// Request message for adding crawler output to one or more datasets.<br> Either <code>crawler_names</code> or <code>crawler_result_names</code> (or both) must be provided.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct RagAddCrawlerResultsToDatasetsRequest {
     /// Required. The agent that owns the crawler.
